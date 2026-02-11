@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MintMatch Messaging Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#06f9bc",
+                        "primary-dark": "#05dcb5",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f231e",
+                        "text-main": "#0d1c18",
+                        "text-secondary": "#479e89",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "2.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+        }
+        .glass-panel-dark {
+            background: rgba(15, 35, 30, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .active-glass-card {
+            background: rgba(6, 249, 188, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(6, 249, 188, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(6, 249, 188, 0.3);
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#f0fffc] via-[#f8fcfb] to-[#e6fcf6] min-h-screen text-text-main font-display selection:bg-primary selection:text-text-main overflow-hidden">
+<div class="h-screen flex flex-col w-full max-w-[1920px] mx-auto p-4 md:p-6 lg:p-8 gap-6">
+<header class="glass-panel rounded-xl px-6 py-4 flex items-center justify-between shadow-sm z-20 shrink-0">
+<div class="flex items-center gap-4 text-text-main">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-text-main shadow-lg shadow-primary/20 rotate-3">
+<span class="material-symbols-outlined text-[20px] font-bold">all_inclusive</span>
+</div>
+<h2 class="text-text-main text-xl font-bold tracking-tight">MintMatch</h2>
+</div>
+<nav class="hidden md:flex items-center gap-1 bg-white/40 p-1.5 rounded-full border border-white/40 shadow-sm backdrop-blur-sm">
+<a class="px-5 py-2 text-text-main/70 hover:text-text-main hover:bg-white/60 rounded-full text-sm font-semibold transition-all duration-200" href="#">Dashboard</a>
+<a class="px-5 py-2 text-text-main/70 hover:text-text-main hover:bg-white/60 rounded-full text-sm font-semibold transition-all duration-200" href="#">Discover</a>
+<a class="px-5 py-2 bg-white text-text-main shadow-sm rounded-full text-sm font-bold ring-1 ring-black/5" href="#">Messages</a>
+<a class="px-5 py-2 text-text-main/70 hover:text-text-main hover:bg-white/60 rounded-full text-sm font-semibold transition-all duration-200" href="#">Jobs</a>
+<a class="px-5 py-2 text-text-main/70 hover:text-text-main hover:bg-white/60 rounded-full text-sm font-semibold transition-all duration-200" href="#">Network</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center size-10 rounded-full bg-white/50 hover:bg-white hover:scale-105 text-text-main transition-all relative shadow-sm border border-white/50">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+</button>
+<div class="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full bg-white/40 border border-white/50 hover:bg-white/60 transition-colors cursor-pointer group">
+<div class="text-right hidden xl:block">
+<p class="text-xs font-bold text-text-main">Alex M.</p>
+<p class="text-[10px] text-text-secondary font-medium uppercase tracking-wider">Recruiter</p>
+</div>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-9 ring-2 ring-white shadow-sm group-hover:scale-105 transition-transform" data-alt="User profile picture of a man" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAEGfQKitRlFooIZrwmRnD6apPePPj1e-a9BF3CD_Pc1ccZklnQApNsZQT9VcCF6CzcnpG0yM-vwKI2jyY8ALcPuqUMIEjhdZSCDhEs4B5iSUCqJrQN0DOXBUbYBib6ufrCHJXA-EH5gsB5iLmHvYmL3N1Dn-7gChRlSQxanZ99OMFP0Ba7rk3CtGMPg5f0_9DTNZM2M6pqIXifUUbYGIhBbmFAT_Om8mIPvxTCiD18sVcR5JZQnzwuq33NB_rFJYDHhDn3OKDsyAA");'></div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 gap-6 overflow-hidden relative">
+<aside class="w-full md:w-[35%] lg:w-[30%] xl:w-[25%] glass-panel rounded-[2rem] flex flex-col overflow-hidden shadow-sm h-full">
+<div class="p-6 pb-2 shrink-0">
+<div class="flex items-center justify-between mb-6">
+<h1 class="text-2xl font-bold text-text-main">Messages</h1>
+<button class="size-8 rounded-full bg-white/60 flex items-center justify-center hover:bg-primary hover:text-text-main transition-colors text-text-secondary">
+<span class="material-symbols-outlined text-[20px]">edit_square</span>
+</button>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-secondary">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="glass-input block w-full pl-10 pr-3 py-3 rounded-xl text-sm placeholder:text-text-secondary/70 focus:outline-none focus:ring-2 focus:ring-primary/50 text-text-main transition-all" placeholder="Search conversations..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6 px-6 py-2 text-sm font-medium border-b border-white/40 shrink-0">
+<button class="text-text-main border-b-2 border-primary pb-2 -mb-[9px]">All Messages</button>
+<button class="text-text-secondary hover:text-text-main pb-2 transition-colors">Unread</button>
+<button class="text-text-secondary hover:text-text-main pb-2 transition-colors">Archived</button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-2">
+<div class="active-glass-card p-3 rounded-2xl flex gap-3 cursor-pointer group transition-all">
+<div class="relative shrink-0">
+<div class="size-12 rounded-full bg-cover bg-center ring-2 ring-white/50" data-alt="Portrait of Sarah Jenkins" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCdz2i8Zu7awdzDM2_2u97O814rukOh3yunH_-NIBBP_5kXThNABopaRKRp6FoSOjey77SvcCVhHGEXNb7h6FhaB-GQUJDshX-JqkoTdlKLQtuVsfGdBjbnfin1D-WWhkpyEiEP3eAk53oq-fa103E-3yTtERCfzIbox3rALn72kdzrZTZvtNEGNvgjTealyyjiIe2sXnClkDgC-S4_hxCfT4vqOHIDnK0IE0xG082oYtxqkKdFl-TzzgcL8O6GeUk-enwfuucErgs");'></div>
+<div class="absolute bottom-0 right-0 size-3 bg-[#07882e] border-2 border-white rounded-full"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0 justify-center">
+<div class="flex justify-between items-center mb-0.5">
+<h3 class="font-bold text-text-main truncate">Sarah Jenkins</h3>
+<span class="text-xs font-semibold text-text-main/80">Now</span>
+</div>
+<p class="text-sm text-text-main/90 truncate font-medium">Can we reschedule for Tuesday?</p>
+</div>
+</div>
+<div class="hover:bg-white/40 p-3 rounded-2xl flex gap-3 cursor-pointer transition-colors">
+<div class="relative shrink-0">
+<div class="size-12 rounded-full bg-cover bg-center" data-alt="Portrait of Mike Ross" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCapoEzMnCixfzveNYRnYriJ8Q7MpNv8yo9h-kM7zOUkL-ff8tfbyCb9KTb4LrNQR0Fl9lMQPc1KZwRRKNP2mpa8yFeIO2kBO75VZzKVfQuRo2jVr_vfvckmOpLw_n88jPis_P0bZx4dBsT-VRag-HNqATITXPKUwFE5daqbG4HrNYhl2hBGqcIztzbdHQCEpgdo-_f1uzsBCs6Qu13JyGlUBAvSAlyBFO7gUchtcrL5N-43bhEpqrYS4c6w4LQcA6rO5-AY3FiV5c");'></div>
+<div class="absolute bottom-0 right-0 size-3 bg-gray-400 border-2 border-white rounded-full"></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0 justify-center">
+<div class="flex justify-between items-center mb-0.5">
+<h3 class="font-bold text-text-main truncate">Mike Ross</h3>
+<div class="flex items-center gap-2">
+<span class="text-xs text-text-secondary">2m</span>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<p class="text-sm text-text-main font-semibold truncate">Thanks for the offer!</p>
+<span class="flex items-center justify-center bg-primary text-text-main text-[10px] font-bold h-5 min-w-5 px-1.5 rounded-full shadow-sm">2</span>
+</div>
+</div>
+</div>
+<div class="hover:bg-white/40 p-3 rounded-2xl flex gap-3 cursor-pointer transition-colors">
+<div class="relative shrink-0">
+<div class="size-12 rounded-full bg-cover bg-center" data-alt="Portrait of David Chen" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA_zyCfb7FEwxsoD95_5qoo4_yaeUj6YsqsduadTQhWmTD_--PQRvEW5XuW9nb2FGJpjkaFTbCFViyTIj9ylCeXJuAh_EztebXJ221lqYOlvX9qMzbDriklzzsAKAGjqd4kmWGedxX-Izvkqyq10x_14y0gopm8cy1PMCCDBDCIL1nV0OfMoiz2HSceykWQnWSPPJrNNMt0UX7h1z6Dmnx-O1qtxS2-Nbq70ptU3lQYz6cZhDgXCOJP3xl0DMnG7yif1LRuLKrIJMA");'></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0 justify-center">
+<div class="flex justify-between items-center mb-0.5">
+<h3 class="font-bold text-text-main truncate">David Chen</h3>
+<span class="text-xs text-text-secondary">1h</span>
+</div>
+<p class="text-sm text-text-secondary truncate">I'll send the portfolio over later today.</p>
+</div>
+</div>
+<div class="hover:bg-white/40 p-3 rounded-2xl flex gap-3 cursor-pointer transition-colors">
+<div class="relative shrink-0">
+<div class="size-12 rounded-full bg-cover bg-center" data-alt="Portrait of Emily Watson" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuATAcr790nsgheB7MOfhUy1KWDq2FEwZfBzlbde4t5f3L_Vk6PqWVsjrjvHPzTrboPqVHAGmxNN27pjzfbgvy0hJCD0Y9trN_RVQwxPpWm0soR41KiBTbDXoCPrAUBTACoNYCbjPe7NrLrit7Mzp19fn9LcIX2iAaeEghRaXzoo3IL2f-dTe0yuuB-J7mkzOMAOgHVbQBkS5WjPy_HxdnpL0M9S1ziMU4Yv2rFTHhhHMoXTFsc1zZPwusuC_FWorFbx7xc95BeGbDI");'></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0 justify-center">
+<div class="flex justify-between items-center mb-0.5">
+<h3 class="font-bold text-text-main truncate">Emily Watson</h3>
+<span class="text-xs text-text-secondary">Yesterday</span>
+</div>
+<p class="text-sm text-text-secondary truncate">Sounds good, talk soon.</p>
+</div>
+</div>
+<div class="hover:bg-white/40 p-3 rounded-2xl flex gap-3 cursor-pointer transition-colors">
+<div class="relative shrink-0">
+<div class="size-12 rounded-full bg-cover bg-center grayscale opacity-80" data-alt="Portrait of Jessica Pearson" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDjuZUuXnbIZeN7HQQ__Q644THiBKd58vzwtP3rM312HOsW7HLL0I-hJ42pByvbyH_3eqjZcOSnZSuIGVbX3rqAeCg-_x-Z40Vy6r-pt1K2RZc0cAmPVWxNH5VDAMDaZLWsaIny24VIKrVbLNc0yBvfSAI8oEddIyidXwqUd0ToG0PBqVtjur1W9Guj37wUe6wR57V3WRJwRVL-o3GcucTupjyGaZU8tt_RyNjzsUdRK8mNLgAXGYi11tND25JzWYN7-zDezfrxJuY");'></div>
+</div>
+<div class="flex flex-col flex-1 min-w-0 justify-center">
+<div class="flex justify-between items-center mb-0.5">
+<h3 class="font-bold text-text-main truncate opacity-80">Jessica Pearson</h3>
+<span class="text-xs text-text-secondary">2d</span>
+</div>
+<p class="text-sm text-text-secondary truncate">Position has been filled.</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="hidden md:flex flex-col flex-1 glass-panel rounded-[2rem] shadow-sm h-full overflow-hidden relative">
+<div class="px-8 py-5 border-b border-white/40 bg-white/30 backdrop-blur-md flex items-center justify-between shrink-0 z-10">
+<div class="flex items-center gap-4">
+<div class="relative">
+<div class="size-12 rounded-full bg-cover bg-center ring-2 ring-white" data-alt="Large portrait of Sarah Jenkins" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCzjKQAQbmcl2ZIoXuYamV-hZh1-aD7uZea5Drs0cGSBxOAi8QjMj43oOCPQWctWA1TX6nzxq5zhlrWvJPAc54muNZFwjGq6XjB-RkChzJvRL9DOz1nx5a4ePu9iGptqbriShaClaZECVTpgrhuP1QyVghP_W5S1eZQcu-zM52nIvx0kxlu21806cCUlSxkrMI3X-8p7hfDR70hyc_ApALeWo-eTmb0mT5AIYR4F4ctA89x-ftZaRqc18ETIsam3Tlf4OPc4uae41E");'></div>
+<div class="absolute bottom-0 right-0 size-3 bg-[#07882e] border-2 border-white rounded-full"></div>
+</div>
+<div>
+<h2 class="text-lg font-bold text-text-main leading-tight">Sarah Jenkins</h2>
+<p class="text-sm text-text-secondary font-medium">Senior UX Designer • <span class="text-[#07882e]">Active Now</span></p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="size-10 rounded-full hover:bg-white/50 flex items-center justify-center text-text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">call</span>
+</button>
+<button class="size-10 rounded-full hover:bg-white/50 flex items-center justify-center text-text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">videocam</span>
+</button>
+<div class="w-px h-6 bg-text-secondary/20 mx-2"></div>
+<button class="size-10 rounded-full hover:bg-white/50 flex items-center justify-center text-text-secondary hover:text-text-main transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-8 flex flex-col gap-6 relative">
+<div class="flex justify-center">
+<span class="bg-white/60 px-4 py-1.5 rounded-full text-xs font-semibold text-text-secondary backdrop-blur-sm">Today, Oct 24</span>
+</div>
+<div class="flex items-end gap-3 max-w-[70%]">
+<div class="size-8 rounded-full bg-cover bg-center shrink-0 mb-1" data-alt="Small portrait of Sarah Jenkins" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAkl-LvlCuhkNCNBjSpSHJbNnsze210rgfyeT34l40EKfYL_MW-Txz9vIsKlnnYJcjmj97VWe7zWeAl8gY4HU0OxG7WPSqOVY6pm19260a0yP_DdpitcuWSSC0jZW7UjYUdM8oMDneyjVYAKvv87mxdXP5ZMm_FiGhKzefUlZi6R6mERPJbLi5OxkXf_MaqOuBWXhMd3BgqU78V1-kwJx9-K5_uPubt-vKiC9z7PrcfXWOWFN-GXOFBnBX9ppWHvLFaDeMG31HXo6E");'></div>
+<div class="flex flex-col gap-1">
+<div class="bg-white/60 p-4 rounded-2xl rounded-bl-none text-text-main text-[15px] leading-relaxed shadow-sm backdrop-blur-sm border border-white/50">
+                                Hi! Thanks for reaching out. I'm definitely interested in the Senior UX role at MintMatch.
+                            </div>
+<span class="text-xs text-text-secondary ml-2">10:23 AM</span>
+</div>
+</div>
+<div class="flex items-end gap-3 max-w-[70%] self-end flex-row-reverse">
+<div class="size-8 rounded-full bg-cover bg-center shrink-0 mb-1" data-alt="Small user portrait" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBrSYlDTmg-ZK3DWiShoz05Z4aDvSr9Gc7-KHgD6nX-dimC4z_n-QMblBEgxh5EXwNokr_ud3NbWh_bfWlpfVwFk5dzXgNWhSnRSXBt181MgNwKm9xbQZb6-nsah-00KtjnFzVtnHiZlgz2AlanOBFE-mMgcgQ5vXu5h6COzlen7Y1Cs1ib-IzGozroLV2CDv6zACRMf6wXR3PnWs4rKlb71J5WmNAV5l9qWDoGIjk2SwY20y5Wi1dD45J_DVpYiZMaoj7_RSYCIT4");'></div>
+<div class="flex flex-col gap-1 items-end">
+<div class="bg-primary/90 p-4 rounded-2xl rounded-br-none text-text-main text-[15px] leading-relaxed shadow-md backdrop-blur-sm border border-white/20 font-medium">
+                                That's great to hear, Sarah! We were really impressed by your portfolio. Would you be available for a quick chat this week?
+                            </div>
+<span class="text-xs text-text-secondary mr-2">10:25 AM</span>
+</div>
+</div>
+<div class="flex items-end gap-3 max-w-[70%]">
+<div class="size-8 rounded-full bg-cover bg-center shrink-0 mb-1" data-alt="Small portrait of Sarah Jenkins" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCbNUaqr8b4PSg0TAFoYVX3zsf9TGqe1xS33mpW47mCev1yl20-TMPjT_YGywMT-ZRTCtbEJTCkvrSQduBWuqWCRqzVaOtzexiIUoptK8HwnLZQyxAj1VkBUsC7GkIPjoHsU76J5rV5W9JLs7P2MsqbWy2AuSuN8r1RWPdzKqZeuzSzS6d1AeSQxEI8UMNQjrqg0LyzfnH9eAQY6J027L9-j7hdbiPVxZFGut9JAGLo1qDlL7Z4eegP-dpiBJDO4vAwJIdv47cP-IQ");'></div>
+<div class="flex flex-col gap-1">
+<div class="bg-white/60 p-4 rounded-2xl rounded-bl-none text-text-main text-[15px] leading-relaxed shadow-sm backdrop-blur-sm border border-white/50">
+                                Absolutely. I'm free most afternoons.
+                            </div>
+<div class="bg-white/60 p-4 rounded-2xl rounded-tl-sm text-text-main text-[15px] leading-relaxed shadow-sm backdrop-blur-sm border border-white/50">
+                                Can we reschedule for Tuesday? Something came up on Monday.
+                            </div>
+<span class="text-xs text-text-secondary ml-2">10:28 AM</span>
+</div>
+</div>
+</div>
+<div class="p-6 pt-2 shrink-0 z-20">
+<div class="glass-input rounded-[2rem] p-2 pr-2.5 flex items-center gap-2 shadow-sm focus-within:shadow-md focus-within:ring-2 focus-within:ring-primary/30 transition-all">
+<button class="size-10 rounded-full hover:bg-black/5 text-text-secondary flex items-center justify-center transition-colors ml-1">
+<span class="material-symbols-outlined">add_circle</span>
+</button>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-text-main placeholder:text-text-secondary/70 py-3 text-base" placeholder="Type your message..." type="text"/>
+<div class="flex items-center gap-1 mr-2">
+<button class="size-9 rounded-full hover:bg-black/5 text-text-secondary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[20px]">sentiment_satisfied</span>
+</button>
+<button class="size-9 rounded-full hover:bg-black/5 text-text-secondary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[20px]">image</span>
+</button>
+</div>
+<button class="size-10 bg-primary rounded-full flex items-center justify-center text-text-main shadow-lg shadow-primary/30 hover:scale-105 hover:bg-[#05efb3] active:scale-95 transition-all">
+<span class="material-symbols-outlined filled font-bold">arrow_upward</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+</div>
+<div class="md:hidden fixed inset-0 bg-background-light z-50 flex items-center justify-center p-8 text-center glass-panel">
+<div>
+<span class="material-symbols-outlined text-4xl text-primary mb-4">desktop_windows</span>
+<h2 class="text-xl font-bold mb-2">Desktop View Optimized</h2>
+<p class="text-text-secondary">This messaging interface is designed for larger screens. Please switch to a desktop or tablet for the best experience.</p>
+</div>
+</div>
+
+</body></html>

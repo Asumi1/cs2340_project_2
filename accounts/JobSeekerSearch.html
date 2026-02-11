@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MintMatch Map Search</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#06f9bc",
+                        "primary-dark": "#05d5a1",
+                        "background-light": "#f0fdf9", 
+                        "background-dark": "#0f231e",
+                        "glass-white": "rgba(255, 255, 255, 0.7)",
+                        "glass-border": "rgba(255, 255, 255, 0.5)",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "sans": ["Manrope", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "2xl": "2.5rem",
+                        "3xl": "3rem",
+                        "full": "9999px",
+                    },
+                    boxShadow: {
+                        "glass": "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
+                        "glass-hover": "0 12px 40px 0 rgba(6, 249, 188, 0.15)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Manrope", sans-serif
+        }.custom-scrollbar::-webkit-scrollbar {
+            width: 6px
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(6, 249, 188, 0.3);
+            border-radius: 20px
+        }.glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6)
+        }
+        .glass-panel-dark {
+            background: rgba(15, 35, 30, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1)
+        }.map-bg {
+            background-color: #e5e7eb;
+            background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuDVMI-hgtGlSZNlDAYgsoLpd3IYCUiwW7sOO4_3ezZNYfiYmlniFMoLuIZNUWCmj3vUO8Z1dqzHAalITAQXYBNvysXCem1NT9EDrzOkZ3wtXnewYVMAWZ6Sk9T1CNcg7Xy1283d8EmlusPe4LTl69M729lLDWP88t0XXFk00cZyJxdhzdtnbFn2uPGqxV2-0jePV0qjZFbCzOsByCoHlhCZqkxzhzy7a7m4yanjJ0UVA8wJTrOUMj_kviErJWPFtPqe_rjx3jiW5w4)
+        }.header-glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+        }
+        .dark .header-glass {
+            background: rgba(15, 35, 30, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-background-light to-[#dcfce7] dark:from-background-dark dark:to-[#051a15] min-h-screen flex flex-col overflow-hidden text-[#0d1c18] dark:text-white transition-colors duration-300 relative">
+<div class="fixed top-6 left-0 right-0 z-50 flex justify-center px-6">
+<nav class="w-full max-w-5xl header-glass rounded-full px-2 py-2 md:px-3 md:py-2.5 transition-all duration-300">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5 pl-2">
+<div class="size-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 rotate-3 hover:rotate-0 transition-transform duration-300">
+<span class="material-symbols-outlined text-white text-[20px]">spa</span>
+</div>
+<div class="flex flex-col leading-none">
+<h1 class="text-lg font-extrabold tracking-tight text-gray-900 dark:text-white">Mint<span class="text-primary-dark dark:text-primary">Match</span></h1>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
+<div class="bg-gray-100/50 dark:bg-black/20 p-1 rounded-full flex items-center gap-1 border border-white/50 dark:border-white/5">
+<a class="px-5 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:bg-white hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white transition-all" href="#">Jobs</a>
+<a class="px-5 py-2 rounded-full text-sm font-bold text-gray-900 dark:text-white bg-white dark:bg-white/10 shadow-sm border border-black/5 dark:border-white/5" href="#">Map</a>
+<a class="px-5 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:bg-white hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white transition-all" href="#">Saved</a>
+</div>
+</div>
+<div class="flex items-center gap-3 pr-1">
+<div class="hidden lg:flex relative group w-48 mr-2">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</div>
+<input class="block w-full pl-9 pr-3 py-2 rounded-full bg-transparent hover:bg-white/40 focus:bg-white dark:hover:bg-white/5 dark:focus:bg-black/40 border-none ring-0 focus:ring-1 focus:ring-primary/50 transition-all placeholder-gray-400 text-sm font-medium" placeholder="Search..." type="text"/>
+</div>
+<div class="h-6 w-[1px] bg-gray-200 dark:bg-gray-700 hidden lg:block mx-1"></div>
+<div class="flex items-center gap-2">
+<button class="size-9 flex items-center justify-center rounded-full bg-transparent hover:bg-white/60 dark:hover:bg-white/10 transition-all text-gray-500 dark:text-gray-300">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-full transition-all shadow-sm ring-2 ring-transparent hover:ring-primary/50">
+<img alt="User profile picture" class="size-9 rounded-full object-cover border-2 border-white dark:border-gray-600" data-alt="User Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXdaIo6_ot_RjHxqw-xUiykHNDGeTad4Fc60Zt7ZmYYowp65pnaVbRIsRpdT3Zf0g71lfDuJCiU_ZvLv8VOKCW9dpbViSysOuwKvzPra_EAQG3__v14C-Cv2kUPmorMM7YkwCYqJlI55Zwq0mSAifliaBVsQ0iB42wE_mxooNleWRBeH1CCgwAoB-jpawnuqGOQRHb53H71zZcyhTEMLG6T-rKeAZJ7hDMoE1SWan-k_6H9u2-_1jakVXgE6WsWyMJCr1wQ790GhY"/>
+</button>
+</div>
+</div>
+</div>
+</nav>
+</div>
+<main class="flex-1 flex gap-6 px-6 pb-6 pt-24 overflow-hidden h-screen">
+<div class="w-full lg:w-[45%] xl:w-[40%] flex flex-col gap-4 h-full pt-2">
+<div class="glass-panel dark:glass-panel-dark rounded-3xl p-6 shadow-glass shrink-0 flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h2 class="text-2xl font-bold text-gray-900 dark:text-white">Find your next role</h2>
+<span class="text-sm font-medium text-gray-500 dark:text-gray-400">142 jobs found</span>
+</div>
+<div class="flex gap-3 overflow-x-auto pb-1 no-scrollbar mask-gradient-r">
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-[#0d1c18] font-bold text-sm shadow-sm hover:shadow-md transition-all whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+                    All Filters
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-100 dark:border-white/5 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/20 transition-all whitespace-nowrap">
+                    Remote
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-100 dark:border-white/5 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/20 transition-all whitespace-nowrap">
+                    Full-time
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-100 dark:border-white/5 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/20 transition-all whitespace-nowrap">
+                    $100k+
+                </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-100 dark:border-white/5 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/20 transition-all whitespace-nowrap">
+                    Design
+                </button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-4 pb-24">
+<div class="group relative glass-panel dark:glass-panel-dark rounded-3xl p-5 shadow-glass hover:shadow-glass-hover hover:-translate-y-1 transition-all duration-300 cursor-pointer border-l-4 border-l-primary">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="size-12 rounded-xl bg-gray-900 flex items-center justify-center text-white text-xl font-bold">
+                            S
+                        </div>
+<div>
+<h3 class="font-bold text-lg text-gray-900 dark:text-white leading-tight group-hover:text-primary transition-colors">Senior UI Designer</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">Stripe • Remote</p>
+</div>
+</div>
+<button class="size-8 rounded-full bg-white dark:bg-white/10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/20 transition-colors text-gray-400 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">bookmark</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="px-3 py-1 rounded-full bg-primary/10 text-primary-dark dark:text-primary text-xs font-bold border border-primary/20">Design System</span>
+<span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 text-xs font-medium">Figma</span>
+<span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 text-xs font-medium">Senior</span>
+</div>
+<div class="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-white/5">
+<p class="font-bold text-gray-900 dark:text-white">$140k - $180k <span class="text-xs text-gray-400 font-normal">/ year</span></p>
+<span class="text-xs text-gray-400">Posted 2h ago</span>
+</div>
+</div>
+<div class="group relative glass-panel dark:glass-panel-dark rounded-3xl p-5 shadow-glass hover:shadow-glass-hover hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="size-12 rounded-xl bg-black flex items-center justify-center text-white">
+<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0L1.6 6v12L12 24l10.4-6V6L12 0zm0 21.6l-8.4-4.8V7.2L12 2.4l8.4 4.8v9.6L12 21.6z"></path></svg>
+</div>
+<div>
+<h3 class="font-bold text-lg text-gray-900 dark:text-white leading-tight group-hover:text-primary transition-colors">Frontend Developer</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">Vercel • Hybrid</p>
+</div>
+</div>
+<button class="size-8 rounded-full bg-white dark:bg-white/10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/20 transition-colors text-gray-400 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">bookmark</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 text-xs font-medium">React</span>
+<span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 text-xs font-medium">Next.js</span>
+</div>
+<div class="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-white/5">
+<p class="font-bold text-gray-900 dark:text-white">$120k - $160k <span class="text-xs text-gray-400 font-normal">/ year</span></p>
+<span class="text-xs text-gray-400">Posted 5h ago</span>
+</div>
+</div>
+<div class="group relative glass-panel dark:glass-panel-dark rounded-3xl p-5 shadow-glass hover:shadow-glass-hover hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="size-12 rounded-xl bg-blue-600 flex items-center justify-center text-white text-xl font-bold">
+                            L
+                        </div>
+<div>
+<h3 class="font-bold text-lg text-gray-900 dark:text-white leading-tight group-hover:text-primary transition-colors">Product Manager</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">Linear • Remote</p>
+</div>
+</div>
+<button class="size-8 rounded-full bg-white dark:bg-white/10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/20 transition-colors text-gray-400 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">bookmark</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 text-xs font-medium">Product Strategy</span>
+<span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 text-xs font-medium">Agile</span>
+</div>
+<div class="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-white/5">
+<p class="font-bold text-gray-900 dark:text-white">$130k - $170k <span class="text-xs text-gray-400 font-normal">/ year</span></p>
+<span class="text-xs text-gray-400">Posted 8h ago</span>
+</div>
+</div>
+<div class="group relative glass-panel dark:glass-panel-dark rounded-3xl p-5 shadow-glass hover:shadow-glass-hover hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="size-12 rounded-xl bg-green-600 flex items-center justify-center text-white text-xl font-bold">
+                            S
+                        </div>
+<div>
+<h3 class="font-bold text-lg text-gray-900 dark:text-white leading-tight group-hover:text-primary transition-colors">Staff Engineer</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">Spotify • New York</p>
+</div>
+</div>
+<button class="size-8 rounded-full bg-white dark:bg-white/10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/20 transition-colors text-gray-400 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">bookmark</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-2 mb-4">
+<span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 text-xs font-medium">Backend</span>
+<span class="px-3 py-1 rounded-full bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-300 text-xs font-medium">Java</span>
+</div>
+<div class="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-white/5">
+<p class="font-bold text-gray-900 dark:text-white">$190k - $240k <span class="text-xs text-gray-400 font-normal">/ year</span></p>
+<span class="text-xs text-gray-400">Posted 1d ago</span>
+</div>
+</div>
+</div>
+</div>
+<div class="hidden lg:block lg:w-[55%] xl:w-[60%] h-full relative rounded-3xl overflow-hidden shadow-glass border border-white/50 dark:border-white/10 mt-2 mb-2">
+<div class="absolute inset-0 z-0 bg-slate-200 map-bg">
+<img class="w-full h-full object-cover opacity-80 mix-blend-overlay grayscale contrast-125 brightness-110" data-alt="Minimalist Map View of City" data-location="San Francisco Bay Area" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxZWxb3gFn9j-kDW_SKA9gDUAglI0vVwYPllJSH0b1EHVTJXgSQXtyOj_6YIzWFwO8ZwNAQSmlG5itt2j0BaAmyuy9LM-rG7SxMi0AO8WEERda_z4vGv2LzB4FaMc8cgqvccsQrfYluM9nhYZkKrUQEVYhM1IwhxdBQGlHMVTndZwWo1I2LFoOVBWj9l6i51GVYxQIHGcDH3GUtsqxLWFxZD4UsotIvj3kjmnI5kdac3chEKguaHx_Fv6Am8pvyOQK3cBy4OElpj0"/>
+</div>
+<div class="absolute top-6 right-6 z-10 glass-panel dark:glass-panel-dark rounded-full px-5 py-3 flex items-center gap-4 shadow-lg w-72">
+<span class="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 whitespace-nowrap">Radius: 15km</span>
+<div class="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+<div class="absolute top-0 left-0 h-full w-1/3 bg-primary rounded-full"></div>
+<div class="absolute top-1/2 left-1/3 -translate-y-1/2 -translate-x-1/2 size-4 bg-white border-2 border-primary rounded-full shadow-md cursor-pointer hover:scale-110 transition-transform"></div>
+</div>
+</div>
+<div class="absolute top-1/3 left-1/4 z-10 group cursor-pointer">
+<div class="size-14 rounded-full bg-primary/90 text-background-dark flex items-center justify-center font-bold text-lg shadow-lg shadow-primary/40 border-2 border-white animate-bounce-slow">
+                24
+            </div>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-white dark:bg-gray-900 px-3 py-1 rounded-lg text-xs font-bold shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                San Francisco
+            </div>
+</div>
+<div class="absolute bottom-1/3 right-1/3 z-10 group cursor-pointer">
+<div class="size-10 rounded-full bg-primary/70 text-background-dark flex items-center justify-center font-bold text-sm shadow-md backdrop-blur-sm border border-white/50">
+                8
+            </div>
+</div>
+<div class="absolute top-1/2 left-1/2 z-10 group cursor-pointer">
+<div class="size-10 rounded-full bg-white p-1 shadow-lg hover:scale-110 transition-transform">
+<img alt="Company Logo" class="w-full h-full rounded-full" data-alt="Stripe Logo Pin" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyxKzCuwtLaPEBN_AiU1KVGn9z9QWjmuV0NHalczsh_b0LmAcIy9BRDaFesdg3QmkAQpNNaDedysjOdbRDPIyJd0YOqGpY_O0azUiZDS3Xk_fBGaHVD9PYqR7gVAVP5ILDofkYKADoZ8Y0qZ_VoahIbt4TcLVH60cXWO89ge17gNiiW2CXMuo9mQ4GkCIAGqGuJa59Eo2jN6VXlPa0KoAk61muDrLpvdbYvABc-ReIQTQHh83WNUQOF-GLgICBzrSEhnjwA9Ie96k"/>
+</div>
+<div class="absolute bottom-12 left-1/2 -translate-x-1/2 glass-panel dark:glass-panel-dark px-4 py-2 rounded-xl shadow-xl min-w-[140px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none transform translate-y-2 group-hover:translate-y-0 duration-200">
+<p class="text-xs font-bold text-gray-900 dark:text-white">Stripe</p>
+<p class="text-[10px] text-gray-500">Senior UI Designer</p>
+<p class="text-[10px] text-primary font-bold">$140k - $180k</p>
+</div>
+</div>
+<div class="absolute bottom-1/4 left-1/3 z-10 group cursor-pointer">
+<div class="size-10 rounded-full bg-white p-1 shadow-lg hover:scale-110 transition-transform">
+<div class="w-full h-full rounded-full bg-blue-600 flex items-center justify-center text-white text-[10px] font-bold">L</div>
+</div>
+</div>
+<div class="absolute bottom-6 right-6 flex flex-col gap-2 z-10">
+<button class="size-10 glass-panel dark:glass-panel-dark rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-white/20 transition-colors shadow-lg text-gray-600 dark:text-white">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="size-10 glass-panel dark:glass-panel-dark rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-white/20 transition-colors shadow-lg text-gray-600 dark:text-white">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<button class="size-10 glass-panel dark:glass-panel-dark rounded-full flex items-center justify-center hover:bg-white dark:hover:bg-white/20 transition-colors shadow-lg text-primary mt-2">
+<span class="material-symbols-outlined">my_location</span>
+</button>
+</div>
+</div>
+</main>
+<button class="fixed bottom-8 left-1/2 -translate-x-1/2 lg:hidden z-50 bg-primary hover:bg-primary-dark text-[#0d1c18] px-6 py-3 rounded-full shadow-lg font-bold flex items-center gap-2 transition-transform hover:scale-105">
+<span class="material-symbols-outlined">map</span>
+        View Map
+    </button>
+<style>
+        @keyframes bounce-slow {
+            0%, 100% {
+                transform: translateY(-5%);
+                animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+            }
+            50% {
+                transform: translateY(0);
+                animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+            }
+        }
+        .animate-bounce-slow {
+            animation: bounce-slow 3s infinite;
+        }
+        .mask-gradient-r {
+            mask-image: linear-gradient(to right, black 90%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
+        }
+    </style>
+</body></html>

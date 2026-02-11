@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MintMatch Admin Dashboard Floating</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#06f9bc",
+                        "primary-dark": "#04c795",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f231e",
+                        "surface-light": "rgba(255, 255, 255, 0.7)",
+                        "surface-dark": "rgba(30, 41, 59, 0.7)",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "2xl": "2.5rem",
+                        "3xl": "3rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'glow': '0 0 15px rgba(6, 249, 188, 0.3)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 35, 30, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-button {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+        }
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.7);
+            transform: translateY(-1px);
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+        }
+        .dark .glass-nav {
+            background: rgba(15, 35, 30, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen text-slate-800 dark:text-slate-100 selection:bg-primary selection:text-slate-900 transition-colors duration-300">
+<div class="flex flex-col h-screen overflow-hidden relative">
+<div class="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[100px] pointer-events-none z-0"></div>
+<div class="absolute bottom-[-10%] right-[-5%] w-[30%] h-[30%] bg-blue-300/20 rounded-full blur-[100px] pointer-events-none z-0"></div>
+<div class="w-full px-6 pt-6 z-50 fixed top-0 left-0 right-0 flex justify-center pointer-events-none">
+<nav class="glass-nav h-[4.5rem] w-full max-w-[1400px] rounded-full flex items-center justify-between px-3 pl-3 pr-3 pointer-events-auto transition-all duration-300">
+<div class="flex items-center gap-3 pl-2">
+<div class="size-10 rounded-full bg-gradient-to-tr from-primary to-emerald-400 flex items-center justify-center text-slate-900 shadow-glow shrink-0">
+<span class="material-symbols-outlined text-2xl">spa</span>
+</div>
+<span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hidden lg:block">MintMatch</span>
+</div>
+<div class="hidden md:flex items-center gap-1">
+<a class="px-5 py-2.5 rounded-full bg-slate-900 text-white dark:bg-primary dark:text-slate-900 text-sm font-semibold shadow-md transition-all hover:shadow-lg" href="#">Dashboard</a>
+<a class="px-5 py-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-white/10 text-sm font-medium transition-all" href="#">Users</a>
+<a class="px-5 py-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-white/10 text-sm font-medium transition-all" href="#">Jobs</a>
+<a class="px-5 py-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-white/10 text-sm font-medium transition-all" href="#">Reports</a>
+<a class="px-5 py-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-white/10 text-sm font-medium transition-all" href="#">Analytics</a>
+</div>
+<div class="flex items-center gap-2 pr-1">
+<button class="glass-button size-10 rounded-full flex items-center justify-center text-slate-700 dark:text-white relative group">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-2.5 right-2.5 size-2 bg-rose-500 rounded-full border border-white dark:border-slate-800"></span>
+</button>
+<div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2"></div>
+<div class="flex items-center gap-3 cursor-pointer group bg-white/40 dark:bg-black/20 pl-4 pr-1.5 py-1.5 rounded-full border border-white/40 dark:border-white/5 hover:bg-white/60 dark:hover:bg-black/30 transition-colors">
+<div class="text-right hidden xl:block">
+<p class="text-sm font-bold text-slate-800 dark:text-white leading-none">Sarah Smith</p>
+<p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider mt-0.5">Admin</p>
+</div>
+<div class="size-9 rounded-full overflow-hidden border-2 border-white dark:border-slate-700 shadow-sm transition-transform group-hover:scale-105">
+<img alt="Admin user profile picture" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPC6tOIdRfKQa1kCPXuF4ykb5Cnri966fnMyFQsmMXWRK-fTBiiQHbfveXxG-7yhSZ3aeyEURykyjARTGvJ-qEcqT3WPDvjYfHqqVt8NTRpKMLHjNSE4C4ZJjHPUtaovJv0xLn7_5s2V-iO2C4nAVrPvi8Ou5o-stliOTdHrPqtRr5W75_gbEMT58UTWqO1jTqbRk5QofirzqONKxs8TezmiOkcD-ZHhRBv-jDMsxfPEnosR3K2vGABQ9JmNfE6cBslIwe91uG2Ow"/>
+</div>
+</div>
+</div>
+</nav>
+</div>
+<main class="flex-1 flex flex-col overflow-hidden relative z-10 w-full max-w-[1920px] mx-auto mt-24">
+<header class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-8 py-6 shrink-0 gap-4">
+<div>
+<h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Dashboard Overview</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Welcome back, here's what's happening today.</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="glass-button h-12 px-6 rounded-full flex items-center gap-2 text-slate-700 dark:text-white font-semibold hover:bg-white/60 transition-colors">
+<span class="material-symbols-outlined">calendar_today</span>
+<span>Oct 24, 2023</span>
+</button>
+<button class="bg-slate-900 hover:bg-slate-800 dark:bg-primary dark:hover:bg-primary-dark dark:text-slate-900 text-white h-12 px-6 rounded-full flex items-center gap-2 font-semibold shadow-lg shadow-slate-900/20 transition-all transform hover:scale-105">
+<span class="material-symbols-outlined">add</span>
+<span>New Project</span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto px-8 pb-8 scrollbar-hide z-10">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="glass-panel p-6 rounded-3xl shadow-glass flex flex-col justify-between h-44 hover:scale-[1.02] transition-transform duration-300">
+<div class="flex justify-between items-start">
+<div class="p-3 bg-primary/10 rounded-2xl text-emerald-600 dark:text-primary">
+<span class="material-symbols-outlined">group</span>
+</div>
+<span class="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold">+12.5%</span>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-400 font-medium mb-1">Total Users</p>
+<h3 class="text-3xl font-bold text-slate-800 dark:text-white">12,450</h3>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-3xl shadow-glass flex flex-col justify-between h-44 hover:scale-[1.02] transition-transform duration-300">
+<div class="flex justify-between items-start">
+<div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-2xl text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined">visibility</span>
+</div>
+<span class="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold">+5.2%</span>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-400 font-medium mb-1">Active Sessions</p>
+<h3 class="text-3xl font-bold text-slate-800 dark:text-white">1,203</h3>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-3xl shadow-glass flex flex-col justify-between h-44 hover:scale-[1.02] transition-transform duration-300">
+<div class="flex justify-between items-start">
+<div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-2xl text-purple-600 dark:text-purple-400">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs font-bold">+8.1%</span>
+</div>
+<div>
+<p class="text-slate-500 dark:text-slate-400 font-medium mb-1">Revenue</p>
+<h3 class="text-3xl font-bold text-slate-800 dark:text-white">$45,230</h3>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-3xl shadow-glass flex flex-col justify-between h-44 hover:scale-[1.02] transition-transform duration-300 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/80 to-emerald-600 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+<div class="absolute -right-6 -top-6 size-32 bg-white/20 rounded-full blur-xl"></div>
+<div class="relative z-10 flex justify-between items-start">
+<div class="p-3 bg-white/20 rounded-2xl text-white backdrop-blur-sm">
+<span class="material-symbols-outlined">dns</span>
+</div>
+<span class="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold backdrop-blur-sm">-2%</span>
+</div>
+<div class="relative z-10 text-white">
+<p class="font-medium mb-1 opacity-90">Server Load</p>
+<h3 class="text-3xl font-bold">24%</h3>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-[2.5rem] p-8 shadow-glass min-h-[500px] flex flex-col">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+<div>
+<h2 class="text-2xl font-bold text-slate-800 dark:text-white">User Management</h2>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Manage team members and their account permissions here.</p>
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+<input class="pl-10 pr-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-full sm:w-64 transition-all" placeholder="Search users..." type="text"/>
+</div>
+<button class="p-2.5 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-slate-900 to-slate-800 dark:from-primary dark:to-emerald-400 text-white dark:text-slate-900 rounded-full text-sm font-bold shadow-glow hover:shadow-lg hover:scale-105 transition-all">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Export CSV</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-slate-200 dark:border-slate-700/50">
+<th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 w-[60px]">
+<div class="flex items-center justify-center size-5 rounded border border-slate-300 dark:border-slate-600"></div>
+</th>
+<th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">User</th>
+<th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Role</th>
+<th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Status</th>
+<th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Last Activity</th>
+<th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-700/30">
+<tr class="group hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center justify-center size-5 rounded border border-slate-300 dark:border-slate-600 cursor-pointer"></div>
+</td>
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full overflow-hidden bg-slate-200">
+<img alt="Avatar of Esther Howard" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDi0NpcGQRcrYNRDg94_uFvnujVaMS4zWr9ckN_6lhc44SZz65msExGaUdXkZe1plvXWh2ToMOMlfoG7mQsB1GJv7kVAcscemB4Qc2c7XPaAdRlPfhmZ4Qnvs9Lex-pe5LfVtVSSb7nfuXHQKybWsZzDiIA5ZccJG20OHqdDRp6kuaOtYbVstc2bJscqW0Xb9Ufh05-UDUDyLGnI-OOUcfn_OnpQWcjjm1qEPRDjHe8jWhIDtHl-wMgTqC2z3Z2BxHhil0rNrDiPs0"/>
+</div>
+<div>
+<p class="font-bold text-slate-800 dark:text-slate-100 text-sm">Esther Howard</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">esther@example.com</p>
+</div>
+</div>
+</td>
+<td class="py-5 px-4 align-middle">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/20 text-emerald-700 dark:text-primary border border-primary/20">
+                                            Admin
+                                        </span>
+</td>
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center gap-2">
+<div class="relative flex size-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full size-2.5 bg-emerald-500"></span>
+</div>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-300">Active</span>
+</div>
+</td>
+<td class="py-5 px-4 align-middle">
+<span class="text-sm text-slate-500 dark:text-slate-400">2 mins ago</span>
+</td>
+<td class="py-5 px-4 align-middle text-right">
+<button class="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center justify-center size-5 rounded border border-slate-300 dark:border-slate-600 cursor-pointer"></div>
+</td>
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full overflow-hidden bg-slate-200">
+<img alt="Avatar of Cameron Williamson" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV8vRYQdS_ZL3QxadnytGYFLt6HM33F655dQaVxWbPIkOl8Dly0Hh47aThHkK06Tj9lP7Z_u_zCdcVKYNbC76c5tule-dorTkhPKoGamMWiFvtDDj_Vf8p2bsAyKk7WjfPUl3dm9ZULpquANlXeFI2BTwQKeTqcorDuviEvlubIEU-8J97MnZ6OW6CXc2zJ-h0RyXRkHHE-AvJtc4gCWuFVlzIdXcNOZ52QFFzAPCt118Pcta1N83PbXh3uy3Loliz2C8QGFFz8v8"/>
+</div>
+<div>
+<p class="font-bold text-slate-800 dark:text-slate-100 text-sm">Cameron Williamson</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">cameron@example.com</p>
+</div>
+</div>
+</td>
+<td class="py-5 px-4 align-middle">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">
+                                            Editor
+                                        </span>
+</td>
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center gap-2">
+<div class="relative flex size-2.5">
+<span class="relative inline-flex rounded-full size-2.5 bg-slate-300 dark:bg-slate-600"></span>
+</div>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-300">Offline</span>
+</div>
+</td>
+<td class="py-5 px-4 align-middle">
+<span class="text-sm text-slate-500 dark:text-slate-400">1 day ago</span>
+</td>
+<td class="py-5 px-4 align-middle text-right">
+<button class="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center justify-center size-5 rounded border border-slate-300 dark:border-slate-600 cursor-pointer"></div>
+</td>
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full overflow-hidden bg-slate-200">
+<img alt="Avatar of Robert Fox" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDB6daoX01QA9AUJLKVOuqMAmxj6OZm8i3pNJUPrd8WpMUW3aGNcrA-GnCEDd5yMfS4BUHNQTOl83wXIVQmFMMtP3mFHh0FFEFKpyKbo774UnlluKD0xD6LyoLcqKqKesV6MtzOz7NAMevcpyW-i-Le-KsF7pWPxoOBlmZdpKyjCQbyC2L9U59oLQMaRX4LqGk0VQ2885RQsDSG1p_BXU6V8zcU9c4Dr22L8F9ZDhF0o2qQN5JCJieSiJOgOxNu6rFm-2g76NaWkq0"/>
+</div>
+<div>
+<p class="font-bold text-slate-800 dark:text-slate-100 text-sm">Robert Fox</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">robert@example.com</p>
+</div>
+</div>
+</td>
+<td class="py-5 px-4 align-middle">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">
+                                            Viewer
+                                        </span>
+</td>
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center gap-2">
+<div class="relative flex size-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full size-2.5 bg-emerald-500"></span>
+</div>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-300">Active</span>
+</div>
+</td>
+<td class="py-5 px-4 align-middle">
+<span class="text-sm text-slate-500 dark:text-slate-400">5 mins ago</span>
+</td>
+<td class="py-5 px-4 align-middle text-right">
+<button class="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center justify-center size-5 rounded border border-slate-300 dark:border-slate-600 cursor-pointer"></div>
+</td>
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full overflow-hidden bg-slate-200">
+<img alt="Avatar of Jacob Jones" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCT_0n-eF21_YoLywwcM4r4vsmjpF8eVuubzcs8oj5Cd-GAF6FX8V5dNHdG3no8IVPz_Rs7cl_Ttkdva0LAF9JNyYodcKpqCd1WOyMjgMUBfNqaCMcpQnFJOn2nHtUVgfKAwMDVvieaMrt0ERldqPUOhqRKz6Yu_iZHl7FkKKJ6SU0ECWDXn3iTdK6JBfmTKBqn3FF65x9bM7zhM-1qarfJw6pVPPnBHz7ZXY1i8QkSkG0qj4sai9DQiXsPLv8WZPqcqmVC7OJlthc"/>
+</div>
+<div>
+<p class="font-bold text-slate-800 dark:text-slate-100 text-sm">Jacob Jones</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">jacob@example.com</p>
+</div>
+</div>
+</td>
+<td class="py-5 px-4 align-middle">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">
+                                            Editor
+                                        </span>
+</td>
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center gap-2">
+<div class="relative flex size-2.5">
+<span class="relative inline-flex rounded-full size-2.5 bg-slate-300 dark:bg-slate-600"></span>
+</div>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-300">Offline</span>
+</div>
+</td>
+<td class="py-5 px-4 align-middle">
+<span class="text-sm text-slate-500 dark:text-slate-400">3 hours ago</span>
+</td>
+<td class="py-5 px-4 align-middle text-right">
+<button class="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center justify-center size-5 rounded border border-slate-300 dark:border-slate-600 cursor-pointer"></div>
+</td>
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full overflow-hidden bg-slate-200">
+<img alt="Avatar of Jenny Wilson" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQfCWIAOUNTVijzex-_RpXcvIyuP34cR71pd__cFt_HjgS46cavzT83a-51-GFmyqKnv6bsigVyD4RzGLfjWli_PSR6T5e1YDNhaVFusfB4o2grFZzhMr4N-lu9-SxS36vVqqKi-00OkA9EtoOUh8rJt5LrNFcgMbMQZhl73Iyl_TDGhJatZ5abrdkKfUS_yy69v5IIw9rR1BOtXsHrypjpWa02vIYrHF6qgAix6zLHw3qnr6BpHjC3adlNKzLb9cgPiRAFrBLhYc"/>
+</div>
+<div>
+<p class="font-bold text-slate-800 dark:text-slate-100 text-sm">Jenny Wilson</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">jenny@example.com</p>
+</div>
+</div>
+</td>
+<td class="py-5 px-4 align-middle">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/20 text-emerald-700 dark:text-primary border border-primary/20">
+                                            Admin
+                                        </span>
+</td>
+<td class="py-5 px-4 align-middle">
+<div class="flex items-center gap-2">
+<div class="relative flex size-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full size-2.5 bg-emerald-500"></span>
+</div>
+<span class="text-sm font-medium text-slate-600 dark:text-slate-300">Active</span>
+</div>
+</td>
+<td class="py-5 px-4 align-middle">
+<span class="text-sm text-slate-500 dark:text-slate-400">12 mins ago</span>
+</td>
+<td class="py-5 px-4 align-middle text-right">
+<button class="text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="pt-6 mt-4 border-t border-slate-200 dark:border-slate-700/50 flex items-center justify-between">
+<div class="text-sm text-slate-500 dark:text-slate-400">
+                            Showing <span class="font-bold text-slate-800 dark:text-white">1-5</span> of <span class="font-bold text-slate-800 dark:text-white">50</span> users
+                        </div>
+<div class="flex gap-2">
+<button class="size-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="size-8 flex items-center justify-center rounded-full bg-slate-900 text-white dark:bg-primary dark:text-slate-900 font-bold text-sm shadow-md">1</button>
+<button class="size-8 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 font-medium text-sm transition-colors">2</button>
+<button class="size-8 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 font-medium text-sm transition-colors">3</button>
+<button class="size-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
