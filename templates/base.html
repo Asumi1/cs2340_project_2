@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}MintMatch{% endblock %}</title>
+    
+    <!-- Dependencies -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    
+    <!-- Global Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#06f9bc",
+                        "primary-dark": "#04dcb5",
+                        "mint-dark": "#04c794",
+                        "charcoal": "#1a1f24",
+                        "charcoal-light": "#4b5563",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+    
+    <!-- Global Styles -->
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}text-charcoal bg-gray-50{% endblock %}">
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>
