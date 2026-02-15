@@ -1,367 +1,212 @@
-<!DOCTYPE html>
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MintMatch Talent Search</title>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}MintMatch Talent Search{% endblock %}
+
+{% block extra_head %}
+<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#25f4af",
-                        "primary-dark": "#1ec78e",
-                        "background-light": "#f5f8f7",
-                        "background-dark": "#10221c",
-                        "surface-light": "#ffffff",
-                        "surface-dark": "#1a352c",
-                    },
-                    fontFamily: {
-                        "display": ["Manrope", "sans-serif"]
-                    },
-                    borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "3rem", "full": "9999px"},
-                    boxShadow: {
-                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
-                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-                    }
+
+<!-- Page Specific Tailwind Config -->
+<script>
+    // Merging/Overriding config for this page
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "primary": "#25f4af",
+                    "primary-dark": "#1ec78e",
+                    "background-light": "#f5f8f7",
+                    "background-dark": "#10221c",
+                    "surface-light": "#ffffff",
+                    "surface-dark": "#1a352c",
                 },
+                fontFamily: {
+                    "display": ["Manrope", "sans-serif"]
+                },
+                borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "3rem", "full": "9999px"},
+                boxShadow: {
+                    'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                    'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                }
             },
-        }
-    </script>
+        },
+    }
+</script>
 <style>
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-        }
-        .dark .glass-panel {
-            background: rgba(26, 53, 44, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
-    </style>
-</head>
-<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    .dark .glass-panel {
+        background: rgba(26, 53, 44, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent; 
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #cbd5e1; 
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8; 
+    }
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .scrollbar-hide {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300{% endblock %}
+
+{% block content %}
 <div class="sticky top-4 z-50 px-4 md:px-6 w-full max-w-7xl mx-auto">
-<nav class="glass-panel w-full rounded-2xl shadow-glass border border-slate-200/50 dark:border-slate-800/50">
-<div class="px-6 h-20 flex items-center justify-between">
-<div class="flex items-center gap-3">
-<div class="size-10 bg-gradient-to-br from-primary to-emerald-400 rounded-xl flex items-center justify-center text-slate-900 shadow-lg shadow-primary/20">
-<span class="material-symbols-outlined text-2xl">search_insights</span>
+    <nav class="glass-panel w-full rounded-2xl shadow-glass border border-slate-200/50 dark:border-slate-800/50">
+        <div class="px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="size-10 bg-gradient-to-br from-primary to-emerald-400 rounded-xl flex items-center justify-center text-slate-900 shadow-lg shadow-primary/20">
+                    <span class="material-symbols-outlined text-2xl">search_insights</span>
+                </div>
+                <h1 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">MintMatch</h1>
+            </div>
+            <div class="hidden md:flex items-center gap-8 text-sm font-bold text-slate-600 dark:text-slate-300">
+                <a class="text-slate-900 dark:text-white relative after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-primary after:rounded-full" href="{% url 'recruiter_talent_search' %}">Find Talent</a>
+                <a class="hover:text-primary-dark transition-colors" href="{% url 'job_create' %}">Post a Job</a>
+                <a class="hover:text-primary-dark transition-colors" href="{% url 'recruiter_dashboard' %}">Dashboard</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-bold hidden sm:block">{{ user.username }}</span>
+                    <div class="size-9 rounded-full bg-slate-200 overflow-hidden cursor-pointer" title="Profile">
+                        {% if user.recruiterprofile.profile_picture %}
+                             <img src="{{ user.recruiterprofile.profile_picture }}" class="w-full h-full object-cover">
+                        {% else %}
+                             <div class="w-full h-full flex items-center justify-center bg-primary text-slate-900 font-bold">{{ user.first_name|first|default:user.username|first|upper }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
 </div>
-<h1 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">MintMatch</h1>
-</div>
-<div class="hidden md:flex items-center gap-8 text-sm font-bold text-slate-600 dark:text-slate-300">
-<a class="text-slate-900 dark:text-white relative after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-primary after:rounded-full" href="#">Find Talent</a>
-<a class="hover:text-primary-dark transition-colors" href="#">Post a Job</a>
-<a class="hover:text-primary-dark transition-colors" href="#">Community</a>
-</div>
-<div class="flex items-center gap-3">
-<button class="hidden sm:flex h-10 px-6 items-center justify-center rounded-full text-sm font-bold bg-white dark:bg-surface-dark border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                    Log In
-                </button>
-<button class="flex h-10 px-6 items-center justify-center rounded-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-bold hover:brightness-110 transition-all shadow-lg shadow-slate-900/20 dark:shadow-white/20">
-                    Sign Up
-                </button>
-</div>
-</div>
-</nav>
-</div>
+
 <main class="flex-1 w-full max-w-7xl mx-auto px-6 py-8 flex flex-col gap-8">
-<section class="glass-panel rounded-2xl p-6 shadow-glass relative overflow-hidden">
-<div class="absolute -top-20 -right-20 w-64 h-64 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
-<div class="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between relative z-10">
-<div class="flex-1 w-full">
-<h2 class="text-3xl font-bold mb-6 text-slate-900 dark:text-white">Find your next top performer</h2>
-<div class="flex flex-col md:flex-row gap-3 w-full">
-<div class="relative flex-grow group">
-<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-dark transition-colors">
-<span class="material-symbols-outlined">search</span>
-</div>
-<input class="w-full h-14 pl-12 pr-4 rounded-full bg-white dark:bg-surface-dark border-0 ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all" placeholder="Search by role, skill, or keyword..." type="text"/>
-</div>
-<div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-<button class="flex items-center gap-2 h-14 px-5 rounded-full bg-white/50 dark:bg-surface-dark/50 hover:bg-white dark:hover:bg-surface-dark border border-slate-200/60 dark:border-slate-700 transition-all whitespace-nowrap">
-<span class="text-sm font-semibold">Skills</span>
-<span class="material-symbols-outlined text-lg">expand_more</span>
-</button>
-<button class="flex items-center gap-2 h-14 px-5 rounded-full bg-white/50 dark:bg-surface-dark/50 hover:bg-white dark:hover:bg-surface-dark border border-slate-200/60 dark:border-slate-700 transition-all whitespace-nowrap">
-<span class="text-sm font-semibold">Experience</span>
-<span class="material-symbols-outlined text-lg">expand_more</span>
-</button>
-<button class="flex items-center gap-2 h-14 px-5 rounded-full bg-white/50 dark:bg-surface-dark/50 hover:bg-white dark:hover:bg-surface-dark border border-slate-200/60 dark:border-slate-700 transition-all whitespace-nowrap">
-<span class="text-sm font-semibold">Projects</span>
-<span class="material-symbols-outlined text-lg">expand_more</span>
-</button>
-</div>
-</div>
-</div>
-<div class="flex-shrink-0 self-end lg:self-center">
-<div class="bg-slate-100 dark:bg-surface-dark p-1 rounded-full flex items-center border border-slate-200 dark:border-slate-700">
-<button class="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white transition-all">
-<span class="material-symbols-outlined text-lg">grid_view</span>
-<span class="text-sm font-bold">Grid</span>
-</button>
-<button class="flex items-center justify-center gap-2 px-4 py-2 rounded-full text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white transition-all">
-<span class="material-symbols-outlined text-lg">blur_on</span>
-<span class="text-sm font-medium">Heatmap</span>
-</button>
-</div>
-</div>
-</div>
-</section>
-<div class="flex items-center gap-4 px-2">
-<h3 class="text-slate-500 dark:text-slate-400 font-medium">Showing <span class="text-slate-900 dark:text-white font-bold">248</span> candidates</h3>
-<div class="h-px bg-slate-200 dark:bg-slate-700 flex-1"></div>
-<button class="text-primary-dark dark:text-primary text-sm font-bold hover:underline">Clear filters</button>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-<article class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full border border-slate-100 dark:border-slate-800 group">
-<div class="flex items-start justify-between mb-4">
-<div class="flex items-center gap-3">
-<img alt="Sarah Jenkins portrait" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow-sm" data-alt="Smiling woman with curly hair looking at camera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbhCZsU1k8cIydLH-Z0JDqK6dB7WE85OqrKRsJG4Ly6JIyfjFsf1d_YGcxP52bBAV99qPXN8eqINJs0dURfSapBrSd7tVn49B0cXng2ID9621rupyGJHgj5B7-3VMJzmbxI3_aa0PiosB4FYXb9w8dTVTnCLj3Bm7L-pj1nZnDjX0bXLM_5XpIvYevHV3EC3qm6TUOKctCOnvdcKckHaDp4lOcJ6oFr36-vscENzfvJIXlOPOkpE65kD1uG-aITzqHEY1er6Qu8Dk"/>
-<div>
-<h3 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">Sarah Jenkins</h3>
-<p class="text-sm text-slate-500 dark:text-slate-400">Senior Product Designer</p>
-</div>
-</div>
-<button class="text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">bookmark</span>
-</button>
-</div>
-<div class="flex flex-wrap gap-2 mb-6">
-<span class="px-3 py-1 rounded-full bg-primary/10 text-primary-dark dark:text-primary text-xs font-bold border border-primary/20">Figma</span>
-<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">Prototyping</span>
-<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">User Research</span>
-</div>
-<div class="mt-auto">
-<div class="mb-4">
-<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Portfolio</p>
-<div class="flex gap-2">
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100">
-<img alt="Mobile app interface design" class="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer" data-alt="Mobile app screen showing charts and graphs" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDak6yx3QMVFhPI8v0ku7bU0jRrvFDGx_lMW3gkIGcr5skyZPUoF_xz8xc3mrQP_7w932OnETI6yHcLLgdkA06EFmhzGkLzRAi08ZuHkVIjVnNM_bYIX7t7VHr2_hHajA6bU1pIC1SbQ3RtQIi8t7KO5523Qi-mgSCvWv5HD2_9OrByMaunCRV-a0eZwH1fuDiQ4uPgFUtCXuQ69tjEUQ8oPlH9YBtVR5c2oKyf5TPEJjvgKercfnIGG1gIcQvPtLAx6VUWvJMCVOI"/>
-</div>
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100">
-<img alt="Web dashboard design" class="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer" data-alt="Light mode dashboard interface with sidebar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd1W9ttVRlL5pC68zPAbYW1hUJJWl4kz881_dpJn8ePuxIX53j9XtbfeETgpp_W50a9JB97zvXyzLdCxCe_VDP8G3FLuAuBPCOFfyaT3pl-oaBEo92z1nPwrfbnoyEz-P7Wg8A6j3oorv-WBxSqxGaQNY3pgS7bxQ6H8AV0MFv3DmmXT5SBJQVqrTIcKJ5nEcTpEsQbwQTa-qmWz9Ax0wddhoIzOGTp_asCgTBCg9ESr9mjeBwKhhbsZxTHMwi3XAgwzvnf-M4dpc"/>
-</div>
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center text-slate-400 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-<span class="text-xs font-bold">+4</span>
-</div>
-</div>
-</div>
-<button class="w-full h-10 rounded-full border-2 border-primary text-slate-900 dark:text-white font-bold text-sm hover:bg-primary hover:text-slate-900 transition-all flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-slate-900">
-                        View Profile
-                        <span class="material-symbols-outlined text-base">arrow_forward</span>
-</button>
-</div>
-</article>
-<article class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full border border-slate-100 dark:border-slate-800 group">
-<div class="flex items-start justify-between mb-4">
-<div class="flex items-center gap-3">
-<img alt="Michael Chen portrait" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow-sm" data-alt="Man with glasses smiling in professional attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG1dO_uC2rwoGD_u7_3GCAGxYWlwkACCktcfu_q2n1K6l2EcxhWFXkm8M3KKyPViI31IMBrzIBuTklOX6Y4Yi4fF9hU8llzP9CmS2S-uED3bqW36FWPrA5qm3-ptKTsUEBOsp0XpKXgmCnn5DzYfb81Udn_WBrH3CqY9L2GGAKQts71ItN7yTagQtBGR03I7ev8l7aBwM6Fv_kG9OzQEWv_RfJ0wlbXY5naA20GxzB8P7lmOFxb8deBMtbtLej51PlDpD9Xt_-yIM"/>
-<div>
-<h3 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">Michael Chen</h3>
-<p class="text-sm text-slate-500 dark:text-slate-400">Frontend Developer</p>
-</div>
-</div>
-<button class="text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">bookmark</span>
-</button>
-</div>
-<div class="flex flex-wrap gap-2 mb-6">
-<span class="px-3 py-1 rounded-full bg-primary/10 text-primary-dark dark:text-primary text-xs font-bold border border-primary/20">React</span>
-<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">TypeScript</span>
-<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">Next.js</span>
-</div>
-<div class="mt-auto">
-<div class="mb-4">
-<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Portfolio</p>
-<div class="flex gap-2">
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100">
-<img alt="Data analytics dashboard" class="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer" data-alt="Complex data visualization screen" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFKfRfpo_yWZdPATBsWjhs5lUBVIadW6qGw0Yyj6XqvWZWiwfLd2Eyq_4w1-VVwt0UGBSbQi15ApVYCyqT9g7FuebLfljP0FpFvVCqWzVuPIAR7YOpey70mbhA-tPFMvpIHsEe5uJfxeMTTVqFVna7ne2vkqDAHQpwjuDJ7Q_y-UXg_kg3MTL8aDU-1zBacl9AJgrilSNYrA2jm5rAaz069n8qs7GjwURlX_cKsALTo6BgOkSA_CVX3pEr37AZOQ5at5xrF0b19TI"/>
-</div>
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center text-slate-400 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-<span class="text-xs font-bold">+2</span>
-</div>
-</div>
-</div>
-<button class="w-full h-10 rounded-full border-2 border-primary text-slate-900 dark:text-white font-bold text-sm hover:bg-primary hover:text-slate-900 transition-all flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-slate-900">
-                        View Profile
-                        <span class="material-symbols-outlined text-base">arrow_forward</span>
-</button>
-</div>
-</article>
-<article class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full border border-slate-100 dark:border-slate-800 group">
-<div class="flex items-start justify-between mb-4">
-<div class="flex items-center gap-3">
-<img alt="Elena Rodriguez portrait" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow-sm" data-alt="Woman in business casual attire smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuByqIFcClOdua7NRdqWFK9-trvuKfbK4JDG8E9wiKLwW_80BdAG-UCvDF4zbjZhLwbNpCbbpl_uJeDoJfSbmLNjPsXiYJbLEFe1CMDpllFeMv3x8wMlJd7zAPtufTKZhjqM953NDXGxsaOZznm7kGxEC3wpy5JfZXc0w7amjl1whLwGYjaEwg_BIpgu6hAsUzB0i8rD75Sh3aLWWVHFfCe_WZbtrARF7w519grALgIlfnst0Yi-3qOFt5ib8HseR2J7jxu6rONc_Iw"/>
-<div>
-<h3 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">Elena Rodriguez</h3>
-<p class="text-sm text-slate-500 dark:text-slate-400">UX Researcher</p>
-</div>
-</div>
-<button class="text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">bookmark</span>
-</button>
-</div>
-<div class="flex flex-wrap gap-2 mb-6">
-<span class="px-3 py-1 rounded-full bg-primary/10 text-primary-dark dark:text-primary text-xs font-bold border border-primary/20">Interviews</span>
-<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">Data Analysis</span>
-<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">Personas</span>
-</div>
-<div class="mt-auto">
-<div class="mb-4">
-<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Portfolio</p>
-<div class="flex gap-2">
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100">
-<img alt="User journey map" class="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer" data-alt="Infographic showing user journey steps" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBue08dN2_ukXyxgY6lDdGp7FU8EY6CfxDqEM7dzENV6e96dTg9BkvyXj0Vx6p-x5dyhaZTNAN8pXpOk6OmOnl3MZn_iq7PKaLGRZZ2e31STHoBPoxrfbSKFnhKshDnfZPcbJCs2Ce_Ubgsx6iveaFFVJmMFMJxkIx6HduffRuBa7mYqNq9PakVDCMxHd1A6KPow_26w9IM_bSsYv0Wsdt4mTheuW7XXONpaoI0-O-MnQ8LN9fd7_TM-lqPJOsjcwUUhBdaTFOMHr4"/>
-</div>
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100">
-<img alt="Research presentation slides" class="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer" data-alt="Slide deck showing research findings" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCR8sR_V6Kg3kd09JbWfw88jqgX4sFIy22NGAgtUKVxpyfIltRvyWx5TNwMiOigaOs1r7I0IZdDCbdi80gtSWPqTUZy8LxcoeA_Y4y8b6CJ9EpcNtrEX-M9-a0ZbX8VzUcXPFEQbMrvyvIoFziuk7JTH-OnL9gzDlhx4BI3oBFv-WZLUa1H5ngu0ufbV1rJPVT3eftBreotI3k8jta9r1tXeiXtMKFzCDexgy2qkEZ3T8smg8whx2EGaI7BZybSEP7f5oa6L8dh12k"/>
-</div>
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100">
-<img alt="Usability testing setup" class="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer" data-alt="Laptop and notebook for usability test" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZHwQ_R8eoAzB8B6mIL9PgiGJBZaABRQBHnLOQzuFnxENHZ8wfa93NGuNI9XQDNqFNoHC7WRGbPMsKXV64EMXVhz9JXoJdFcyQfaBKzo4EzOxi5KtxyDQtYZpfMhI-AuFUYi1ANQ-XEmZua6RFoHLzszVGSD7rjUQ0uD3i-86kNLeT4qRLNAJsgh3CoUf0W1BkcuEbSCIOx093aIZlndnsacMxEUGA31cghe9iA6jBj4VrSGWXLqGeK2q_lUJdxOAhBQunCMbYSvU"/>
-</div>
-</div>
-</div>
-<button class="w-full h-10 rounded-full border-2 border-primary text-slate-900 dark:text-white font-bold text-sm hover:bg-primary hover:text-slate-900 transition-all flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-slate-900">
-                        View Profile
-                        <span class="material-symbols-outlined text-base">arrow_forward</span>
-</button>
-</div>
-</article>
-<article class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full border border-slate-100 dark:border-slate-800 group">
-<div class="flex items-start justify-between mb-4">
-<div class="flex items-center gap-3">
-<img alt="David Kim portrait" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow-sm" data-alt="Man with short hair smiling against blurred background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBa_s9wNmNgJWhxlVoKxvMytl1ym0zaw7r_C4r8wm2K1433pZA8oYc86WvYqYRUM4zdRBt3gDIyVl37lYBJde_fq97xIFOOl8HLU9I-lMfVOG1ZtADOgQov_bMNEmbuJguf40MV9VfZCSknwQOQTXrqXQ2d4pbzAieyexGdt0Sgpe1LuM2iU41LNNlc9Q5kcZvFIFeo49PPvJjV7aooPMeg0uzO8ZPD0_RREfBe3esUnKiX0Sdt6W3BLQtHsT9dA9i7UHDMggzkppI"/>
-<div>
-<h3 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">David Kim</h3>
-<p class="text-sm text-slate-500 dark:text-slate-400">Full Stack Engineer</p>
-</div>
-</div>
-<button class="text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">bookmark</span>
-</button>
-</div>
-<div class="flex flex-wrap gap-2 mb-6">
-<span class="px-3 py-1 rounded-full bg-primary/10 text-primary-dark dark:text-primary text-xs font-bold border border-primary/20">Node.js</span>
-<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">PostgreSQL</span>
-<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">AWS</span>
-</div>
-<div class="mt-auto">
-<div class="mb-4">
-<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Portfolio</p>
-<div class="flex gap-2">
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100">
-<img alt="Code editor screen" class="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer" data-alt="Dark mode code editor with colorful syntax" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlR-8X_gJhz2dLJiBqHn-rP9o__HRbGGhMLGfi68L87XA6wxvSHxZLFwpPwUkiuwgwhHuziEJYLVKt10_Lx7LaNHykSNt4RYGdMG0OwNRip90NFtXVUNcDuYW_LQ9yKfuDJf5W74ZpUV7qv2Y6F-dtid3ROhkEmvRqPrcJSJLm5IDg0kTqiIEmML7xXxn04DGEfZwMTF2LO_sfK9K_LpSeQVdWHhy6Jr2dA_FpFugCssR_LhPZWo4IqpOlRFUMaNmrUvsr326_WCc"/>
-</div>
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center text-slate-400 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-<span class="text-xs font-bold">+5</span>
-</div>
-</div>
-</div>
-<button class="w-full h-10 rounded-full border-2 border-primary text-slate-900 dark:text-white font-bold text-sm hover:bg-primary hover:text-slate-900 transition-all flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-slate-900">
-                        View Profile
-                        <span class="material-symbols-outlined text-base">arrow_forward</span>
-</button>
-</div>
-</article>
-<article class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full border border-slate-100 dark:border-slate-800 group">
-<div class="flex items-start justify-between mb-4">
-<div class="flex items-center gap-3">
-<img alt="Amanda Lowery portrait" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow-sm" data-alt="Model posing with neutral expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrfDzI2swANEmSzCYHCFA-Z8V2DGQRa1ZgXb1Bah5pomKgLpqmkNSxIGoShunBX_-9mHJNhHnIYvl_moEP-B4VhvoxxXftWYnRN9DHooWi5sLramAHPuWXKynGKF3hEYiKABz-z1b7NC-kQt7_juFbtf2JNXr0K8BJCR7ouwqg_ZVmV1vXK6OUpAoSUHgwShp8eS6xOsUBy8YPGO8C0NPfK2tdBa2465_OfsnTCxCf5FZyd8sY4YZ1BVG49NAN-_TZS3EJUH1AN2c"/>
-<div>
-<h3 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">Amanda Lowery</h3>
-<p class="text-sm text-slate-500 dark:text-slate-400">Brand Designer</p>
-</div>
-</div>
-<button class="text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">bookmark</span>
-</button>
-</div>
-<div class="flex flex-wrap gap-2 mb-6">
-<span class="px-3 py-1 rounded-full bg-primary/10 text-primary-dark dark:text-primary text-xs font-bold border border-primary/20">Illustrator</span>
-<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">Packaging</span>
-<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">Identity</span>
-</div>
-<div class="mt-auto">
-<div class="mb-4">
-<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Portfolio</p>
-<div class="flex gap-2">
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100">
-<img alt="Brand style guide book" class="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer" data-alt="Minimalist brand book on a table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTpM2PycP7WYc-sdrl3k5xSjY656JoYcajpQzaz3dan3AHolneJMyap0BCrE4rTKxq-FqAc5aVWOCZ3IO3NTNDVpgD8Ph07JUKKFSCsXmWsR5s7em90gUtGsbD2Js-uJlmfzHJB52_b3ZrR7j7fhge119OVJePAb4u-8xdyhudt8nZRwSCet2GjptU7HNxhpPYnLP47z_AOcZbTJbprlGc18xwHWWmnz4xZ64qe0L0zUF5_neWbYWVWMDmhWN9qshONVi_Oj1dKzc"/>
-</div>
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100">
-<img alt="Logo sketches" class="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer" data-alt="Pencil sketches of logo concepts" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcS0Q1NsqZVHQrReT36nP9-RdAT7drL-7o1cL3MOLZ6GkX4lbL4nv-YOM5Jl467WyEl5NE7mvYdjeS62uQg-XTxTZqHMivkJlWTqkVAT8_zf6sIxPnUxXJm5Zl_1KfY8JrANfq2bNTOVlUVLHHKwN-0RM8-3YidVo8rjNiLVZ2sfyshd1vKiW5j5pIR3vK8B2XqblG6OuhERR9cWpBLq6DX3QK3Uyt_BLIxLr4kcyJtZ5-S7N_KA3ipM6g3uz2t3GPGX7wEIQmEe4"/>
-</div>
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100">
-<img alt="Packaging design mockup" class="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer" data-alt="Cosmetic box packaging design" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC__r_cMAtXTfVOpoVvDwhtcytUthXsIE1_4j7Bf-HbO391xdKzuDnWDlv0CLJZHpDy_0PJLCLfNSc0ZGeglKzhEKCbwQVCyIE_1BBYpAQyJzUMd8subvZkBLD421fxFcznq3Chyq910CytTQ_Z9wn37zdLnLsslaYe394_OzML87vMWAmsFMyVNkWzu5KzaxvxFHqRGk8hySjZ9iFagD91knuSwF3xYtfI9Rn7h3sB6AafjSv-eAeaorgErkF7PsNZ4wg1FTbyueE"/>
-</div>
-</div>
-</div>
-<button class="w-full h-10 rounded-full border-2 border-primary text-slate-900 dark:text-white font-bold text-sm hover:bg-primary hover:text-slate-900 transition-all flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-slate-900">
-                        View Profile
-                        <span class="material-symbols-outlined text-base">arrow_forward</span>
-</button>
-</div>
-</article>
-<article class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full border border-slate-100 dark:border-slate-800 group">
-<div class="flex items-start justify-between mb-4">
-<div class="flex items-center gap-3">
-<img alt="James Wilson portrait" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow-sm" data-alt="Man in suit looking confident" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqExZ_AiEgWIyr9XiRHWXgY3hGAlo-wd3jLftp17plLAYcEmCNLjN5xAXJLuoXc7jxtxpV10DHB72VGFNB-eF-fjybXQuwoauncI70zjHmQvqid9RXzZH_40-2goB1xZMqDYeF5_AP_WT_hpCSzoV5hTWktquELor1Eahczp25BB1Ku-_6HVWjoZznS2pvX3eEb0Jz01JPoBT9Qj6ajjQWxngOiXP1vOA8yFOPNbQy7nUhUhtpo7uvuvJ6KvdMPHqo9GglC3sdFGk"/>
-<div>
-<h3 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">James Wilson</h3>
-<p class="text-sm text-slate-500 dark:text-slate-400">Product Manager</p>
-</div>
-</div>
-<button class="text-slate-400 hover:text-primary transition-colors">
-<span class="material-symbols-outlined">bookmark</span>
-</button>
-</div>
-<div class="flex flex-wrap gap-2 mb-6">
-<span class="px-3 py-1 rounded-full bg-primary/10 text-primary-dark dark:text-primary text-xs font-bold border border-primary/20">Strategy</span>
-<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">Agile</span>
-<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">Roadmap</span>
-</div>
-<div class="mt-auto">
-<div class="mb-4">
-<p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Portfolio</p>
-<div class="flex gap-2">
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100">
-<img alt="Kanban board meeting" class="w-full h-full object-cover hover:scale-110 transition-transform cursor-pointer" data-alt="Team looking at sticky notes on wall" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0zLiZguJlCYxofklwJrwV938D7TmahDL6A2HCQpSgdBbUhnRcaeHCmNxWCF2tQJIJFYv-G8Ivq-rTfR5dXUCqeBq4f0aLVstFpUKblSMq0DILtxawHs8Jg8uBbFz3hEfZttihs9emzoQqkCH3kTBLs7qCkI4uBnBL7tzmKQ_NgxpVmUC0RVlFLYjvqj2QjKHmkkZuODJdTT7rhaIKW8jqrANyx8upScmz8W7iNpJEd830rT1FwaH1TXHslwbHnGEGUv5IyFXsvoI"/>
-</div>
-<div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center text-slate-400 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-<span class="text-xs font-bold">+3</span>
-</div>
-</div>
-</div>
-<button class="w-full h-10 rounded-full border-2 border-primary text-slate-900 dark:text-white font-bold text-sm hover:bg-primary hover:text-slate-900 transition-all flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-slate-900">
-                        View Profile
-                        <span class="material-symbols-outlined text-base">arrow_forward</span>
-</button>
-</div>
-</article>
-</div>
-<div class="flex justify-center mt-8 pb-12">
-<button class="glass-panel px-8 py-3 rounded-full font-bold text-slate-700 dark:text-white hover:bg-white dark:hover:bg-surface-dark transition-all flex items-center gap-2 shadow-sm">
-                Load More Candidates
-                <span class="material-symbols-outlined animate-bounce">expand_more</span>
-</button>
-</div>
+    <section class="glass-panel rounded-2xl p-6 shadow-glass relative overflow-hidden">
+        <div class="absolute -top-20 -right-20 w-64 h-64 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between relative z-10">
+            <div class="flex-1 w-full">
+                <h2 class="text-3xl font-bold mb-6 text-slate-900 dark:text-white">Find your next top performer</h2>
+                <form method="GET" action="{% url 'recruiter_talent_search' %}" class="flex flex-col md:flex-row gap-3 w-full">
+                    <div class="relative flex-grow group">
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-dark transition-colors">
+                            <span class="material-symbols-outlined">search</span>
+                        </div>
+                        <input name="q" value="{{ query|default:'' }}" class="w-full h-14 pl-12 pr-4 rounded-full bg-white dark:bg-surface-dark border-0 ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all" placeholder="Search by role, skill, or keyword..." type="text"/>
+                    </div>
+                    <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+                        <button type="submit" class="flex items-center gap-2 h-14 px-5 rounded-full bg-slate-900 text-white hover:bg-slate-800 transition-all whitespace-nowrap font-bold shadow-lg">
+                            Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="flex-shrink-0 self-end lg:self-center">
+                <div class="bg-slate-100 dark:bg-surface-dark p-1 rounded-full flex items-center border border-slate-200 dark:border-slate-700">
+                    <button class="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white transition-all">
+                        <span class="material-symbols-outlined text-lg">grid_view</span>
+                        <span class="text-sm font-bold">Grid</span>
+                    </button>
+                    <button class="flex items-center justify-center gap-2 px-4 py-2 rounded-full text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white transition-all">
+                        <span class="material-symbols-outlined text-lg">blur_on</span>
+                        <span class="text-sm font-medium">Heatmap</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="flex items-center gap-4 px-2">
+        <h3 class="text-slate-500 dark:text-slate-400 font-medium">Showing <span class="text-slate-900 dark:text-white font-bold">{{ profiles|length }}</span> candidates</h3>
+        <div class="h-px bg-slate-200 dark:bg-slate-700 flex-1"></div>
+        <a href="{% url 'recruiter_talent_search' %}" class="text-primary-dark dark:text-primary text-sm font-bold hover:underline">Clear filters</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for profile in profiles %}
+        <article class="bg-white dark:bg-surface-dark rounded-2xl p-5 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full border border-slate-100 dark:border-slate-800 group">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    {% if profile.profile_picture %}
+                         <img alt="{{ profile.user.get_full_name }}" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-slate-700 shadow-sm" src="{{ profile.profile_picture.url }}"/>
+                    {% else %}
+                         <div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-xl font-bold text-slate-900 border-2 border-white shadow-sm">
+                            {{ profile.user.first_name|first }}{{ profile.user.last_name|first }}
+                         </div>
+                    {% endif %}
+                    <div>
+                        <h3 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">{{ profile.user.get_full_name }}</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">{{ profile.major|default:"Candidate" }}</p>
+                    </div>
+                </div>
+                <button class="text-slate-400 hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined">bookmark</span>
+                </button>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-6">
+                <!-- Mock skills for now if not iterable -->
+                {% if profile.skills %}
+                    <span class="px-3 py-1 rounded-full bg-primary/10 text-primary-dark dark:text-primary text-xs font-bold border border-primary/20">{{ profile.skills|truncatechars:15 }}</span>
+                {% else %}
+                    <span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">Available</span>
+                {% endif %}
+            </div>
+            <div class="mt-auto">
+                <div class="mb-4">
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Portfolio</p>
+                    <div class="flex gap-2">
+                         <!-- Placeholders for portfolio thumbnails -->
+                        <div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
+                             <div class="w-full h-full flex items-center justify-center text-slate-300"><span class="material-symbols-outlined">image</span></div>
+                        </div>
+                        <div class="h-16 w-16 rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
+                             <div class="w-full h-full flex items-center justify-center text-slate-300"><span class="material-symbols-outlined">image</span></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="w-full h-10 rounded-full border-2 border-primary text-slate-900 dark:text-white font-bold text-sm hover:bg-primary hover:text-slate-900 transition-all flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-slate-900">
+                    View Profile
+                    <span class="material-symbols-outlined text-base">arrow_forward</span>
+                </button>
+            </div>
+        </article>
+        {% empty %}
+        <div class="col-span-full py-12 text-center text-slate-500">
+            <span class="material-symbols-outlined text-4xl mb-2">search_off</span>
+            <p>No candidates found matching your search.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination or Load More -->
+    <div class="flex justify-center mt-8 pb-12">
+        <button class="glass-panel px-8 py-3 rounded-full font-bold text-slate-700 dark:text-white hover:bg-white dark:hover:bg-surface-dark transition-all flex items-center gap-2 shadow-sm">
+            Load More Candidates
+            <span class="material-symbols-outlined animate-bounce">expand_more</span>
+        </button>
+    </div>
 </main>
-</body></html>
+{% endblock %}

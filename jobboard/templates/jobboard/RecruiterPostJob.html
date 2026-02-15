@@ -1,0 +1,362 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}MintMatch Post Job V2{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+
+<script>
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "primary": "#06f9bc",
+                    "primary-dark": "#04c796",
+                    "primary-light": "#8cfce1",
+                    "background-light": "#f5f8f8",
+                    "background-dark": "#0f231e",
+                    "surface-light": "#ffffff",
+                    "surface-dark": "#162f29",
+                    "neutral-soft": "#e0e7e5", // Derived neutral
+                },
+                fontFamily: {
+                    "display": ["Manrope", "sans-serif"]
+                },
+                borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                boxShadow: {
+                    "glass": "0 8px 32px 0 rgba(6, 249, 188, 0.1)",
+                    "soft": "0 4px 20px -2px rgba(15, 35, 30, 0.05)",
+                }
+            },
+        },
+    }
+</script>
+<style>
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    .dark .glass-panel {
+        background: rgba(22, 47, 41, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .bento-card {
+        transition: all 0.3s ease;
+    }
+    .bento-card:hover, .bento-card:focus-within {
+        box-shadow: 0 10px 40px -5px rgba(6, 249, 188, 0.15);
+        border-color: #06f9bc;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+
+    /* Toggle Switch */
+    .toggle-checkbox:checked {
+        right: 0;
+        border-color: #06f9bc;
+    }
+    .toggle-checkbox:checked + .toggle-label {
+        background-color: #06f9bc;
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-display min-h-screen selection:bg-primary selection:text-background-dark flex overflow-hidden{% endblock %}
+
+{% block content %}
+<!-- Floating Navigation Sidebar -->
+<nav class="hidden md:flex flex-col items-center py-8 px-4 w-24 h-screen fixed left-0 top-0 z-50">
+    <!-- Logo -->
+    <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-10 shadow-lg shadow-primary/30">
+        <span class="material-icons text-background-dark text-2xl">eco</span>
+    </div>
+    <!-- Glass Pill Menu -->
+    <div class="glass-panel rounded-full py-6 px-2 flex flex-col gap-6 shadow-glass">
+        <a href="{% url 'recruiter_dashboard' %}" class="w-12 h-12 rounded-full flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white/50 transition-all group relative">
+            <span class="material-icons">dashboard</span>
+            <span class="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Dashboard</span>
+        </a>
+        <a href="{% url 'job_create' %}" class="w-12 h-12 rounded-full flex items-center justify-center text-primary bg-primary/10 shadow-inner transition-all group relative">
+            <span class="material-icons">add_circle</span>
+            <span class="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">New Job</span>
+        </a>
+        <a href="{% url 'recruiter_talent_search' %}" class="w-12 h-12 rounded-full flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white/50 transition-all group relative">
+            <span class="material-icons">people_alt</span>
+            <span class="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Candidates</span>
+        </a>
+        <a href="{% url 'recruiter_messaging' %}" class="w-12 h-12 rounded-full flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white/50 transition-all group relative">
+            <span class="material-icons">chat_bubble</span>
+            <span class="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Messages</span>
+        </a>
+    </div>
+    <!-- Bottom Actions -->
+    <div class="mt-auto glass-panel rounded-full p-2">
+        <button class="w-10 h-10 rounded-full overflow-hidden border-2 border-white dark:border-slate-700">
+            {% if user.recruiterprofile.profile_picture %}
+                <img alt="Profile" class="w-full h-full object-cover" src="{{ user.recruiterprofile.profile_picture.url }}"/>
+            {% else %}
+                <div class="w-full h-full bg-primary flex items-center justify-center text-xs font-bold">{{ user.username|first|upper }}</div>
+            {% endif %}
+        </button>
+    </div>
+</nav>
+
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-24 h-screen overflow-y-auto p-4 md:p-8 relative">
+    <!-- Header Section -->
+    <header class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+            <div class="flex items-center gap-2 text-slate-400 text-sm mb-1">
+                <span>Jobs</span>
+                <span class="material-icons text-xs">chevron_right</span>
+                <span class="text-primary font-medium">New Position</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">Create New Position</h1>
+        </div>
+        <div class="flex items-center gap-4 bg-white dark:bg-surface-dark p-2 pr-3 rounded-full shadow-soft">
+            <!-- Toggle Switch -->
+            <div class="relative flex items-center bg-slate-100 dark:bg-slate-800 rounded-full p-1 cursor-pointer select-none">
+                <div class="flex items-center">
+                    <div class="px-4 py-1.5 rounded-full bg-white dark:bg-slate-600 shadow-sm text-xs font-bold text-slate-800 dark:text-white z-10 transition-all">Edit</div>
+                    <div class="px-4 py-1.5 rounded-full text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 transition-all">Preview</div>
+                </div>
+            </div>
+            <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+            <button class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-medium text-sm px-2">Save Draft</button>
+            <button class="bg-primary hover:bg-primary-dark text-slate-900 font-bold px-6 py-2.5 rounded-full shadow-lg shadow-primary/20 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
+                <span>Publish Job</span>
+                <span class="material-icons text-sm">arrow_forward</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Bento Grid Layout -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 pb-20">
+        <!-- Column 1: Main Details (Span 8) -->
+        <div class="md:col-span-8 flex flex-col gap-6">
+            <!-- Role Details Card -->
+            <div class="bg-white dark:bg-surface-dark rounded-xl p-8 shadow-soft border border-transparent hover:border-primary/30 bento-card relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark">
+                        <span class="material-icons">work_outline</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Role Details</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Job Title</label>
+                        <input class="w-full bg-background-light dark:bg-background-dark border-none rounded-2xl px-5 py-4 focus:ring-2 focus:ring-primary text-slate-800 dark:text-white placeholder-slate-400 font-medium transition-all" placeholder="e.g. Senior Product Designer" type="text"/>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Department</label>
+                        <div class="relative">
+                            <select class="w-full bg-background-light dark:bg-background-dark border-none rounded-2xl px-5 py-4 focus:ring-2 focus:ring-primary text-slate-800 dark:text-white appearance-none cursor-pointer font-medium">
+                                <option>Design</option>
+                                <option>Engineering</option>
+                                <option>Marketing</option>
+                                <option>Product</option>
+                            </select>
+                            <span class="material-icons absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-2 mb-6">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Location</label>
+                    <div class="relative">
+                        <span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">place</span>
+                        <input class="w-full bg-background-light dark:bg-background-dark border-none rounded-2xl pl-12 pr-5 py-4 focus:ring-2 focus:ring-primary text-slate-800 dark:text-white placeholder-slate-400 font-medium transition-all" placeholder="Search for a city or 'Remote'" type="text"/>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Description</label>
+                    <div class="bg-background-light dark:bg-background-dark rounded-2xl p-2 min-h-[200px] border-2 border-transparent focus-within:border-primary/50 transition-all">
+                        <!-- Fake Toolbar -->
+                        <div class="flex gap-2 p-2 mb-2 border-b border-slate-200 dark:border-slate-700">
+                            <button class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-500"><span class="material-icons text-sm">format_bold</span></button>
+                            <button class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-500"><span class="material-icons text-sm">format_italic</span></button>
+                            <button class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-500"><span class="material-icons text-sm">format_list_bulleted</span></button>
+                            <button class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-500"><span class="material-icons text-sm">link</span></button>
+                        </div>
+                        <textarea class="w-full bg-transparent border-none focus:ring-0 p-2 text-slate-700 dark:text-slate-300 h-40 resize-none" placeholder="Describe the role responsibilities and requirements..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screening Questions Card -->
+            <div class="bg-white dark:bg-surface-dark rounded-xl p-8 shadow-soft border border-transparent hover:border-primary/30 bento-card">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark">
+                            <span class="material-icons">quiz</span>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Screening Questions</h2>
+                    </div>
+                    <button class="text-primary font-bold text-sm hover:underline flex items-center gap-1">
+                        <span class="material-icons text-sm">add</span> Add Question
+                    </button>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3 bg-background-light dark:bg-background-dark p-4 rounded-2xl group cursor-move">
+                        <span class="material-icons text-slate-300 cursor-grab">drag_indicator</span>
+                        <div class="flex-1">
+                            <p class="font-medium text-slate-800 dark:text-white text-sm">How many years of experience do you have with React?</p>
+                            <p class="text-xs text-slate-400 mt-1">Numeric input</p>
+                        </div>
+                        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full text-slate-500"><span class="material-icons text-sm">edit</span></button>
+                            <button class="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-full text-red-400"><span class="material-icons text-sm">delete</span></button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-6 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer">
+                        <p class="text-slate-400 font-medium text-sm">Click to add a new question</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 2: Sidebar Config (Span 4) -->
+        <div class="md:col-span-4 flex flex-col gap-6">
+            <!-- Compensation Card -->
+            <div class="bg-white dark:bg-surface-dark rounded-xl p-6 shadow-soft border border-transparent hover:border-primary/30 bento-card">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark">
+                        <span class="material-icons">payments</span>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Compensation</h2>
+                </div>
+                <div class="space-y-5">
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Currency</label>
+                        <div class="flex gap-2">
+                            <button class="bg-primary text-slate-900 px-4 py-2 rounded-full text-sm font-bold shadow-sm">USD</button>
+                            <button class="bg-background-light dark:bg-background-dark text-slate-500 px-4 py-2 rounded-full text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700">EUR</button>
+                            <button class="bg-background-light dark:bg-background-dark text-slate-500 px-4 py-2 rounded-full text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700">GBP</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Salary Range (Annual)</label>
+                        <div class="flex items-center gap-2">
+                            <input class="w-full bg-background-light dark:bg-background-dark border-none rounded-xl px-4 py-3 text-center font-bold text-slate-800 dark:text-white" type="text" value="$90k"/>
+                            <span class="text-slate-400">-</span>
+                            <input class="w-full bg-background-light dark:bg-background-dark border-none rounded-xl px-4 py-3 text-center font-bold text-slate-800 dark:text-white" type="text" value="$140k"/>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <label class="flex items-center gap-3 cursor-pointer py-2">
+                            <div class="relative">
+                                <input class="sr-only peer" type="checkbox"/>
+                                <div class="w-10 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </div>
+                            <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Offer Equity / Stock Options</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills & Tags Card -->
+            <div class="bg-gradient-to-br from-white to-slate-50 dark:from-surface-dark dark:to-slate-900 rounded-xl p-6 shadow-soft border border-transparent hover:border-primary/30 bento-card relative">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark">
+                        <span class="material-icons">psychology</span>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Skills &amp; Tags</h2>
+                </div>
+                <div class="relative mb-4 group">
+                    <!-- Frosted Glass Input Area -->
+                    <div class="absolute inset-0 bg-primary/5 rounded-2xl blur-md opacity-0 group-focus-within:opacity-100 transition-opacity"></div>
+                    <div class="relative z-10 glass-panel rounded-2xl flex items-center p-1 pr-3 shadow-sm border-slate-200 dark:border-slate-700">
+                        <span class="material-icons text-slate-400 ml-3 mr-2">search</span>
+                        <input class="w-full bg-transparent border-none focus:ring-0 text-sm font-medium text-slate-800 dark:text-white placeholder-slate-400" placeholder="Add a skill (e.g. Figma)" type="text"/>
+                        <span class="text-xs text-slate-400 border border-slate-200 dark:border-slate-600 rounded px-1.5 py-0.5">↵</span>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-primary text-slate-900 shadow-sm shadow-primary/30 cursor-pointer hover:bg-primary-dark transition-colors">
+                        Product Design
+                        <span class="material-icons text-[10px] opacity-60">close</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-primary text-slate-900 shadow-sm shadow-primary/30 cursor-pointer hover:bg-primary-dark transition-colors">
+                        Figma
+                        <span class="material-icons text-[10px] opacity-60">close</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 cursor-pointer hover:border-primary hover:text-primary transition-colors">
+                        Prototyping
+                        <span class="material-icons text-[10px] opacity-60">add</span>
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 cursor-pointer hover:border-primary hover:text-primary transition-colors">
+                        UI/UX
+                        <span class="material-icons text-[10px] opacity-60">add</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Benefits Card -->
+            <div class="bg-white dark:bg-surface-dark rounded-xl p-6 shadow-soft border border-transparent hover:border-primary/30 bento-card">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark">
+                        <span class="material-icons">card_giftcard</span>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Benefits</h2>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="cursor-pointer group">
+                        <input checked="" class="peer sr-only" type="checkbox"/>
+                        <div class="p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-background-light dark:bg-background-dark flex flex-col items-center gap-2 transition-all peer-checked:border-primary peer-checked:bg-primary/5 group-hover:bg-white dark:group-hover:bg-slate-800">
+                            <span class="material-icons text-slate-400 peer-checked:text-primary">health_and_safety</span>
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Healthcare</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group">
+                        <input checked="" class="peer sr-only" type="checkbox"/>
+                        <div class="p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-background-light dark:bg-background-dark flex flex-col items-center gap-2 transition-all peer-checked:border-primary peer-checked:bg-primary/5 group-hover:bg-white dark:group-hover:bg-slate-800">
+                            <span class="material-icons text-slate-400 peer-checked:text-primary">home_work</span>
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Remote</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group">
+                        <input class="peer sr-only" type="checkbox"/>
+                        <div class="p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-background-light dark:bg-background-dark flex flex-col items-center gap-2 transition-all peer-checked:border-primary peer-checked:bg-primary/5 group-hover:bg-white dark:group-hover:bg-slate-800">
+                            <span class="material-icons text-slate-400 peer-checked:text-primary">fitness_center</span>
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Gym</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group">
+                        <input class="peer sr-only" type="checkbox"/>
+                        <div class="p-3 rounded-xl border border-slate-100 dark:border-slate-700 bg-background-light dark:bg-background-dark flex flex-col items-center gap-2 transition-all peer-checked:border-primary peer-checked:bg-primary/5 group-hover:bg-white dark:group-hover:bg-slate-800">
+                            <span class="material-icons text-slate-400 peer-checked:text-primary">school</span>
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Learning</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Abstract Background Shape for aesthetics -->
+<div class="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl -z-10 pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
+<div class="fixed bottom-0 left-24 w-[300px] h-[300px] bg-blue-300/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+{% endblock %}
