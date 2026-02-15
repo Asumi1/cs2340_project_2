@@ -1,212 +1,223 @@
-<!DOCTYPE html>
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MintMatch Landing Page</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#06f9bc",
-                        "primary-dark": "#04dcb5",
-                        "charcoal": "#1a1f24",
-                        "charcoal-light": "#4b5563",
-                    },
-                    fontFamily: {
-                        "display": ["Manrope", "sans-serif"]
-                    }
-                },
-            },
-        }
-    </script>
+{% extends "base.html" %}
+
+{% block title %}MintMatch Landing Page{% endblock %}
+
+{% block extra_head %}
 <style>
-        body {
-            font-family: 'Manrope', sans-serif;
-            background: linear-gradient(135deg, #f0fdf9 0%, #ffffff 100%);
-        }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
-        }
-        .glass-card-hover:hover {
-            background: rgba(255, 255, 255, 0.9);
-            border-color: rgba(6, 249, 188, 0.4);
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px -10px rgba(6, 249, 188, 0.15);
-        }
-        .text-glow {
-            text-shadow: 0 0 20px rgba(6, 249, 188, 0.4);
-        }.glass-stats {
-            background: rgba(26, 31, 36, 0.85);backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-        }.ambient-blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            z-index: 0;
-            opacity: 0.6;
-        }
-    </style>
-</head>
-<body class="text-charcoal overflow-x-hidden min-h-screen relative">
+    body {
+        background: linear-gradient(135deg, #f0fdf9 0%, #ffffff 100%);
+    }
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+    }
+    .glass-card-hover:hover {
+        background: rgba(255, 255, 255, 0.9);
+        border-color: rgba(6, 249, 188, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px -10px rgba(6, 249, 188, 0.15);
+    }
+    .text-glow {
+        text-shadow: 0 0 20px rgba(6, 249, 188, 0.4);
+    }
+    .glass-stats {
+        background: rgba(26, 31, 36, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+    .ambient-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        z-index: 0;
+        opacity: 0.6;
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}text-charcoal overflow-x-hidden min-h-screen relative{% endblock %}
+
+{% block content %}
 <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-<div class="ambient-blob bg-primary/20 w-[600px] h-[600px] top-[-150px] left-[-150px]"></div>
-<div class="ambient-blob bg-blue-200/40 w-[500px] h-[500px] bottom-[5%] right-[-150px]"></div>
-<div class="ambient-blob bg-primary/10 w-[300px] h-[300px] top-[30%] left-[40%]"></div>
+    <div class="ambient-blob bg-primary/20 w-[600px] h-[600px] top-[-150px] left-[-150px]"></div>
+    <div class="ambient-blob bg-blue-200/40 w-[500px] h-[500px] bottom-[5%] right-[-150px]"></div>
+    <div class="ambient-blob bg-primary/10 w-[300px] h-[300px] top-[30%] left-[40%]"></div>
 </div>
+
 <nav class="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
-<div class="glass-panel rounded-full pl-6 pr-2 py-2 flex items-center justify-between gap-8 md:gap-12 w-full max-w-[1200px]">
-<a class="flex items-center gap-2 group" href="#">
-<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-charcoal shadow-sm">
-<span class="material-symbols-outlined text-[20px] font-bold">bolt</span>
-</div>
-<span class="font-bold text-lg tracking-tight text-charcoal">MintMatch</span>
-</a>
-<div class="hidden md:flex items-center gap-1 bg-white/40 p-1 rounded-full border border-white/20">
-<a class="px-4 py-1.5 rounded-full text-sm font-medium text-charcoal bg-white shadow-sm" href="#">Discover</a>
-<a class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 hover:text-charcoal hover:bg-white/50 transition-all" href="#">Talent</a>
-<a class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 hover:text-charcoal hover:bg-white/50 transition-all" href="#">Companies</a>
-<a class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 hover:text-charcoal hover:bg-white/50 transition-all" href="#">Pricing</a>
-</div>
-<div class="flex items-center gap-2">
-<button class="text-sm font-semibold text-charcoal hover:text-primary-dark transition-colors px-4 hidden sm:block">Log in</button>
-<button class="bg-charcoal hover:bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-lg shadow-charcoal/20 flex items-center gap-2">
-<span>Sign up</span>
-<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-</button>
-</div>
-</div>
+    <div class="glass-panel rounded-full pl-6 pr-2 py-2 flex items-center justify-between gap-8 md:gap-12 w-full max-w-[1200px]">
+        <a class="flex items-center gap-2 group" href="{% url 'home' %}">
+            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-charcoal shadow-sm">
+                <span class="material-symbols-outlined text-[20px] font-bold">bolt</span>
+            </div>
+            <span class="font-bold text-lg tracking-tight text-charcoal">MintMatch</span>
+        </a>
+        <div class="hidden md:flex items-center gap-1 bg-white/40 p-1 rounded-full border border-white/20">
+            <a class="px-4 py-1.5 rounded-full text-sm font-medium text-charcoal bg-white shadow-sm" href="#">Discover</a>
+            <a class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 hover:text-charcoal hover:bg-white/50 transition-all" href="#">Talent</a>
+            <a class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 hover:text-charcoal hover:bg-white/50 transition-all" href="#">Companies</a>
+            <a class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 hover:text-charcoal hover:bg-white/50 transition-all" href="#">Pricing</a>
+        </div>
+        <div class="flex items-center gap-2">
+            {% if user.is_authenticated %}
+                <span class="text-sm font-semibold text-charcoal hidden sm:block">Hello, {{ user.username }}</span>
+                <form action="{% url 'logout' %}" method="post" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="text-sm font-semibold text-charcoal hover:text-primary-dark transition-colors px-4">Log Out</button>
+                </form>
+                {% if user.role == "RECRUITER" %}
+                     <a href="#" class="bg-charcoal hover:bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-lg shadow-charcoal/20 flex items-center gap-2">
+                        <span>Dashboard</span>
+                    </a>
+                {% elif user.role == "JOBSEEKER" %}
+                    <a href="#" class="bg-charcoal hover:bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-lg shadow-charcoal/20 flex items-center gap-2">
+                        <span>Find Jobs</span>
+                    </a>
+                {% endif %}
+            {% else %}
+                <a class="text-sm font-semibold text-charcoal hover:text-primary-dark transition-colors px-4 hidden sm:block" href="{% url 'login' %}">Log in</a>
+                <a class="bg-charcoal hover:bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-lg shadow-charcoal/20 flex items-center gap-2" href="{% url 'signup' %}">
+                    <span>Sign up</span>
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
 </nav>
+
 <div class="relative z-10 flex flex-col items-center pt-32 pb-32 px-4 md:px-8 max-w-[1200px] mx-auto w-full">
-<header class="text-center max-w-3xl mx-auto mb-12">
-<h1 class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.1] text-charcoal">
+    <header class="text-center max-w-3xl mx-auto mb-12">
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.1] text-charcoal">
             Find clarity in your <br/>
-<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-dark to-gray-500">career path.</span>
-</h1>
-<p class="text-gray-500 text-lg md:text-xl max-w-xl mx-auto mb-8 font-medium">
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-dark to-gray-500">career path.</span>
+        </h1>
+        <p class="text-gray-500 text-lg md:text-xl max-w-xl mx-auto mb-8 font-medium">
             The transparent job platform built for modern professionals. No guessing games, just clear opportunities with MintMatch.
         </p>
-<div class="glass-panel p-2 rounded-full max-w-xl mx-auto flex items-center w-full group focus-within:ring-2 focus-within:ring-primary/50 transition-all shadow-md">
-<div class="pl-4 pr-2 text-gray-400">
-<span class="material-symbols-outlined">search</span>
+        <div class="glass-panel p-2 rounded-full max-w-xl mx-auto flex items-center w-full group focus-within:ring-2 focus-within:ring-primary/50 transition-all shadow-md">
+            <div class="pl-4 pr-2 text-gray-400">
+                <span class="material-symbols-outlined">search</span>
+            </div>
+            <input class="bg-transparent border-none focus:ring-0 text-charcoal placeholder-gray-400 w-full py-2 text-base font-medium" placeholder="Search for roles, skills, or companies..." type="text"/>
+            <button class="bg-primary hover:bg-primary-dark text-charcoal rounded-full w-10 h-10 flex items-center justify-center transition-colors shadow-sm">
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full auto-rows-[minmax(180px,auto)]">
+        <!-- Dashboard/Card Grid -->
+        <div class="glass-panel rounded-3xl p-8 md:col-span-2 md:row-span-2 flex flex-col justify-between relative overflow-hidden group glass-card-hover transition-all duration-300">
+            <div class="relative z-10">
+                <div class="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary-dark mb-6">
+                    <span class="material-symbols-outlined text-3xl">rocket_launch</span>
+                </div>
+                <h3 class="text-2xl font-bold mb-2 text-charcoal">Instant Apply</h3>
+                <p class="text-gray-500 font-medium">One-click applications to top startups. Skip the cover letter for verified MintMatch profiles.</p>
+            </div>
+            <div class="absolute -right-4 -bottom-4 w-48 h-48 opacity-40">
+                <div class="w-full h-full rounded-full border-[20px] border-primary/20 blur-xl"></div>
+            </div>
+            <div class="mt-8 flex items-center gap-2">
+                <div class="flex -space-x-3">
+                    <img alt="User avatar 1" class="w-10 h-10 rounded-full border-2 border-white shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0q8-3JRAonLkmMkLAciixtmUpG2PlKyCkbw31iHc3090R7W5Q6efqB6VYUvhn07wDm3bTUNZPCnVHeZCE1Wm3kqRugjHx89E1ZWtwbd59SCOlJa9oO-AWbHmo3_KdbkAb8kTELpYhiGTdEEiVbcqSCkg79L88vhdiRztE10y7CAmaYCR_rPmpwHTvB1679ZermIA-05jTrRKbmqNgsLE6KLhq82HeU0aXetMtDZiCc3hxGC5mas6IbopqJB1ZnGkvciG85rlXtuA"/>
+                    <img alt="User avatar 2" class="w-10 h-10 rounded-full border-2 border-white shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIcG7le3IK0B6KKonDw0OoAjYISkSS5HHZJygrcuqWDkU_8K7HKPAayjGHvLCQQfHGxs7RL2iK5I5w07J_FTsybOVZSJ2r4nOTJw39e9R_idN0LWcl8STAA4OKpo6IJSF5bnlct2I737Acdcy_qBqQZA4JooKu04tevZTx_VXpKefZEj7pwh1DUlJq_MjQTL-jhtWdoRpkQikRuCNnXjL8-U3k3hGHCwAMXhG6krEhgmp-5gdFGXuAxBcYDUutjgAjtEPLqRPUuQk"/>
+                    <img alt="User avatar 3" class="w-10 h-10 rounded-full border-2 border-white shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSo9E-xsXXBi3QDtvyDsyNCQ-4thU3pNgv7YDkcFQc9MqFWgoKXumBIJncCkKjei_OCCWOqz085eStjpOXRWxe_Xv0YoTym5Pv_LJ3ANh70WcF4MvRcilax0eKgOP4pF3UTgXPfI6Qv2Jq490PTrvGWts1TAxMB0xp8U645hJpoiPF90l53tiMqCdzg0jeT9jxL9WyHehSekfBRUfU6ccdmW7Ldjf7dZ-HUFrA2zfmTuhQevxt6N3jaw48foXfdqmWGDNE1UNFHDQ"/>
+                </div>
+                <span class="text-sm font-semibold text-gray-600 ml-2">1k+ applied today</span>
+            </div>
+        </div>
+        
+        <div class="glass-panel rounded-3xl p-6 md:row-span-2 flex flex-col items-center justify-center text-center glass-card-hover transition-all duration-300">
+            <div class="w-20 h-20 rounded-full border-4 border-gray-100 border-t-primary flex items-center justify-center mb-4 rotate-45 bg-white shadow-sm">
+                <span class="material-symbols-outlined text-3xl text-primary-dark -rotate-45">attach_money</span>
+            </div>
+            <h3 class="text-3xl font-bold text-charcoal mb-1">$145k</h3>
+            <p class="text-primary-dark text-sm font-bold mb-4 uppercase tracking-wide">Average Salary</p>
+            <p class="text-gray-500 text-sm font-medium">For senior engineering roles posted this week.</p>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-6 glass-card-hover transition-all duration-300 flex flex-col justify-between">
+            <div class="flex justify-between items-start">
+                <span class="material-symbols-outlined text-2xl text-charcoal">public</span>
+                <span class="bg-primary/20 text-primary-dark text-xs font-bold px-2 py-1 rounded-full border border-primary/10">New</span>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold text-charcoal">Remote First</h4>
+                <p class="text-xs text-gray-500 font-medium mt-1">Work from anywhere</p>
+            </div>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-6 glass-card-hover transition-all duration-300 flex flex-col justify-between">
+            <div class="flex justify-between items-start">
+                <span class="material-symbols-outlined text-2xl text-charcoal">verified_user</span>
+            </div>
+            <div>
+                <h4 class="text-lg font-bold text-charcoal">Verified</h4>
+                <p class="text-xs text-gray-500 font-medium mt-1">Legit companies only</p>
+            </div>
+        </div>
+
+        <div class="glass-panel rounded-3xl p-8 md:col-span-3 lg:col-span-2 flex flex-col md:flex-row items-center justify-between gap-6 glass-card-hover transition-all duration-300 relative overflow-hidden">
+            <div class="relative z-10 max-w-md">
+                <h3 class="text-xl font-bold mb-2 text-charcoal">Hiring at top companies</h3>
+                <p class="text-gray-500 text-sm font-medium">Join the teams building the future at industry leaders.</p>
+            </div>
+            <div class="flex gap-4 relative z-10 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
+                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm text-gray-600">
+                    <span class="material-symbols-outlined">dataset</span>
+                </div>
+                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm text-gray-600">
+                    <span class="material-symbols-outlined">token</span>
+                </div>
+                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm text-gray-600">
+                    <span class="material-symbols-outlined">polymer</span>
+                </div>
+                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm text-gray-600">
+                    <span class="material-symbols-outlined">hexagon</span>
+                </div>
+            </div>
+            <div class="absolute left-0 top-0 w-full h-full bg-gradient-to-r from-primary/10 to-transparent pointer-events-none"></div>
+        </div>
+
+        <div class="glass-panel rounded-3xl md:col-span-2 lg:col-span-2 relative overflow-hidden group min-h-[200px]">
+            <div class="absolute inset-0 bg-cover bg-center opacity-70 group-hover:opacity-90 transition-opacity duration-500" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAJgaUmym0oBavN3Kka7u0uCSeE-pm8JkQFTlXnkkPttShCF3Q7FzVPXRhAzP08M7S2YZKhJVNIa3l0YafGMN6V6hURGTtx9-cAXBsenpG3wxFUCeG5JNEtEhQ9Mxxvt2WW1l5e6l8cVA9Rkx0Y5_NHADTkDhLOf9qi7Tk8FZwshg5v-Pgb7J47MvRmW5PNQTGhoynHfoG30B1u1yOLvk2UmFe9pfQSJn06hTjMzDjcot_-PivbJF-057f0QbZMi5ACUYU154-wXPg'); mix-blend-mode: multiply;">
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-white to-transparent opacity-90"></div>
+            <div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+                <div>
+                    <h3 class="text-xl font-bold text-charcoal">Global Opportunities</h3>
+                    <p class="text-gray-600 text-sm font-medium">From SF to Tokyo</p>
+                </div>
+                <button class="bg-white hover:bg-gray-50 text-charcoal rounded-full p-3 transition-colors shadow-md border border-gray-100">
+                    <span class="material-symbols-outlined">arrow_outward</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
-<input class="bg-transparent border-none focus:ring-0 text-charcoal placeholder-gray-400 w-full py-2 text-base font-medium" placeholder="Search for roles, skills, or companies..." type="text"/>
-<button class="bg-primary hover:bg-primary-dark text-charcoal rounded-full w-10 h-10 flex items-center justify-center transition-colors shadow-sm">
-<span class="material-symbols-outlined">arrow_forward</span>
-</button>
-</div>
-</header>
-<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full auto-rows-[minmax(180px,auto)]">
-<div class="glass-panel rounded-3xl p-8 md:col-span-2 md:row-span-2 flex flex-col justify-between relative overflow-hidden group glass-card-hover transition-all duration-300">
-<div class="relative z-10">
-<div class="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary-dark mb-6">
-<span class="material-symbols-outlined text-3xl">rocket_launch</span>
-</div>
-<h3 class="text-2xl font-bold mb-2 text-charcoal">Instant Apply</h3>
-<p class="text-gray-500 font-medium">One-click applications to top startups. Skip the cover letter for verified MintMatch profiles.</p>
-</div>
-<div class="absolute -right-4 -bottom-4 w-48 h-48 opacity-40">
-<div class="w-full h-full rounded-full border-[20px] border-primary/20 blur-xl"></div>
-</div>
-<div class="mt-8 flex items-center gap-2">
-<div class="flex -space-x-3">
-<img alt="User avatar 1" class="w-10 h-10 rounded-full border-2 border-white shadow-sm" data-alt="Portrait of a young woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0q8-3JRAonLkmMkLAciixtmUpG2PlKyCkbw31iHc3090R7W5Q6efqB6VYUvhn07wDm3bTUNZPCnVHeZCE1Wm3kqRugjHx89E1ZWtwbd59SCOlJa9oO-AWbHmo3_KdbkAb8kTELpYhiGTdEEiVbcqSCkg79L88vhdiRztE10y7CAmaYCR_rPmpwHTvB1679ZermIA-05jTrRKbmqNgsLE6KLhq82HeU0aXetMtDZiCc3hxGC5mas6IbopqJB1ZnGkvciG85rlXtuA"/>
-<img alt="User avatar 2" class="w-10 h-10 rounded-full border-2 border-white shadow-sm" data-alt="Portrait of a young man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIcG7le3IK0B6KKonDw0OoAjYISkSS5HHZJygrcuqWDkU_8K7HKPAayjGHvLCQQfHGxs7RL2iK5I5w07J_FTsybOVZSJ2r4nOTJw39e9R_idN0LWcl8STAA4OKpo6IJSF5bnlct2I737Acdcy_qBqQZA4JooKu04tevZTx_VXpKefZEj7pwh1DUlJq_MjQTL-jhtWdoRpkQikRuCNnXjL8-U3k3hGHCwAMXhG6krEhgmp-5gdFGXuAxBcYDUutjgAjtEPLqRPUuQk"/>
-<img alt="User avatar 3" class="w-10 h-10 rounded-full border-2 border-white shadow-sm" data-alt="Portrait of a smiling man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSo9E-xsXXBi3QDtvyDsyNCQ-4thU3pNgv7YDkcFQc9MqFWgoKXumBIJncCkKjei_OCCWOqz085eStjpOXRWxe_Xv0YoTym5Pv_LJ3ANh70WcF4MvRcilax0eKgOP4pF3UTgXPfI6Qv2Jq490PTrvGWts1TAxMB0xp8U645hJpoiPF90l53tiMqCdzg0jeT9jxL9WyHehSekfBRUfU6ccdmW7Ldjf7dZ-HUFrA2zfmTuhQevxt6N3jaw48foXfdqmWGDNE1UNFHDQ"/>
-</div>
-<span class="text-sm font-semibold text-gray-600 ml-2">1k+ applied today</span>
-</div>
-</div>
-<div class="glass-panel rounded-3xl p-6 md:row-span-2 flex flex-col items-center justify-center text-center glass-card-hover transition-all duration-300">
-<div class="w-20 h-20 rounded-full border-4 border-gray-100 border-t-primary flex items-center justify-center mb-4 rotate-45 bg-white shadow-sm">
-<span class="material-symbols-outlined text-3xl text-primary-dark -rotate-45">attach_money</span>
-</div>
-<h3 class="text-3xl font-bold text-charcoal mb-1">$145k</h3>
-<p class="text-primary-dark text-sm font-bold mb-4 uppercase tracking-wide">Average Salary</p>
-<p class="text-gray-500 text-sm font-medium">For senior engineering roles posted this week.</p>
-</div>
-<div class="glass-panel rounded-3xl p-6 glass-card-hover transition-all duration-300 flex flex-col justify-between">
-<div class="flex justify-between items-start">
-<span class="material-symbols-outlined text-2xl text-charcoal">public</span>
-<span class="bg-primary/20 text-primary-dark text-xs font-bold px-2 py-1 rounded-full border border-primary/10">New</span>
-</div>
-<div>
-<h4 class="text-lg font-bold text-charcoal">Remote First</h4>
-<p class="text-xs text-gray-500 font-medium mt-1">Work from anywhere</p>
-</div>
-</div>
-<div class="glass-panel rounded-3xl p-6 glass-card-hover transition-all duration-300 flex flex-col justify-between">
-<div class="flex justify-between items-start">
-<span class="material-symbols-outlined text-2xl text-charcoal">verified_user</span>
-</div>
-<div>
-<h4 class="text-lg font-bold text-charcoal">Verified</h4>
-<p class="text-xs text-gray-500 font-medium mt-1">Legit companies only</p>
-</div>
-</div>
-<div class="glass-panel rounded-3xl p-8 md:col-span-3 lg:col-span-2 flex flex-col md:flex-row items-center justify-between gap-6 glass-card-hover transition-all duration-300 relative overflow-hidden">
-<div class="relative z-10 max-w-md">
-<h3 class="text-xl font-bold mb-2 text-charcoal">Hiring at top companies</h3>
-<p class="text-gray-500 text-sm font-medium">Join the teams building the future at industry leaders.</p>
-</div>
-<div class="flex gap-4 relative z-10 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
-<div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm text-gray-600">
-<span class="material-symbols-outlined">dataset</span>
-</div>
-<div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm text-gray-600">
-<span class="material-symbols-outlined">token</span>
-</div>
-<div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm text-gray-600">
-<span class="material-symbols-outlined">polymer</span>
-</div>
-<div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm text-gray-600">
-<span class="material-symbols-outlined">hexagon</span>
-</div>
-</div>
-<div class="absolute left-0 top-0 w-full h-full bg-gradient-to-r from-primary/10 to-transparent pointer-events-none"></div>
-</div>
-<div class="glass-panel rounded-3xl md:col-span-2 lg:col-span-2 relative overflow-hidden group min-h-[200px]">
-<div class="absolute inset-0 bg-cover bg-center opacity-70 group-hover:opacity-90 transition-opacity duration-500" data-alt="Aerial view of city lights at night" data-location="Global" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAJgaUmym0oBavN3Kka7u0uCSeE-pm8JkQFTlXnkkPttShCF3Q7FzVPXRhAzP08M7S2YZKhJVNIa3l0YafGMN6V6hURGTtx9-cAXBsenpG3wxFUCeG5JNEtEhQ9Mxxvt2WW1l5e6l8cVA9Rkx0Y5_NHADTkDhLOf9qi7Tk8FZwshg5v-Pgb7J47MvRmW5PNQTGhoynHfoG30B1u1yOLvk2UmFe9pfQSJn06hTjMzDjcot_-PivbJF-057f0QbZMi5ACUYU154-wXPg'); mix-blend-mode: multiply;">
-</div>
-<div class="absolute inset-0 bg-gradient-to-t from-white to-transparent opacity-90"></div>
-<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
-<div>
-<h3 class="text-xl font-bold text-charcoal">Global Opportunities</h3>
-<p class="text-gray-600 text-sm font-medium">From SF to Tokyo</p>
-</div>
-<button class="bg-white hover:bg-gray-50 text-charcoal rounded-full p-3 transition-colors shadow-md border border-gray-100">
-<span class="material-symbols-outlined">arrow_outward</span>
-</button>
-</div>
-</div>
-</div>
-</div>
+
 <div class="fixed bottom-6 left-4 right-4 z-40 flex justify-center pointer-events-none">
-<div class="glass-stats rounded-full px-8 py-4 flex flex-wrap justify-center items-center gap-8 md:gap-16 pointer-events-auto shadow-2xl">
-<div class="flex flex-col items-center">
-<span class="text-2xl font-bold text-primary text-glow">10k+</span>
-<span class="text-xs uppercase tracking-wider text-gray-400 font-bold">New Jobs</span>
+    <div class="glass-stats rounded-full px-8 py-4 flex flex-wrap justify-center items-center gap-8 md:gap-16 pointer-events-auto shadow-2xl">
+        <div class="flex flex-col items-center">
+            <span class="text-2xl font-bold text-primary text-glow">10k+</span>
+            <span class="text-xs uppercase tracking-wider text-gray-400 font-bold">New Jobs</span>
+        </div>
+        <div class="w-px h-8 bg-white/20"></div>
+        <div class="flex flex-col items-center">
+            <span class="text-2xl font-bold text-white">500+</span>
+            <span class="text-xs uppercase tracking-wider text-gray-400 font-bold">Startups</span>
+        </div>
+        <div class="w-px h-8 bg-white/20 hidden sm:block"></div>
+        <div class="flex flex-col items-center hidden sm:flex">
+            <span class="text-2xl font-bold text-white">24h</span>
+            <span class="text-xs uppercase tracking-wider text-gray-400 font-bold">Avg Response</span>
+        </div>
+    </div>
 </div>
-<div class="w-px h-8 bg-white/20"></div>
-<div class="flex flex-col items-center">
-<span class="text-2xl font-bold text-white">500+</span>
-<span class="text-xs uppercase tracking-wider text-gray-400 font-bold">Startups</span>
-</div>
-<div class="w-px h-8 bg-white/20 hidden sm:block"></div>
-<div class="flex flex-col items-center hidden sm:flex">
-<span class="text-2xl font-bold text-white">24h</span>
-<span class="text-xs uppercase tracking-wider text-gray-400 font-bold">Avg Response</span>
-</div>
-</div>
-</div>
-</body></html>
+{% endblock %}

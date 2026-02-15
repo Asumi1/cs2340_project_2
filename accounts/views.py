@@ -1,7 +1,39 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, logout
+from .forms import CustomUserCreationForm, CustomAuthenticationForm
+from .models import JobSeekerProfile, RecruiterProfile, CustomUser
 
 def signup_view(request):
-    return render(request, "accounts/signup.html")
+    if request.method == "POST":
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Create the corresponding profile based on role
+            if user.role == CustomUser.Role.JOBSEEKER:
+                JobSeekerProfile.objects.create(user=user)
+            elif user.role == CustomUser.Role.RECRUITER:
+                company = form.cleaned_data.get("company_name", "Pending Company Name")
+                RecruiterProfile.objects.create(user=user, company_name=company)
+            
+            login(request, user)
+            return redirect("home")
+    else:
+        form = CustomUserCreationForm()
+    return render(request, "accounts/signup.html", {"form": form})
 
 def login_view(request):
-    return render(request, "accounts/login.html")
+    if request.method == "POST":
+        form = CustomAuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            if "next" in request.POST:
+                return redirect(request.POST.get("next"))
+            return redirect("home")
+    else:
+        form = CustomAuthenticationForm()
+    return render(request, "accounts/login.html", {"form": form})
+
+def logout_view(request):
+    logout(request)
+    return redirect("home")
