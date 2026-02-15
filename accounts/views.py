@@ -16,6 +16,12 @@ def signup_view(request):
                 RecruiterProfile.objects.create(user=user, company_name=company)
             
             login(request, user)
+            
+            # Redirect based on role
+            if user.role == CustomUser.Role.RECRUITER:
+                return redirect("recruiter_dashboard")
+            elif user.role == CustomUser.Role.JOBSEEKER:
+                return redirect("jobseeker_dashboard")
             return redirect("home")
     else:
         form = CustomUserCreationForm()
@@ -29,6 +35,12 @@ def login_view(request):
             login(request, user)
             if "next" in request.POST:
                 return redirect(request.POST.get("next"))
+            
+            # Redirect based on role
+            if user.role == CustomUser.Role.RECRUITER:
+                return redirect("recruiter_dashboard")
+            elif user.role == CustomUser.Role.JOBSEEKER:
+                return redirect("jobseeker_dashboard")
             return redirect("home")
     else:
         form = CustomAuthenticationForm()

@@ -1,239 +1,380 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="globals.css" />
-    <link rel="stylesheet" href="styleguide.css" />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="main-content-margin">
-      <div class="main-content">
-        <div class="welcome-section">
-          <div class="container">
-            <div class="div"><div class="text-wrapper">Thursday, Oct 24th</div></div>
-            <div class="div"></div>
-          </div>
-          <button class="button-wrapper">
-            <button class="button">
-              <div class="icon-wrapper">
-                <div class="icon"><img class="vector" src="img/vector-3.svg" /></div>
-              </div>
-              <div class="text-wrapper-2">Edit Profile</div>
-            </button>
-          </button>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}MintMatch Recruiter Overview{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+        darkMode: "class",
+        theme: {
+            extend: {
+                colors: {
+                    "primary": "#06f9bc",
+                    "background-light": "#f5f8f8",
+                    "background-dark": "#0f231e",
+                    "mint-dark": "#05c796",
+                    "mint-pale": "#e0fffa",
+                    "charcoal": "#1e293b",
+                    "charcoal-light": "#475569"
+                },
+                fontFamily: {
+                    "display": ["Manrope", "sans-serif"]
+                },
+                borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                backdropBlur: {
+                    'xs': '2px',
+                }
+            },
+        },
+    }
+</script>
+<style>
+    /* Custom styles for specific Bento Glass effects */
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 32px 0 rgba(6, 249, 188, 0.05);
+    }
+    
+    .dark .glass-panel {
+        background: rgba(15, 35, 30, 0.6);
+        border: 1px solid rgba(6, 249, 188, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .glass-nav {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        box-shadow: 0 4px 20px -2px rgba(6, 249, 188, 0.15);
+    }
+
+    .dark .glass-nav {
+        background: rgba(15, 35, 30, 0.85);
+        border: 1px solid rgba(6, 249, 188, 0.1);
+    }
+
+    /* Sparkline animation approximation */
+    @keyframes draw {
+        from { stroke-dashoffset: 1000; }
+        to { stroke-dashoffset: 0; }
+    }
+    
+    .sparkline-path {
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 0;
+        animation: draw 2s ease-out forwards;
+    }
+
+    .hover-lift {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px -4px rgba(6, 249, 188, 0.15);
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}bg-background-light dark:bg-background-dark font-display text-charcoal dark:text-gray-100 min-h-screen relative overflow-x-hidden transition-colors duration-300{% endblock %}
+
+{% block content %}
+<!-- Ambient Background Gradient Blobs -->
+<div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+    <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 dark:bg-primary/5 rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-[100px]"></div>
+</div>
+
+<!-- Floating Navigation -->
+<nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-5xl glass-nav rounded-full px-6 py-3 flex items-center justify-between">
+    <!-- Logo -->
+    <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
+            <span class="material-icons text-charcoal text-lg font-bold">bolt</span>
         </div>
-        <div class="bento-grid-layout">
-          <div class="element-main-profile-card">
-            <div class="decorative-gradient"></div>
-            <div class="container-2">
-              <div class="container-3">
-                <div class="image-shadow"></div>
-                <div class="background-border">
-                  <div class="container-4">
-                    <div class="background"></div>
-                    <div class="background-2"></div>
-                  </div>
-                  <div class="text-wrapper-3">Open to work</div>
-                </div>
-              </div>
-              <div class="container-5">
-                <div class="heading"><div class="text-wrapper-4">Alex Morgan</div></div>
-                <div class="div-wrapper"><p class="p">Senior Product Designer based in San Francisco, CA</p></div>
-                <div class="passionate-about-wrapper">
-                  <p class="passionate-about">
-                    Passionate about building accessible design systems and crafting<br />intuitive user experiences for
-                    complex SaaS products.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="margin">
-              <div class="horizontal-border">
-                <div class="container-6">
-                  <div class="div"><div class="text-wrapper-5">EXPERIENCE</div></div>
-                  <div class="div"><div class="text-wrapper-6">5 Years</div></div>
-                </div>
-                <div class="vertical-divider"></div>
-                <div class="container-6">
-                  <div class="div"><div class="text-wrapper-5">LEVEL</div></div>
-                  <div class="div"><div class="text-wrapper-6">Senior</div></div>
-                </div>
-                <div class="vertical-divider"></div>
-                <div class="container-7">
-                  <div class="div"><div class="text-wrapper-5">PORTFOLIO</div></div>
-                  <div class="link">
-                    <div class="text-wrapper-7">alex.design</div>
-                    <div class="container-8">
-                      <div class="vector-wrapper"><img class="img" src="img/vector.svg" /></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="element-application">
-            <div class="container-wrapper">
-              <div class="container-9">
-                <div class="div-2"><div class="text-wrapper-8">Active Applications</div></div>
-                <div class="button-2">
-                  <div class="container-8">
-                    <div class="vector-wrapper"><img class="vector-2" src="img/vector-10.svg" /></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="container-10">
-              <div class="item">
-                <div class="container-11">
-                  <div class="background-shadow">
-                    <div class="div-2">
-                      <div class="img-wrapper"><img class="vector-3" src="img/vector-6.svg" /></div>
-                    </div>
-                  </div>
-                  <div class="div-2">
-                    <div class="div"><div class="text-wrapper-9">Airbnb</div></div>
-                    <div class="div"><div class="text-wrapper-10">Senior UX Designer</div></div>
-                  </div>
-                </div>
-                <div class="container-12">
-                  <div class="in-review-wrapper"><div class="in-review">IN REVIEW</div></div>
-                  <div class="div-2"><div class="text-wrapper-11">2d ago</div></div>
-                </div>
-              </div>
-              <div class="item-2">
-                <div class="overlay"></div>
-                <div class="container-13">
-                  <div class="background-shadow">
-                    <div class="div-2">
-                      <div class="img-wrapper"><img class="vector-4" src="img/image.svg" /></div>
-                    </div>
-                  </div>
-                  <div class="div-2">
-                    <div class="div"><div class="text-wrapper-9">Google</div></div>
-                    <div class="div"><div class="text-wrapper-10">Frontend Dev</div></div>
-                  </div>
-                </div>
-                <div class="container-14">
-                  <div class="overlay-2">
-                    <div class="background-3"></div>
-                    <div class="interview">INTERVIEW</div>
-                  </div>
-                  <div class="div-2"><div class="text-wrapper-11">Today</div></div>
-                </div>
-              </div>
-              <div class="item">
-                <div class="container-11">
-                  <div class="background-shadow">
-                    <div class="div-2">
-                      <div class="img-wrapper"><img class="vector-5" src="img/vector-5.svg" /></div>
-                    </div>
-                  </div>
-                  <div class="div-2">
-                    <div class="div"><div class="text-wrapper-9">Netflix</div></div>
-                    <div class="div"><div class="text-wrapper-10">Product Lead</div></div>
-                  </div>
-                </div>
-                <div class="container-12">
-                  <div class="applied-wrapper"><div class="applied">APPLIED</div></div>
-                  <div class="div-2"><div class="text-wrapper-11">5d ago</div></div>
-                </div>
-              </div>
-              <div class="item-3">
-                <div class="container-11">
-                  <div class="background-shadow">
-                    <div class="div-2">
-                      <div class="img-wrapper"><img class="vector-6" src="img/vector-11.svg" /></div>
-                    </div>
-                  </div>
-                  <div class="div-2">
-                    <div class="div"><div class="text-wrapper-9">Shopify</div></div>
-                    <div class="div"><div class="text-wrapper-10">UX Engineer</div></div>
-                  </div>
-                </div>
-                <div class="container-15">
-                  <div class="rejected-wrapper"><div class="rejected">REJECTED</div></div>
-                  <div class="div-2"><div class="text-wrapper-11">1w ago</div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="element-skills-cloud-spans">
-            <div class="margin-2">
-              <div class="container-16">
-                <div class="div-2">
-                  <div class="img-wrapper"><img class="vector-7" src="img/vector-7.svg" /></div>
-                </div>
-                <div class="div-2"><div class="text-wrapper-12">Top Skills</div></div>
-              </div>
-            </div>
-            <div class="container-17">
-              <div class="background-border-2"><div class="text-wrapper-13">Figma</div></div>
-              <div class="background-border-3"><div class="text-wrapper-13">React</div></div>
-              <div class="overlay-border"><div class="text-wrapper-14">UI/UX</div></div>
-              <div class="background-border-4"><div class="text-wrapper-13">Prototyping</div></div>
-              <div class="background-border-5"><div class="text-wrapper-13">HTML/CSS</div></div>
-              <div class="background-border-6"><div class="text-wrapper-13">+5 more</div></div>
-            </div>
-          </div>
-          <div class="element-education-mini">
-            <div class="background-4"></div>
-            <div class="container-18">
-              <div class="background-5">
-                <div class="div-2">
-                  <div class="img-wrapper"><img class="vector-8" src="img/vector-8.svg" /></div>
-                </div>
-              </div>
-              <div class="education-wrapper"><div class="education">EDUCATION</div></div>
-              <div class="master-s-in-HCI-wrapper"><div class="master-s-in-HCI">Master&#39;s in HCI</div></div>
-              <div class="container-19"><div class="text-wrapper-10">Carnegie Mellon Univ.</div></div>
-            </div>
-          </div>
-          <div class="element-profile-views">
-            <div class="container-20">
-              <div class="div"><div class="profile-views">PROFILE VIEWS</div></div>
-              <div class="container-21">
-                <div class="div-2"><div class="text-wrapper-15">128</div></div>
-                <div class="background-wrapper">
-                  <div class="background-6"><div class="text-wrapper-16">+12%</div></div>
-                </div>
-              </div>
-            </div>
-            <img class="abstract-chart-bars" src="img/abstract-chart-bars-margin.svg" />
-          </div>
-          <div class="element-one-click-apply">
-            <div class="gradient"></div>
-            <div class="button-3">
-              <div class="div-2">
-                <div class="premium-feature-wrapper"><div class="premium-feature">PREMIUM FEATURE</div></div>
-                <div class="container-22">
-                  <div class="text-wrapper-17">One-Click Apply</div>
-                  <div class="div-2">
-                    <div class="icon-2"><img class="vector-9" src="img/vector-9.svg" /></div>
-                  </div>
-                </div>
-              </div>
-              <div class="overlay-overlayblur">
-                <div class="container-8">
-                  <div class="img-wrapper"><img class="vector-10" src="img/vector-2.svg" /></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="element-map-location-spans">
-            <img class="image" src="img/image.png" />
-            <div class="gradient-2"></div>
-            <div class="container-23"><div class="text-wrapper-18">Open to relocation</div></div>
-            <div class="overlay-shadow">
-              <div class="div-2">
-                <div class="vector-wrapper"><img class="vector-11" src="img/vector-4.svg" /></div>
-              </div>
-              <div class="text-wrapper-19">San Francisco</div>
-            </div>
-          </div>
-        </div>
-      </div>
+        <span class="font-bold text-lg tracking-tight text-charcoal dark:text-white">MintMatch</span>
     </div>
-  </body>
-</html>
+    <!-- Links -->
+    <div class="hidden md:flex items-center gap-1 bg-gray-100/50 dark:bg-black/20 p-1 rounded-full">
+        <a class="px-5 py-2 bg-white dark:bg-white/10 text-charcoal dark:text-white font-semibold rounded-full shadow-sm text-sm transition-all" href="#">Overview</a>
+        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="{% url 'job_create' %}">Post Job</a>
+        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="#">Candidates</a>
+        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="#">Messages</a>
+    </div>
+    <!-- Profile & Actions -->
+    <div class="flex items-center gap-4">
+        <button class="relative p-2 text-charcoal-light dark:text-gray-300 hover:text-primary transition-colors">
+            <span class="material-icons">notifications_none</span>
+            <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+        </button>
+        <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white dark:border-white/10 shadow-md">
+            <img alt="Recruiter profile photo" class="w-full h-full object-cover" src="{% static 'img/default-profile.png' %}" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDwOIPtNMrvGhOGc2-dV9q4kK2lvXwblEC-FzlB0x8SrLEDezo-1NGW72kJDdn8W99WhEaxdoxsLmd-Y6zhlw4tjUP4XIqNqYAURU_9Yu77URi86sqXZ5d7KJpDnb0CcYqw2ez9lbl3g3cSPug1WHXxjqNs18OtToJmLNF8bEne42LqStNzCvwm75vtrJXncNg1OmrYx3_96ukmYKROA2r2qgHbZ-Gkn4RRt18IppGeyK6NgiDQckUrqYVjnRDJ7xGkdO4Mm1n__vI'"/>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content Area -->
+<main class="pt-32 pb-12 px-4 md:px-8 max-w-7xl mx-auto">
+    <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <h1 class="text-4xl font-extrabold text-charcoal dark:text-white mb-2 tracking-tight">Welcome back, {{ user.first_name|default:user.username }}!</h1>
+            <p class="text-charcoal-light dark:text-gray-400 font-medium">Here's what's happening with your hiring pipeline today.</p>
+        </div>
+        <button onclick="location.href='{% url 'job_create' %}'" class="group flex items-center gap-2 bg-primary hover:bg-mint-dark text-charcoal font-bold px-6 py-3 rounded-full transition-all shadow-lg shadow-primary/20 hover:shadow-primary/40">
+            <span class="material-icons text-lg group-hover:rotate-90 transition-transform">add</span>
+            Create New Requisition
+        </button>
+    </header>
+
+    <!-- Bento Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-min">
+        
+        <!-- 1. Hiring Overview (Large Span) -->
+        <div class="col-span-1 md:col-span-8 glass-panel rounded-lg p-8 hover-lift flex flex-col justify-between min-h-[340px]">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h2 class="text-xl font-bold text-charcoal dark:text-white">Hiring Overview</h2>
+                    <p class="text-sm text-charcoal-light dark:text-gray-400 mt-1">Last 30 days performance</p>
+                </div>
+                <select class="bg-white/50 dark:bg-white/5 border-none text-sm font-medium rounded-full px-4 py-2 text-charcoal dark:text-white focus:ring-2 focus:ring-primary">
+                    <option>This Month</option>
+                    <option>Last Quarter</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-4">
+                <!-- Stat 1 -->
+                <div>
+                    <div class="text-charcoal-light dark:text-gray-400 text-sm font-medium mb-1">Total Applicants</div>
+                    <div class="text-4xl font-extrabold text-charcoal dark:text-white mb-2">1,248</div>
+                    <div class="flex items-center text-green-600 dark:text-primary text-sm font-bold bg-green-100 dark:bg-primary/20 w-fit px-2 py-1 rounded-full">
+                        <span class="material-icons text-sm mr-1">trending_up</span> +12%
+                    </div>
+                </div>
+                <!-- Stat 2 -->
+                <div>
+                    <div class="text-charcoal-light dark:text-gray-400 text-sm font-medium mb-1">Interviews Set</div>
+                    <div class="text-4xl font-extrabold text-charcoal dark:text-white mb-2">86</div>
+                    <div class="flex items-center text-green-600 dark:text-primary text-sm font-bold bg-green-100 dark:bg-primary/20 w-fit px-2 py-1 rounded-full">
+                        <span class="material-icons text-sm mr-1">trending_up</span> +5%
+                    </div>
+                </div>
+                <!-- Stat 3 -->
+                <div>
+                    <div class="text-charcoal-light dark:text-gray-400 text-sm font-medium mb-1">Avg. Time to Hire</div>
+                    <div class="text-4xl font-extrabold text-charcoal dark:text-white mb-2">18d</div>
+                    <div class="flex items-center text-charcoal-light dark:text-gray-400 text-sm font-bold bg-gray-100 dark:bg-gray-800 w-fit px-2 py-1 rounded-full">
+                        <span class="material-icons text-sm mr-1">remove</span> 0%
+                    </div>
+                </div>
+            </div>
+            <!-- Sparkline Chart Area -->
+            <div class="relative h-32 w-full mt-4">
+                <svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 800 100">
+                    <defs>
+                        <lineargradient id="gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#06f9bc;stop-opacity:0.3"></stop>
+                            <stop offset="100%" style="stop-color:#06f9bc;stop-opacity:0"></stop>
+                        </lineargradient>
+                    </defs>
+                    <!-- Area -->
+                    <path d="M0,80 Q80,70 160,50 T320,60 T480,30 T640,40 T800,10 V100 H0 Z" fill="url(#gradient)"></path>
+                    <!-- Line -->
+                    <path class="sparkline-path" d="M0,80 Q80,70 160,50 T320,60 T480,30 T640,40 T800,10" fill="none" stroke="#06f9bc" stroke-linecap="round" stroke-width="3"></path>
+                </svg>
+                <!-- Tooltip approximation -->
+                <div class="absolute top-[10%] left-[80%] -translate-x-1/2 bg-charcoal text-white text-xs font-bold py-1 px-3 rounded-full shadow-xl">
+                    84 Applicants
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-charcoal"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Pending Tasks (Small Square) -->
+        <div class="col-span-1 md:col-span-4 glass-panel rounded-lg p-6 hover-lift flex flex-col h-full">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-charcoal dark:text-white">Pending Tasks</h2>
+                <span class="bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400 text-xs font-bold px-2 py-1 rounded-full">3 Urgent</span>
+            </div>
+            <div class="space-y-3 flex-grow overflow-y-auto pr-1 custom-scrollbar">
+                <!-- Task Item -->
+                <div class="flex items-start gap-3 p-3 rounded-xl bg-white/40 dark:bg-white/5 border border-white/50 dark:border-white/10">
+                    <div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center mt-0.5 cursor-pointer">
+                        <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 hover:opacity-100 transition-opacity"></div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-charcoal dark:text-white">Offer letter for Mike T.</p>
+                        <p class="text-xs text-charcoal-light dark:text-gray-400">Due today by 5:00 PM</p>
+                    </div>
+                </div>
+                <!-- Task Item -->
+                <div class="flex items-start gap-3 p-3 rounded-xl bg-white/40 dark:bg-white/5 border border-white/50 dark:border-white/10">
+                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center mt-0.5 cursor-pointer hover:border-primary">
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-charcoal dark:text-white">Review design portfolio</p>
+                        <p class="text-xs text-charcoal-light dark:text-gray-400">Senior Product Designer Role</p>
+                    </div>
+                </div>
+                <!-- Task Item -->
+                <div class="flex items-start gap-3 p-3 rounded-xl bg-white/40 dark:bg-white/5 border border-white/50 dark:border-white/10">
+                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center mt-0.5 cursor-pointer hover:border-primary">
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-charcoal dark:text-white">Interview feedback: Sarah</p>
+                        <p class="text-xs text-charcoal-light dark:text-gray-400">Pending from Engineering Lead</p>
+                    </div>
+                </div>
+            </div>
+            <button class="w-full mt-4 py-2 text-sm font-bold text-primary hover:bg-primary/10 rounded-full transition-colors">View All Tasks</button>
+        </div>
+
+        <!-- 3. Live Jobs (Dynamic) -->
+        <div class="col-span-1 md:col-span-4 glass-panel rounded-lg p-6 hover-lift">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg font-bold text-charcoal dark:text-white">Live Jobs</h2>
+                <button class="text-primary hover:text-mint-dark transition-colors"><span class="material-icons">more_horiz</span></button>
+            </div>
+            <div class="space-y-4">
+                {% if jobs %}
+                    {% for job in jobs|slice:":3" %}
+                    <!-- Dynamic Job Card -->
+                    <div onclick="location.href='{% url 'job_edit' job.pk %}'" class="group p-4 bg-white/60 dark:bg-white/5 rounded-2xl border border-transparent hover:border-primary/30 transition-all cursor-pointer shadow-sm hover:shadow-md">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full">{{ job.get_job_type_display }}</span>
+                            {% if job.is_active %}
+                            <span class="bg-primary/20 text-teal-800 dark:text-primary text-[10px] font-bold px-2 py-1 rounded-full">Active</span>
+                            {% endif %}
+                        </div>
+                        <h3 class="font-bold text-charcoal dark:text-white group-hover:text-primary transition-colors text-lg truncate">{{ job.title }}</h3>
+                        <div class="flex items-center gap-3 mt-3 text-xs text-charcoal-light dark:text-gray-400">
+                            <span class="flex items-center gap-1"><span class="material-icons text-sm">place</span> {{ job.location }}</span>
+                            <span class="flex items-center gap-1"><span class="material-icons text-sm">people</span> 0 Applicants</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if jobs.count > 3 %}
+                    <div class="text-center mt-4">
+                        <a href="#" class="text-sm text-primary font-bold hover:underline">View All {{ jobs.count }} Jobs</a>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center p-6 text-charcoal-light dark:text-gray-400">
+                        <p class="text-sm">No active jobs found.</p>
+                        <a href="{% url 'job_create' %}" class="text-primary font-bold text-sm mt-2 inline-block">Post your first job</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 4. Top Candidates (Medium Horizontal) -->
+        <div class="col-span-1 md:col-span-8 glass-panel rounded-lg p-6 hover-lift">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg font-bold text-charcoal dark:text-white">Top Candidates</h2>
+                <a class="text-sm font-bold text-primary hover:underline" href="#">View All Candidates</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Candidate 1 -->
+                <div class="p-4 rounded-2xl bg-gradient-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5 border border-white/60 dark:border-white/10 flex items-center gap-4 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-150"></div>
+                    <img alt="Portrait of male candidate" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-md z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAE_AHrq_dTuGbBm-nZ1ceiChhAk3UdS3V4boWRwtv9BItsl2MvYP2l7ky7GKfMrYdzoVXupvNHkcjFFUgxvy-cqNvHJnYOL7Yu-KdcJBuwe4BAKXapdbtyo6HPgC77eSMlITRbTv-bw4VqUy7iE1pAT_2pcAXc9D4blfhCm9WOTbqIiMLVd2DWCqSF_8zBVZADWAZOxIcXGVeSMbkQbp33BATVAzfMAxByGe33J5RRc5QEj-JfKAGXV-3qSCB2RnWVlsuVnInvR0I"/>
+                    <div class="z-10">
+                        <h4 class="font-bold text-charcoal dark:text-white text-sm">James Wilson</h4>
+                        <p class="text-xs text-charcoal-light dark:text-gray-400 mb-1">Frontend Dev</p>
+                        <span class="inline-flex items-center gap-1 bg-charcoal text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            <span class="text-primary">98%</span> Match
+                        </span>
+                    </div>
+                </div>
+                <!-- Candidate 2 -->
+                <div class="p-4 rounded-2xl bg-gradient-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5 border border-white/60 dark:border-white/10 flex items-center gap-4 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-150"></div>
+                    <img alt="Portrait of female candidate" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-md z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKVfrX8IFW-lrHDjdtozD0TfwXwfI5FWSavp5uu2PK1exEwN4kEdPTOhPrlX1inkn74DXJu8jzBuMolEeWOYdCF2_dwox5GmoSDAbvU_LIgihAyV-kWxwqiGXjlr-B-7cAHePCGUQegb135LrGU8LNSomxvuCQoyShMm6GO_2bxQ1W3LSPrBuY6qPhXlojM4wDbeKdKS2Fr7auW0cnOQvoNI8F38XECNuxqXD7Mmt9aFDcmazee8Ts0eCOxzsj8tVeVy5kiicZFog"/>
+                    <div class="z-10">
+                        <h4 class="font-bold text-charcoal dark:text-white text-sm">Elena Rodriguez</h4>
+                        <p class="text-xs text-charcoal-light dark:text-gray-400 mb-1">Product Designer</p>
+                        <span class="inline-flex items-center gap-1 bg-charcoal text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            <span class="text-primary">95%</span> Match
+                        </span>
+                    </div>
+                </div>
+                <!-- Candidate 3 -->
+                <div class="p-4 rounded-2xl bg-gradient-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5 border border-white/60 dark:border-white/10 flex items-center gap-4 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-150"></div>
+                    <img alt="Portrait of male candidate" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-md z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpigRkM3kpLyBkGYYUt-MZ0OFXSJXywDEgG_SXiAj3Iwy-8Y5DpreWF7BHy1LEBkStcwuC2WUJ-QFPIZrX-uOEqWxa0PR8mXgpQ9i3SMYdqYuoiZkITUQQ4Ran71UIZBBhDiJI8jqlwDgf1EcTqTNWmRs2nUpB7nnpXmLRMR48EecG9Jm7MDLBuBiUkev6PLhRjVE94pAEhPGBH0vw4srtQxGlAaPwKomI3BC8msE2spQEV_bI3mP9WhWLVU1u57fLYc-g1wnggak"/>
+                    <div class="z-10">
+                        <h4 class="font-bold text-charcoal dark:text-white text-sm">Marcus Chen</h4>
+                        <p class="text-xs text-charcoal-light dark:text-gray-400 mb-1">Marketing Mgr</p>
+                        <span class="inline-flex items-center gap-1 bg-charcoal text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                            <span class="text-primary">92%</span> Match
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Upcoming Interviews (Bottom Full Width or Span) -->
+        <div class="col-span-1 md:col-span-12 glass-panel rounded-lg p-6 hover-lift">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <h2 class="text-lg font-bold text-charcoal dark:text-white flex items-center gap-2">
+                    <span class="material-icons text-primary">event_available</span>
+                    Today's Schedule
+                </h2>
+                <div class="flex gap-2">
+                    <span class="text-xs font-bold text-charcoal-light dark:text-gray-400 bg-white/50 dark:bg-white/5 px-3 py-1.5 rounded-full border border-white/50 dark:border-white/10">Oct 24, 2023</span>
+                </div>
+            </div>
+            <div class="flex flex-nowrap overflow-x-auto gap-4 pb-2 custom-scrollbar">
+                <!-- Event 1 -->
+                <div class="min-w-[280px] p-4 bg-white/40 dark:bg-white/5 rounded-2xl border-l-4 border-primary flex flex-col gap-2">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-charcoal dark:text-white">10:00 AM - 10:45 AM</span>
+                        <span class="bg-white/80 dark:bg-black/40 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">Zoom</span>
+                    </div>
+                    <h4 class="font-bold text-charcoal dark:text-white">Technical Screen</h4>
+                    <div class="flex items-center gap-2">
+                        <img alt="Avatar" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAY4gqWh4uBDmmlYzvgbVbBPBiyBnqCkr8GjYojlz06Fb6tchEoZWiPNjxVoSJn0LxWLeFlbHQV8MtzoxxaPAz3-3pvdgFxUNCh0ojmxCjIQvZkVDixfeN6MBb5qZ5xmKjKh_9ptGvFLMOVt-rrgREBBHKD-KAOzGwh8VevKMNiNfprR4rA0578VgJ5aL7yd1FDixthXT4kJ8msj6P3g0IrIyyiRlkYLebh69KCfx8NHPlwwremtwlhrdPdwqGr0Sdzgpgr-5ZaE1A"/>
+                        <span class="text-xs text-charcoal-light dark:text-gray-300">Alex Morgan (React Dev)</span>
+                    </div>
+                </div>
+                <!-- Event 2 -->
+                <div class="min-w-[280px] p-4 bg-white/40 dark:bg-white/5 rounded-2xl border-l-4 border-purple-400 flex flex-col gap-2">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-charcoal dark:text-white">1:00 PM - 2:00 PM</span>
+                        <span class="bg-white/80 dark:bg-black/40 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">Office 3B</span>
+                    </div>
+                    <h4 class="font-bold text-charcoal dark:text-white">Culture Fit Interview</h4>
+                    <div class="flex items-center gap-2">
+                        <img alt="Avatar" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXrlZBWAr3DpAmj5cqoJYgf8bgyrLVzntLeOXznG4gs0mdO0izz6YF5e5M6-vlwiEOnMQfipUT-1QRF235SzWTs73tNMIHeqCTJ1Pfvk_dHMfvWzwuAzw0zqoTX7Z91g9ez4xIOwyazH6PF93ksYZED2jUSgTZtKm1C81IGoXgHj7NaD-eORpU6BJF8gQoHjQLBQe2XKXC-MAeXAcsvXy7DlCsLDeSVvITFe9EDqiFLQW9bOSSaQU-Kc79FLo_wjxprkzFwNwcLrE"/>
+                        <span class="text-xs text-charcoal-light dark:text-gray-300">Sarah Jenkins (Product)</span>
+                    </div>
+                </div>
+                <!-- Event 3 -->
+                <div class="min-w-[280px] p-4 bg-white/40 dark:bg-white/5 rounded-2xl border-l-4 border-orange-400 flex flex-col gap-2 opacity-60">
+                    <div class="flex justify-between items-start">
+                        <span class="text-xs font-bold text-charcoal dark:text-white">3:30 PM - 4:00 PM</span>
+                        <span class="bg-white/80 dark:bg-black/40 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">Call</span>
+                    </div>
+                    <h4 class="font-bold text-charcoal dark:text-white">Team Sync</h4>
+                    <div class="flex items-center gap-2">
+                        <div class="flex -space-x-2">
+                            <div class="w-6 h-6 rounded-full bg-gray-300 border-2 border-white"></div>
+                            <div class="w-6 h-6 rounded-full bg-gray-400 border-2 border-white"></div>
+                        </div>
+                        <span class="text-xs text-charcoal-light dark:text-gray-300">Hiring Committee</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+{% endblock %}
