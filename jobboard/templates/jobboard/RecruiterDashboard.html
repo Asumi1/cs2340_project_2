@@ -153,7 +153,7 @@
                 <!-- Stat 1 -->
                 <div>
                     <div class="text-charcoal-light dark:text-gray-400 text-sm font-medium mb-1">Total Applicants</div>
-                    <div class="text-4xl font-extrabold text-charcoal dark:text-white mb-2">1,248</div>
+                    <div class="text-4xl font-extrabold text-charcoal dark:text-white mb-2">{{ total_applicants }}</div>
                     <div class="flex items-center text-green-600 dark:text-primary text-sm font-bold bg-green-100 dark:bg-primary/20 w-fit px-2 py-1 rounded-full">
                         <span class="material-icons text-sm mr-1">trending_up</span> +12%
                     </div>
@@ -161,7 +161,7 @@
                 <!-- Stat 2 -->
                 <div>
                     <div class="text-charcoal-light dark:text-gray-400 text-sm font-medium mb-1">Interviews Set</div>
-                    <div class="text-4xl font-extrabold text-charcoal dark:text-white mb-2">86</div>
+                    <div class="text-4xl font-extrabold text-charcoal dark:text-white mb-2">{{ interviews_count }}</div>
                     <div class="flex items-center text-green-600 dark:text-primary text-sm font-bold bg-green-100 dark:bg-primary/20 w-fit px-2 py-1 rounded-full">
                         <span class="material-icons text-sm mr-1">trending_up</span> +5%
                     </div>
@@ -204,34 +204,23 @@
                 <span class="bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400 text-xs font-bold px-2 py-1 rounded-full">3 Urgent</span>
             </div>
             <div class="space-y-3 flex-grow overflow-y-auto pr-1 custom-scrollbar">
+                {% for app in pending_applications %}
                 <!-- Task Item -->
                 <div class="flex items-start gap-3 p-3 rounded-xl bg-white/40 dark:bg-white/5 border border-white/50 dark:border-white/10">
                     <div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center mt-0.5 cursor-pointer">
                         <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 hover:opacity-100 transition-opacity"></div>
                     </div>
                     <div>
-                        <p class="text-sm font-bold text-charcoal dark:text-white">Offer letter for Mike T.</p>
-                        <p class="text-xs text-charcoal-light dark:text-gray-400">Due today by 5:00 PM</p>
+                        <p class="text-sm font-bold text-charcoal dark:text-white">Review Application: {{ app.applicant.first_name|default:app.applicant.username }}</p>
+                        <p class="text-xs text-charcoal-light dark:text-gray-400">For {{ app.job.title }}</p>
+                        <p class="text-[10px] text-charcoal-light dark:text-gray-500 mt-1">Applied {{ app.applied_at|timesince }} ago</p>
                     </div>
                 </div>
-                <!-- Task Item -->
-                <div class="flex items-start gap-3 p-3 rounded-xl bg-white/40 dark:bg-white/5 border border-white/50 dark:border-white/10">
-                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center mt-0.5 cursor-pointer hover:border-primary">
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold text-charcoal dark:text-white">Review design portfolio</p>
-                        <p class="text-xs text-charcoal-light dark:text-gray-400">Senior Product Designer Role</p>
-                    </div>
+                {% empty %}
+                <div class="text-center p-4">
+                    <p class="text-sm text-charcoal-light dark:text-gray-400">All caught up! No pending applications.</p>
                 </div>
-                <!-- Task Item -->
-                <div class="flex items-start gap-3 p-3 rounded-xl bg-white/40 dark:bg-white/5 border border-white/50 dark:border-white/10">
-                    <div class="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center mt-0.5 cursor-pointer hover:border-primary">
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold text-charcoal dark:text-white">Interview feedback: Sarah</p>
-                        <p class="text-xs text-charcoal-light dark:text-gray-400">Pending from Engineering Lead</p>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
             <button class="w-full mt-4 py-2 text-sm font-bold text-primary hover:bg-primary/10 rounded-full transition-colors">View All Tasks</button>
         </div>
@@ -329,49 +318,30 @@
                     Today's Schedule
                 </h2>
                 <div class="flex gap-2">
-                    <span class="text-xs font-bold text-charcoal-light dark:text-gray-400 bg-white/50 dark:bg-white/5 px-3 py-1.5 rounded-full border border-white/50 dark:border-white/10">Oct 24, 2023</span>
+                    <span class="text-xs font-bold text-charcoal-light dark:text-gray-400 bg-white/50 dark:bg-white/5 px-3 py-1.5 rounded-full border border-white/50 dark:border-white/10">{{ today|date:"M d, Y" }}</span>
                 </div>
             </div>
             <div class="flex flex-nowrap overflow-x-auto gap-4 pb-2 custom-scrollbar">
-                <!-- Event 1 -->
+                {% for interview in todays_interviews %}
+                <!-- Event -->
                 <div class="min-w-[280px] p-4 bg-white/40 dark:bg-white/5 rounded-2xl border-l-4 border-primary flex flex-col gap-2">
                     <div class="flex justify-between items-start">
-                        <span class="text-xs font-bold text-charcoal dark:text-white">10:00 AM - 10:45 AM</span>
-                        <span class="bg-white/80 dark:bg-black/40 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">Zoom</span>
+                        <span class="text-xs font-bold text-charcoal dark:text-white">{{ interview.date_time|time:"g:i A" }}</span>
+                        <span class="bg-white/80 dark:bg-black/40 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">{{ interview.location }}</span>
                     </div>
-                    <h4 class="font-bold text-charcoal dark:text-white">Technical Screen</h4>
+                    <h4 class="font-bold text-charcoal dark:text-white">Interview: {{ interview.application.job.title|truncatechars:20 }}</h4>
                     <div class="flex items-center gap-2">
-                        <img alt="Avatar" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAY4gqWh4uBDmmlYzvgbVbBPBiyBnqCkr8GjYojlz06Fb6tchEoZWiPNjxVoSJn0LxWLeFlbHQV8MtzoxxaPAz3-3pvdgFxUNCh0ojmxCjIQvZkVDixfeN6MBb5qZ5xmKjKh_9ptGvFLMOVt-rrgREBBHKD-KAOzGwh8VevKMNiNfprR4rA0578VgJ5aL7yd1FDixthXT4kJ8msj6P3g0IrIyyiRlkYLebh69KCfx8NHPlwwremtwlhrdPdwqGr0Sdzgpgr-5ZaE1A"/>
-                        <span class="text-xs text-charcoal-light dark:text-gray-300">Alex Morgan (React Dev)</span>
-                    </div>
-                </div>
-                <!-- Event 2 -->
-                <div class="min-w-[280px] p-4 bg-white/40 dark:bg-white/5 rounded-2xl border-l-4 border-purple-400 flex flex-col gap-2">
-                    <div class="flex justify-between items-start">
-                        <span class="text-xs font-bold text-charcoal dark:text-white">1:00 PM - 2:00 PM</span>
-                        <span class="bg-white/80 dark:bg-black/40 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">Office 3B</span>
-                    </div>
-                    <h4 class="font-bold text-charcoal dark:text-white">Culture Fit Interview</h4>
-                    <div class="flex items-center gap-2">
-                        <img alt="Avatar" class="w-6 h-6 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXrlZBWAr3DpAmj5cqoJYgf8bgyrLVzntLeOXznG4gs0mdO0izz6YF5e5M6-vlwiEOnMQfipUT-1QRF235SzWTs73tNMIHeqCTJ1Pfvk_dHMfvWzwuAzw0zqoTX7Z91g9ez4xIOwyazH6PF93ksYZED2jUSgTZtKm1C81IGoXgHj7NaD-eORpU6BJF8gQoHjQLBQe2XKXC-MAeXAcsvXy7DlCsLDeSVvITFe9EDqiFLQW9bOSSaQU-Kc79FLo_wjxprkzFwNwcLrE"/>
-                        <span class="text-xs text-charcoal-light dark:text-gray-300">Sarah Jenkins (Product)</span>
-                    </div>
-                </div>
-                <!-- Event 3 -->
-                <div class="min-w-[280px] p-4 bg-white/40 dark:bg-white/5 rounded-2xl border-l-4 border-orange-400 flex flex-col gap-2 opacity-60">
-                    <div class="flex justify-between items-start">
-                        <span class="text-xs font-bold text-charcoal dark:text-white">3:30 PM - 4:00 PM</span>
-                        <span class="bg-white/80 dark:bg-black/40 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">Call</span>
-                    </div>
-                    <h4 class="font-bold text-charcoal dark:text-white">Team Sync</h4>
-                    <div class="flex items-center gap-2">
-                        <div class="flex -space-x-2">
-                            <div class="w-6 h-6 rounded-full bg-gray-300 border-2 border-white"></div>
-                            <div class="w-6 h-6 rounded-full bg-gray-400 border-2 border-white"></div>
+                         <div class="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">
+                            {{ interview.application.applicant.first_name|first|default:"U" }}
                         </div>
-                        <span class="text-xs text-charcoal-light dark:text-gray-300">Hiring Committee</span>
+                        <span class="text-xs text-charcoal-light dark:text-gray-300">{{ interview.application.applicant.first_name }} {{ interview.application.applicant.last_name }}</span>
                     </div>
                 </div>
+                {% empty %}
+                <div class="w-full text-center py-4">
+                    <p class="text-sm text-charcoal-light dark:text-gray-400">No interviews scheduled for today.</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
 

@@ -22,3 +22,40 @@ class Job(models.Model):
 
     def __str__(self):
         return f"{self.title} at {self.company_name}"
+
+class Application(models.Model):
+    STATUS_CHOICES = (
+        ('APPLIED', 'Applied'),
+        ('SCREENING', 'Screening'),
+        ('INTERVIEW', 'Interview'),
+        ('OFFER', 'Offer'),
+        ('HIRED', 'Hired'),
+        ('REJECTED', 'Rejected'),
+    )
+
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
+    applicant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='applications')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='APPLIED')
+    cover_letter = models.TextField(blank=True, null=True)
+    resume = models.FileField(upload_to='resumes/', blank=True, null=True)
+    applied_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('job', 'applicant')
+        ordering = ['-applied_at']
+
+    def __str__(self):
+        return f"{self.applicant} applied to {self.job}"
+
+class Interview(models.Model):
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='interviews')
+    recruiter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='conducted_interviews')
+    date_time = models.DateTimeField()
+    location = models.CharField(max_length=255, default='Remote')
+    notes = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['date_time']
+
+    def __str__(self):
+        return f"Interview for {self.application.job.title} with {self.application.applicant} on {self.date_time}"

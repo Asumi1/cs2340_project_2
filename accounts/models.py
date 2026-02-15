@@ -31,6 +31,11 @@ class RecruiterProfile(models.Model):
 class JobSeekerProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     major = models.CharField(max_length=120, blank=True)
+    bio = models.TextField(blank=True)
+    skills = models.TextField(blank=True, help_text="Comma-separated skills")
+    linkedin_url = models.URLField(max_length=200, blank=True)
+    portfolio_url = models.URLField(max_length=200, blank=True)
+    resume_file = models.FileField(upload_to='resumes/', blank=True, null=True)
 
     def clean(self):
         if hasattr(self.user, "recruiterprofile"):

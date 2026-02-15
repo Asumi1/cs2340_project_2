@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Job
+from .models import Job, Application, Interview
 from .forms import JobForm
-from accounts.models import CustomUser, RecruiterProfile
+from accounts.models import CustomUser, RecruiterProfile, JobSeekerProfile
+from django.db.models import Q
+from django.utils import timezone
 
 # Helper to ensure only recruiters access certain views
 def recruiter_required(view_func):
@@ -34,7 +36,34 @@ def jobseeker_search(request):
 @recruiter_required
 def recruiter_dashboard(request):
     jobs = Job.objects.filter(recruiter=request.user).order_by('-created_at')
-    return render(request, "jobboard/RecruiterDashboard.html", {'jobs': jobs})
+    
+    # Stats for dashboard
+    total_applicants = Application.objects.filter(job__recruiter=request.user).count()
+    interviews_count = Application.objects.filter(job__recruiter=request.user, status='INTERVIEW').count()
+    
+    # Pending tasks (Applications needing review)
+    pending_applications = Application.objects.filter(
+        job__recruiter=request.user, 
+        status='APPLIED'
+    ).order_by('applied_at')[:5]
+
+    # Upcoming Interviews (Today)
+    today = timezone.now().date()
+    # Filter strictly for today for the "Today's Schedule" section
+    todays_interviews = Interview.objects.filter(
+        recruiter=request.user, 
+        date_time__date=today
+    ).order_by('date_time')
+
+    context = {
+        'jobs': jobs,
+        'total_applicants': total_applicants,
+        'interviews_count': interviews_count,
+        'pending_applications': pending_applications,
+        'todays_interviews': todays_interviews,
+        'today': today,
+    }
+    return render(request, "jobboard/RecruiterDashboard.html", context)
 
 @login_required
 @recruiter_required
@@ -91,5 +120,18 @@ def recruiter_messaging(request):
     return render(request, "jobboard/RecruiterMessaging.html")
 
 @login_required
+@recruiter_required
 def recruiter_talent_search(request):
-    return render(request, "jobboard/RecruiterTalentSearch.html")
+    query = request.GET.get('q', '')
+    profiles = JobSeekerProfile.objects.all()
+
+    if query:
+        profiles = profiles.filter(
+            Q(user__first_name__icontains=query) |
+            Q(user__last_name__icontains=query) |
+            Q(skills__icontains=query) |
+            Q(major__icontains=query)
+        )
+
+    context = {'profiles': profiles, 'query': query}
+    return render(request, "jobboard/RecruiterTalentSearch.html", context)
