@@ -86,45 +86,44 @@
 {% block body_class %}bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-display min-h-screen selection:bg-primary selection:text-background-dark flex overflow-hidden{% endblock %}
 
 {% block content %}
-<!-- Floating Navigation Sidebar -->
-<nav class="hidden md:flex flex-col items-center py-8 px-4 w-24 h-screen fixed left-0 top-0 z-50">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-7xl glass-panel rounded-full px-6 py-4 flex items-center justify-between shadow-glass">
     <!-- Logo -->
-    <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-10 shadow-lg shadow-primary/30">
-        <span class="material-icons text-background-dark text-2xl">eco</span>
+    <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
+            <span class="material-icons text-background-dark text-2xl">eco</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hidden sm:block">MintMatch</h1>
     </div>
-    <!-- Glass Pill Menu -->
-    <div class="glass-panel rounded-full py-6 px-2 flex flex-col gap-6 shadow-glass">
-        <a href="{% url 'recruiter_dashboard' %}" class="w-12 h-12 rounded-full flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white/50 transition-all group relative">
-            <span class="material-icons">dashboard</span>
-            <span class="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Dashboard</span>
-        </a>
-        <a href="{% url 'job_create' %}" class="w-12 h-12 rounded-full flex items-center justify-center text-primary bg-primary/10 shadow-inner transition-all group relative">
-            <span class="material-icons">add_circle</span>
-            <span class="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">New Job</span>
-        </a>
-        <a href="{% url 'recruiter_talent_search' %}" class="w-12 h-12 rounded-full flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white/50 transition-all group relative">
-            <span class="material-icons">people_alt</span>
-            <span class="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Candidates</span>
-        </a>
-        <a href="{% url 'recruiter_messaging' %}" class="w-12 h-12 rounded-full flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white/50 transition-all group relative">
-            <span class="material-icons">chat_bubble</span>
-            <span class="absolute left-14 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">Messages</span>
-        </a>
+
+    <!-- Center Menu -->
+    <div class="hidden md:flex items-center gap-1 bg-white/50 dark:bg-black/20 p-1.5 rounded-full border border-white/20 backdrop-blur-md">
+        <a href="{% url 'recruiter_dashboard' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Overview</a>
+        <a href="{% url 'recruiter_talent_search' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Candidates</a>
+        <a href="{% url 'recruiter_messaging' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Messages</a>
+        <a href="{% url 'job_create' %}" class="px-5 py-2 bg-white dark:bg-surface-dark text-slate-900 dark:text-primary shadow-sm rounded-full text-sm font-bold ring-1 ring-black/5 dark:ring-white/10">Post Job</a>
     </div>
-    <!-- Bottom Actions -->
-    <div class="mt-auto glass-panel rounded-full p-2">
-        <button class="w-10 h-10 rounded-full overflow-hidden border-2 border-white dark:border-slate-700">
-            {% if user.recruiterprofile.profile_picture %}
-                <img alt="Profile" class="w-full h-full object-cover" src="{{ user.recruiterprofile.profile_picture.url }}"/>
-            {% else %}
-                <div class="w-full h-full bg-primary flex items-center justify-center text-xs font-bold">{{ user.username|first|upper }}</div>
-            {% endif %}
-        </button>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full bg-white/40 dark:bg-black/20 border border-white/50 dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/20 transition-colors cursor-pointer group">
+            <div class="text-right hidden xl:block">
+                <p class="text-xs font-bold text-slate-900 dark:text-white">{{ user.first_name|default:user.username }}</p>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Recruiter</p>
+            </div>
+            <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-white dark:border-slate-700">
+                {% if user.recruiterprofile.profile_picture %}
+                    <img alt="Profile" class="w-full h-full object-cover" src="{{ user.recruiterprofile.profile_picture.url }}"/>
+                {% else %}
+                    <div class="w-full h-full bg-primary flex items-center justify-center text-xs font-bold text-slate-900">{{ user.username|first|upper }}</div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </nav>
 
 <!-- Main Content Area -->
-<main class="flex-1 md:ml-24 h-screen overflow-y-auto p-4 md:p-8 relative">
+<main class="w-full max-w-7xl mx-auto pt-32 p-4 md:p-8 relative min-h-screen">
     <form method="post" action="{% if form.instance.pk %}{% url 'job_edit' form.instance.pk %}{% else %}{% url 'job_create' %}{% endif %}" class="max-w-7xl mx-auto flex flex-col gap-6">
         {% csrf_token %}
         
@@ -205,15 +204,18 @@
                     </div>
                 </div>
 
-                <!-- Screening Questions Card (Placeholder for now) -->
-                <div class="bg-white dark:bg-surface-dark rounded-xl p-8 shadow-soft border border-transparent hover:border-primary/30 bento-card opacity-50 pointer-events-none">
+                <!-- Screening Questions Card -->
+                <div class="bg-white dark:bg-surface-dark rounded-xl p-8 shadow-soft border border-transparent hover:border-primary/30 bento-card">
                     <div class="flex justify-between items-center mb-6">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark">
                                 <span class="material-icons">quiz</span>
                             </div>
-                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Screening Questions (Coming Soon)</h2>
+                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">Screening Questions</h2>
                         </div>
+                    </div>
+                    <div class="p-4 bg-background-light dark:bg-background-dark rounded-xl text-center text-slate-500 dark:text-slate-400 text-sm">
+                        No screening questions configured.
                     </div>
                 </div>
             </div>
@@ -240,13 +242,16 @@
                     </div>
                 </div>
 
-                <!-- Skills & Tags Card (Placeholder) -->
-                <div class="bg-gradient-to-br from-white to-slate-50 dark:from-surface-dark dark:to-slate-900 rounded-xl p-6 shadow-soft border border-transparent hover:border-primary/30 bento-card relative opacity-70">
+                <!-- Skills & Tags Card -->
+                <div class="bg-gradient-to-br from-white to-slate-50 dark:from-surface-dark dark:to-slate-900 rounded-xl p-6 shadow-soft border border-transparent hover:border-primary/30 bento-card relative">
                     <div class="flex items-center gap-3 mb-5">
                         <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark">
                             <span class="material-icons">psychology</span>
                         </div>
-                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Skills &amp; Tags (Coming Soon)</h2>
+                        <h2 class="text-lg font-bold text-slate-900 dark:text-white">Skills &amp; Tags</h2>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                         <button type="button" class="px-3 py-1 bg-background-light dark:bg-background-dark rounded-full text-xs font-bold text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition-colors">Add Skill +</button>
                     </div>
                 </div>
             </div>

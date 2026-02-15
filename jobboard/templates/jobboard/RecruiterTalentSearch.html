@@ -74,35 +74,44 @@
 {% block body_class %}bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300{% endblock %}
 
 {% block content %}
-<div class="sticky top-4 z-50 px-4 md:px-6 w-full max-w-7xl mx-auto">
-    <nav class="glass-panel w-full rounded-2xl shadow-glass border border-slate-200/50 dark:border-slate-800/50">
-        <div class="px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="size-10 bg-gradient-to-br from-primary to-emerald-400 rounded-xl flex items-center justify-center text-slate-900 shadow-lg shadow-primary/20">
-                    <span class="material-symbols-outlined text-2xl">search_insights</span>
-                </div>
-                <h1 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white">MintMatch</h1>
+<!-- Top Navigation Bar -->
+<nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-7xl glass-panel rounded-full px-6 py-4 flex items-center justify-between shadow-glass">
+    <!-- Logo -->
+    <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
+            <span class="material-symbols-outlined text-slate-900 text-2xl">search_insights</span>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hidden sm:block">MintMatch</h1>
+    </div>
+
+    <!-- Center Menu -->
+    <div class="hidden md:flex items-center gap-1 bg-white/50 dark:bg-black/20 p-1.5 rounded-full border border-white/20 backdrop-blur-md">
+        <a href="{% url 'recruiter_dashboard' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Overview</a>
+        <a href="{% url 'recruiter_talent_search' %}" class="px-5 py-2 bg-white dark:bg-surface-dark text-slate-900 dark:text-primary shadow-sm rounded-full text-sm font-bold ring-1 ring-black/5 dark:ring-white/10">Candidates</a>
+        <a href="{% url 'recruiter_messaging' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Messages</a>
+        <a href="{% url 'job_create' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Post Job</a>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full bg-white/40 dark:bg-black/20 border border-white/50 dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/20 transition-colors cursor-pointer group">
+            <div class="text-right hidden xl:block">
+                <p class="text-xs font-bold text-slate-900 dark:text-white">{{ user.first_name|default:user.username }}</p>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Recruiter</p>
             </div>
-            <div class="hidden md:flex items-center gap-8 text-sm font-bold text-slate-600 dark:text-slate-300">
-                <a class="text-slate-900 dark:text-white relative after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-primary after:rounded-full" href="{% url 'recruiter_talent_search' %}">Find Talent</a>
-                <a class="hover:text-primary-dark transition-colors" href="{% url 'job_create' %}">Post a Job</a>
-                <a class="hover:text-primary-dark transition-colors" href="{% url 'recruiter_dashboard' %}">Dashboard</a>
-            </div>
-            <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2">
-                    <span class="text-sm font-bold hidden sm:block">{{ user.username }}</span>
-                    <div class="size-9 rounded-full bg-slate-200 overflow-hidden cursor-pointer" title="Profile">
-                        {% if user.recruiterprofile.profile_picture %}
-                             <img src="{{ user.recruiterprofile.profile_picture }}" class="w-full h-full object-cover">
-                        {% else %}
-                             <div class="w-full h-full flex items-center justify-center bg-primary text-slate-900 font-bold">{{ user.first_name|first|default:user.username|first|upper }}</div>
-                        {% endif %}
-                    </div>
-                </div>
+            <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-white dark:border-slate-700">
+                {% if user.recruiterprofile.profile_picture %}
+                    <img alt="Profile" class="w-full h-full object-cover" src="{{ user.recruiterprofile.profile_picture.url }}"/>
+                {% else %}
+                    <div class="w-full h-full bg-primary flex items-center justify-center text-xs font-bold text-slate-900">{{ user.username|first|upper }}</div>
+                {% endif %}
             </div>
         </div>
-    </nav>
-</div>
+    </div>
+</nav>
+
+<div class="h-32 hidden md:block"></div>
+<div class="h-24 md:hidden"></div>
 
 <main class="flex-1 w-full max-w-7xl mx-auto px-6 py-8 flex flex-col gap-8">
     <section class="glass-panel rounded-2xl p-6 shadow-glass relative overflow-hidden">
