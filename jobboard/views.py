@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Job, Application, Interview
-from .forms import JobForm
+from .forms import JobForm, ApplicationForm, ScreeningQuestionFormSet
 from accounts.models import CustomUser, RecruiterProfile, JobSeekerProfile
 from django.db.models import Q
 from django.utils import timezone
@@ -22,7 +22,21 @@ def admin_dashboard(request):
 @login_required
 def jobseeker_dashboard(request):
     jobs = Job.objects.filter(is_active=True).order_by('-created_at')
-    return render(request, "jobboard/JobSeekerDashboard.html", {'jobs': jobs})
+    
+    # Get user's recent applications
+    my_applications = Application.objects.filter(applicant=request.user).order_by('-applied_at')[:5]
+    
+    # Process skills for display
+    user_skills = []
+    if hasattr(request.user, 'jobseekerprofile') and request.user.jobseekerprofile.skills:
+        user_skills = [s.strip() for s in request.user.jobseekerprofile.skills.split(',') if s.strip()]
+
+    context = {
+        'jobs': jobs,
+        'my_applications': my_applications,
+        'user_skills': user_skills,
+    }
+    return render(request, "jobboard/JobSeekerDashboard.html", context)
 
 @login_required
 def jobseeker_map_viewer(request):
@@ -30,7 +44,17 @@ def jobseeker_map_viewer(request):
 
 @login_required
 def jobseeker_search(request):
-    return render(request, "jobboard/JobSeekerSearch.html")
+    query = request.GET.get('q', '')
+    jobs = Job.objects.filter(is_active=True).order_by('-created_at')
+
+    if query:
+        jobs = jobs.filter(
+            Q(title__icontains=query) |
+            Q(company_name__icontains=query) |
+            Q(description__icontains=query)
+        )
+    
+    return render(request, "jobboard/JobSeekerSearch.html", {'jobs': jobs, 'query': query, 'count': jobs.count()})
 
 @login_required
 @recruiter_required
@@ -70,7 +94,9 @@ def recruiter_dashboard(request):
 def job_create(request):
     if request.method == 'POST':
         form = JobForm(request.POST)
-        if form.is_valid():
+        formset = ScreeningQuestionFormSet(request.POST, prefix='questions')
+        
+        if form.is_valid() and formset.is_valid():
             job = form.save(commit=False)
             job.recruiter = request.user
             # Get company name from profile
@@ -81,11 +107,22 @@ def job_create(request):
                 job.company_name = "Unknown Company"
             
             job.save()
+            
+            # Save formset
+            formset.instance = job
+            formset.save()
+            
             messages.success(request, 'Job posted successfully!')
             return redirect('recruiter_dashboard')
     else:
         form = JobForm()
-    return render(request, 'jobboard/job_form.html', {'form': form, 'title': 'Post a New Job'})
+        formset = ScreeningQuestionFormSet(prefix='questions')
+        
+    return render(request, 'jobboard/job_form.html', {
+        'form': form, 
+        'formset': formset,
+        'title': 'Post a New Job'
+    })
 
 @login_required
 @recruiter_required
@@ -93,13 +130,22 @@ def job_edit(request, pk):
     job = get_object_or_404(Job, pk=pk, recruiter=request.user)
     if request.method == 'POST':
         form = JobForm(request.POST, instance=job)
-        if form.is_valid():
+        formset = ScreeningQuestionFormSet(request.POST, instance=job, prefix='questions')
+        
+        if form.is_valid() and formset.is_valid():
             form.save()
+            formset.save()
             messages.success(request, 'Job updated successfully!')
             return redirect('recruiter_dashboard')
     else:
         form = JobForm(instance=job)
-    return render(request, 'jobboard/job_form.html', {'form': form, 'title': 'Edit Job'})
+        formset = ScreeningQuestionFormSet(instance=job, prefix='questions')
+        
+    return render(request, 'jobboard/job_form.html', {
+        'form': form, 
+        'formset': formset,
+        'title': 'Edit Job'
+    })
 
 @login_required
 @recruiter_required
@@ -112,8 +158,51 @@ def job_delete(request, pk):
     return render(request, 'jobboard/job_confirm_delete.html', {'job': job})
 
 @login_required
+@login_required
 def recruiter_kanban(request):
-    return render(request, "jobboard/RecruiterKanban.html")
+    jobs = Job.objects.filter(recruiter=request.user, is_active=True).order_by('-created_at')
+    
+    # Get selected job from query param or default to first job
+    selected_job_id = request.GET.get('job_id')
+    selected_job = None
+    
+    if selected_job_id:
+        selected_job = jobs.filter(pk=selected_job_id).first()
+    elif jobs.exists():
+        selected_job = jobs.first()
+
+    # Dictionary to hold applications by status
+    grouped_applications = {
+        'APPLIED': [],
+        'SCREENING': [],
+        'INTERVIEW': [],
+        'OFFER': [],
+        'HIRED': [],
+        'REJECTED': []
+    }
+    
+    # Fetch applications if a job is selected
+    if selected_job:
+        apps = Application.objects.filter(job=selected_job).select_related('applicant__jobseekerprofile').order_by('-applied_at')
+        for app in apps:
+            if app.status in grouped_applications:
+                grouped_applications[app.status].append(app)
+            else:
+                # Fallback for statuses not in our main list (though defined in choices)
+                grouped_applications.setdefault('OTHER', []).append(app)
+
+    # Create stats
+    total_applications_count = 0
+    if selected_job:
+        total_applications_count = Application.objects.filter(job=selected_job).count()
+
+    context = {
+        'jobs': jobs,
+        'selected_job': selected_job,
+        'kanban_columns': grouped_applications,
+        'total_applications_count': total_applications_count
+    }
+    return render(request, "jobboard/RecruiterKanban.html", context)
 
 @login_required
 def recruiter_messaging(request):
@@ -135,3 +224,89 @@ def recruiter_talent_search(request):
 
     context = {'profiles': profiles, 'query': query}
     return render(request, "jobboard/RecruiterTalentSearch.html", context)
+
+
+@recruiter_required
+def recruiter_application_detail(request, pk):
+    application = get_object_or_404(Application, pk=pk)
+    
+    # Security Check: Ensure the logged-in recruiter owns the job for this application
+    if application.job.posted_by != request.user:
+        messages.error(request, "You do not have permission to view this application.")
+        return redirect('recruiter_dashboard')
+
+    context = {
+        'application': application,
+        'job': application.job, # Convenience
+        'applicant': application.applicant, # Convenience
+        'profile': getattr(application.applicant, 'jobseekerprofile', None)
+    }
+    return render(request, "jobboard/RecruiterApplicationDetail.html", context)
+
+
+@recruiter_required
+def update_application_status(request, pk):
+    application = get_object_or_404(Application, pk=pk)
+    
+    # Security Check: Ensure the logged-in recruiter owns the job for this application
+    if application.job.posted_by != request.user:
+        messages.error(request, "You do not have permission to modify this application.")
+        return redirect('recruiter_dashboard')
+
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        # Check if new_status is valid key in Status choices
+        if new_status and new_status in dict(Application.STATUS_CHOICES):
+            application.status = new_status
+            application.save()
+            messages.success(request, f"Application status updated to {application.get_status_display()}.")
+        else:
+            messages.error(request, "Invalid status provided.")
+    
+    # Redirect back to the Kanban board for this job
+    return redirect(f'/jobboard/recruiter/kanban/?job_id={application.job.id}')
+
+
+@login_required
+def job_detail(request, pk):
+    job = get_object_or_404(Job, pk=pk)
+    
+    # Check if user has already applied
+    has_applied = False
+    if request.user.role == CustomUser.Role.JOBSEEKER:
+        has_applied = Application.objects.filter(job=job, applicant=request.user).exists()
+    
+    # Application Form
+    form = ApplicationForm()
+
+    context = {
+        'job': job,
+        'has_applied': has_applied,
+        'form': form
+    }
+    return render(request, "jobboard/JobDetail.html", context)
+
+@login_required
+def apply_for_job(request, pk):
+    if request.user.role != CustomUser.Role.JOBSEEKER:
+        messages.error(request, "Only job seekers can apply for jobs.")
+        return redirect('job_detail', pk=pk)
+        
+    job = get_object_or_404(Job, pk=pk)
+    
+    if Application.objects.filter(job=job, applicant=request.user).exists():
+        messages.warning(request, "You have already applied to this job.")
+        return redirect('job_detail', pk=pk)
+        
+    if request.method == 'POST':
+        form = ApplicationForm(request.POST, request.FILES)
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.job = job
+            application.applicant = request.user
+            application.save()
+            messages.success(request, "Application submitted successfully!")
+            return redirect('jobseeker_dashboard')
+            
+    return redirect('job_detail', pk=pk)
+

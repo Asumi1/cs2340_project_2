@@ -17,6 +17,7 @@ class Job(models.Model):
     job_type = models.CharField(max_length=50, choices=JOB_TYPES, default='FULL_TIME')
     salary_min = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     salary_max = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    skills = models.CharField(max_length=500, blank=True, help_text="Comma-separated list of required skills")
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
@@ -46,6 +47,22 @@ class Application(models.Model):
 
     def __str__(self):
         return f"{self.applicant} applied to {self.job}"
+
+class ScreeningQuestion(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='screening_questions')
+    question_text = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.question_text
+
+class ApplicationAnswer(models.Model):
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='answers')
+    question = models.ForeignKey(ScreeningQuestion, on_delete=models.CASCADE)
+    answer_text = models.TextField()
+
+    def __str__(self):
+        return f"Answer to {self.question} by {self.application.applicant}"
 
 class Interview(models.Model):
     application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='interviews')

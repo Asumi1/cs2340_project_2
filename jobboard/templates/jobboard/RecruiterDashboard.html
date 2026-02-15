@@ -106,8 +106,9 @@
     <div class="hidden md:flex items-center gap-1 bg-gray-100/50 dark:bg-black/20 p-1 rounded-full">
         <a class="px-5 py-2 bg-white dark:bg-white/10 text-charcoal dark:text-white font-semibold rounded-full shadow-sm text-sm transition-all" href="#">Overview</a>
         <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="{% url 'job_create' %}">Post Job</a>
-        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="#">Candidates</a>
-        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="#">Messages</a>
+        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="{% url 'recruiter_kanban' %}">Candidates</a>
+        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="{% url 'recruiter_messaging' %}">Messages</a>
+        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="{% url 'logout' %}">Log Out</a>
     </div>
     <!-- Profile & Actions -->
     <div class="flex items-center gap-4">
@@ -206,12 +207,12 @@
             <div class="space-y-3 flex-grow overflow-y-auto pr-1 custom-scrollbar">
                 {% for app in pending_applications %}
                 <!-- Task Item -->
-                <div class="flex items-start gap-3 p-3 rounded-xl bg-white/40 dark:bg-white/5 border border-white/50 dark:border-white/10">
+                <div class="flex items-start gap-3 p-3 rounded-xl bg-white/40 dark:bg-white/5 border border-white/50 dark:border-white/10 group hover:border-primary/30 transition-colors">
                     <div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center mt-0.5 cursor-pointer">
                         <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 hover:opacity-100 transition-opacity"></div>
                     </div>
                     <div>
-                        <p class="text-sm font-bold text-charcoal dark:text-white">Review Application: {{ app.applicant.first_name|default:app.applicant.username }}</p>
+                        <a href="{% url 'recruiter_application_detail' app.pk %}" class="text-sm font-bold text-charcoal dark:text-white hover:text-primary transition-colors block">Review Application: {{ app.applicant.first_name|default:app.applicant.username }}</a>
                         <p class="text-xs text-charcoal-light dark:text-gray-400">For {{ app.job.title }}</p>
                         <p class="text-[10px] text-charcoal-light dark:text-gray-500 mt-1">Applied {{ app.applied_at|timesince }} ago</p>
                     </div>

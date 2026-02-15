@@ -1,0 +1,206 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header with Breadcrumbs -->
+    <div class="flex justify-between items-center">
+        <div>
+            <a href="{% url 'recruiter_kanban' %}?job_id={{ job.id }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm font-medium mb-1 inline-flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                Back to {{ job.title }} Board
+            </a>
+            <h1 class="text-3xl font-extrabold text-charcoal dark:text-white">Application Details</h1>
+        </div>
+        <div class="flex gap-2">
+            <!-- Status Badge -->
+            <span class="px-4 py-2 rounded-full text-sm font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                {{ application.get_status_display }}
+            </span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Artist/Applicant Profile Card -->
+            <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                <div class="flex items-start justify-between">
+                    <div class="flex gap-4">
+                        <div class="size-16 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 flex items-center justify-center font-bold text-2xl uppercase">
+                            {{ applicant.first_name|first }}{{ applicant.last_name|first }}
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-charcoal dark:text-white">{{ applicant.first_name }} {{ applicant.last_name }}</h2>
+                            <p class="text-gray-500 dark:text-gray-400 font-medium">{{ profile.major|default:"Candidate" }}</p>
+                            
+                            <div class="flex flex-wrap gap-2 mt-3">
+                                <a href="mailto:{{ applicant.email }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                                    <span class="material-symbols-outlined text-sm">mail</span>
+                                    {{ applicant.email }}
+                                </a>
+                                {% if profile.linkedin %}
+                                <a href="{{ profile.linkedin }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 text-sm hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                                    <span class="material-symbols-outlined text-sm">link</span>
+                                    LinkedIn
+                                </a>
+                                {% endif %}
+                                {% if profile.portfolio %}
+                                <a href="{{ profile.portfolio }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-300 text-sm hover:bg-pink-100 dark:hover:bg-pink-900/30 transition-colors">
+                                    <span class="material-symbols-outlined text-sm">palette</span>
+                                    Portfolio
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if profile.bio %}
+                <div class="mt-6">
+                    <h3 class="font-bold text-charcoal dark:text-white mb-2 text-sm uppercase tracking-wide">About</h3>
+                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">{{ profile.bio }}</p>
+                </div>
+                {% endif %}
+
+                 {% if profile.skills %}
+                <div class="mt-6">
+                    <h3 class="font-bold text-charcoal dark:text-white mb-2 text-sm uppercase tracking-wide">Skills</h3>
+                    <div class="flex flex-wrap gap-2">
+                        {% for skill in profile.skills.split %}
+                        <span class="px-3 py-1 rounded-lg bg-gray-50 dark:bg-white/5 text-sm font-medium text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-gray-700">
+                            {{ skill }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Application Materials -->
+            <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+                <h3 class="font-extrabold text-lg text-charcoal dark:text-white mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">feed</span>
+                    Application Materials
+                </h3>
+                
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="font-bold text-charcoal dark:text-white mb-2 text-sm">Cover Letter</h4>
+                        {% if application.cover_letter %}
+                        <div class="bg-gray-50 dark:bg-white/5 p-4 rounded-xl text-gray-700 dark:text-gray-300 text-sm leading-relaxed whitespace-pre-wrap border border-gray-100 dark:border-gray-700 font-serif">
+                            {{ application.cover_letter }}
+                        </div>
+                        {% else %}
+                        <p class="text-gray-400 italic text-sm">No cover letter submitted.</p>
+                        {% endif %}
+                    </div>
+
+                    {% if application.resume %}
+                    <div>
+                        <h4 class="font-bold text-charcoal dark:text-white mb-2 text-sm">Resume / CV</h4>
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-gray-100 dark:border-gray-700">
+                            <div class="size-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center">
+                                <span class="material-symbols-outlined">picture_as_pdf</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-charcoal dark:text-white text-sm">Resume.pdf</p>
+                                <p class="text-xs text-gray-500">Uploaded {{ application.applied_at|date:"M d, Y" }}</p>
+                            </div>
+                            <a href="{{ application.resume.url }}" target="_blank" class="px-3 py-1.5 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-colors shadow-sm">
+                                View / Download
+                            </a>
+                        </div>
+                        <!-- Embed Preview if possible -->
+                        <div class="mt-4 h-96 w-full bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 relative group">
+                            <iframe src="{{ application.resume.url }}" class="w-full h-full"></iframe>  
+                            <div class="absolute inset-0 pointer-events-none group-hover:bg-black/5 dark:group-hover:bg-white/5 transition-colors"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Actions -->
+        <div class="lg:col-span-1 space-y-6">
+            <!-- Actions Card -->
+             <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 sticky top-6">
+                <h3 class="font-bold text-charcoal dark:text-white mb-4 text-sm uppercase tracking-wide">Actions</h3>
+                
+                <div class="space-y-3">
+                    {% if application.status != 'REJECTED' and application.status != 'HIRED' %}
+                        {% if application.status == 'APPLIED' %}
+                             <form method="POST" action="{% url 'update_application_status' application.pk %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="SCREENING">
+                                <button class="w-full py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-colors shadow-lg shadow-primary/30 flex items-center justify-center gap-2">
+                                    Move to Screening
+                                    <span class="material-symbols-outlined">arrow_forward</span>
+                                </button>
+                            </form>
+                        {% elif application.status == 'SCREENING' %}
+                            <form method="POST" action="{% url 'update_application_status' application.pk %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="INTERVIEW">
+                                <button class="w-full py-2.5 bg-primary text-white rounded-xl font-bold hover:bg-primary-dark transition-colors shadow-lg shadow-primary/30 flex items-center justify-center gap-2">
+                                    Schedule Interview
+                                    <span class="material-symbols-outlined">arrow_forward</span>
+                                </button>
+                            </form>
+                        {% elif application.status == 'INTERVIEW' %}
+                            <form method="POST" action="{% url 'update_application_status' application.pk %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="OFFER">
+                                <button class="w-full py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
+                                    Extend Offer
+                                    <span class="material-symbols-outlined">card_giftcard</span>
+                                </button>
+                            </form>
+                        {% elif application.status == 'OFFER' %}
+                             <form method="POST" action="{% url 'update_application_status' application.pk %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="HIRED">
+                                <button class="w-full py-2.5 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-colors shadow-lg shadow-green-600/30 flex items-center justify-center gap-2">
+                                    Mark as Hired
+                                    <span class="material-symbols-outlined">celebration</span>
+                                </button>
+                            </form>
+                        {% endif %}
+
+                         <form method="POST" action="{% url 'update_application_status' application.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="REJECTED">
+                            <button class="w-full py-2.5 bg-white dark:bg-transparent border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 rounded-xl font-bold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2 mt-3">
+                                Reject Candidate
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </form>
+                    {% else %}
+                        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 text-center">
+                            {% if application.status == 'REJECTED' %}
+                                <p class="text-red-600 dark:text-red-400 font-bold mb-2">Candidate Rejected</p>
+                                <form method="POST" action="{% url 'update_application_status' application.pk %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="APPLIED">
+                                    <button class="text-xs underline text-gray-500 hover:text-gray-700">Reopen (Move to Applied)</button>
+                                </form>
+                            {% else %}
+                                <p class="text-green-600 dark:text-green-400 font-bold mb-2">Candidate Hired!</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <hr class="border-gray-100 dark:border-gray-700 my-6">
+                
+                <h4 class="font-bold text-charcoal dark:text-white mb-3 text-sm">Communication</h4>
+                <a href="mailto:{{ applicant.email }}" class="w-full py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2 mb-2">
+                    <span class="material-symbols-outlined">mail</span>
+                    Email Candidate
+                </a>
+             </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

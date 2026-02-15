@@ -83,7 +83,7 @@
 </style>
 {% endblock %}
 
-{% block body_class %}bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-display min-h-screen selection:bg-primary selection:text-background-dark flex overflow-hidden{% endblock %}
+{% block body_class %}bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-display min-h-screen selection:bg-primary selection:text-background-dark flex flex-col overflow-x-hidden{% endblock %}
 
 {% block content %}
 <!-- Top Navigation Bar -->
@@ -102,10 +102,17 @@
         <a href="{% url 'recruiter_talent_search' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Candidates</a>
         <a href="{% url 'recruiter_messaging' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Messages</a>
         <a href="{% url 'job_create' %}" class="px-5 py-2 bg-white dark:bg-surface-dark text-slate-900 dark:text-primary shadow-sm rounded-full text-sm font-bold ring-1 ring-black/5 dark:ring-white/10">Post Job</a>
+        <a href="{% url 'logout' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Log Out</a>
     </div>
 
     <!-- Right Actions -->
     <div class="flex items-center gap-4">
+        <!-- Main 'Publish' Action in Navbar for Desktop -->
+        <button onclick="document.getElementById('job-form').submit();" class="hidden md:flex bg-primary hover:bg-primary-dark text-slate-900 font-bold px-5 py-2 rounded-full shadow-lg shadow-primary/20 transition-all items-center gap-2 text-sm ml-2">
+            <span>{% if form.instance.pk %}Save{% else %}Post{% endif %}</span>
+            <span class="material-icons text-sm">send</span>
+        </button>
+
         <div class="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full bg-white/40 dark:bg-black/20 border border-white/50 dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/20 transition-colors cursor-pointer group">
             <div class="text-right hidden xl:block">
                 <p class="text-xs font-bold text-slate-900 dark:text-white">{{ user.first_name|default:user.username }}</p>
@@ -124,26 +131,19 @@
 
 <!-- Main Content Area -->
 <main class="w-full max-w-7xl mx-auto pt-32 p-4 md:p-8 relative min-h-screen">
-    <form method="post" action="{% if form.instance.pk %}{% url 'job_edit' form.instance.pk %}{% else %}{% url 'job_create' %}{% endif %}" class="max-w-7xl mx-auto flex flex-col gap-6">
+    <form id="job-form" method="post" action="{% if form.instance.pk %}{% url 'job_edit' form.instance.pk %}{% else %}{% url 'job_create' %}{% endif %}" class="max-w-7xl mx-auto flex flex-col gap-6">
         {% csrf_token %}
         
-        <!-- Header Section -->
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-4">
+        <!-- Header Section (Simplified, removed secondary nav-like actions) -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
             <div>
-                <div class="flex items-center gap-2 text-slate-400 text-sm mb-1">
-                    <span>Jobs</span>
-                    <span class="material-icons text-xs">chevron_right</span>
-                    <span class="text-primary font-medium">{% if form.instance.pk %}Edit Position{% else %}New Position{% endif %}</span>
-                </div>
+                <a href="{% url 'recruiter_dashboard' %}" class="flex items-center gap-2 text-slate-400 hover:text-primary transition-colors text-sm mb-2 group">
+                    <span class="material-icons text-xs group-hover:-translate-x-1 transition-transform">arrow_back</span>
+                    <span>Back to Dashboard</span>
+                </a>
                 <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight">{% if form.instance.pk %}Edit Position{% else %}Create New Position{% endif %}</h1>
             </div>
-            <div class="flex items-center gap-4 bg-white dark:bg-surface-dark p-2 pr-3 rounded-full shadow-soft">
-                <a href="{% url 'recruiter_dashboard' %}" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white font-medium text-sm px-2">Cancel</a>
-                <button type="submit" class="bg-primary hover:bg-primary-dark text-slate-900 font-bold px-6 py-2.5 rounded-full shadow-lg shadow-primary/20 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
-                    <span>{% if form.instance.pk %}Update{% else %}Publish{% endif %} Job</span>
-                    <span class="material-icons text-sm">arrow_forward</span>
-                </button>
-            </div>
+        </header>
         </header>
 
         {% if form.errors %}
@@ -214,10 +214,178 @@
                             <h2 class="text-xl font-bold text-slate-900 dark:text-white">Screening Questions</h2>
                         </div>
                     </div>
-                    <div class="p-4 bg-background-light dark:bg-background-dark rounded-xl text-center text-slate-500 dark:text-slate-400 text-sm">
-                        No screening questions configured.
+                    
+                    <div id="questions-container" class="space-y-4">
+                        {{ formset.management_form }}
+                        {% for q_form in formset %}
+                            <div class="question-form flex gap-3 items-start">
+                                {{ q_form.id }}
+                                <div class="flex-1">
+                                    {{ q_form.question_text }}
+                                     {% if q_form.errors %}
+                                        <div class="text-red-500 text-xs mt-1">{{ q_form.errors.question_text }}</div>
+                                    {% endif %}
+                                </div>
+                                {% if formset.can_delete %}
+                                    <div class="hidden">{{ q_form.DELETE }}</div> <!-- Hide default checkbox -->
+                                    {% if q_form.instance.pk %}
+                                        <button type="button" class="delete-question-btn p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete Question">
+                                            <span class="material-icons">delete</span>
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <button type="button" id="add-question-btn" class="mt-4 px-4 py-2 bg-background-light dark:bg-background-dark rounded-full text-sm font-bold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition-colors flex items-center gap-2">
+                        <span class="material-icons text-sm">add</span>
+                        Add Question
+                    </button>
+
+                    <!-- Empty Form Template for JS -->
+                    <div id="empty-form" class="hidden">
+                        <div class="question-form flex gap-3 items-start mt-4">
+                            <div class="flex-1">
+                                {{ formset.empty_form.question_text }}
+                            </div>
+                            {% if formset.can_delete %}
+                                <div class="hidden">{{ formset.empty_form.DELETE }}</div>
+                                <button type="button" class="delete-question-btn p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const container = document.getElementById('questions-container');
+                        const addBtn = document.getElementById('add-question-btn');
+                        const emptyFormHtml = document.getElementById('empty-form').innerHTML;
+                        const totalFormsInput = document.getElementById('id_questions-TOTAL_FORMS');
+
+                        addBtn.addEventListener('click', function() {
+                            const formIdx = totalFormsInput.value;
+                            const newFormHtml = emptyFormHtml.replace(/__prefix__/g, formIdx);
+                            const newDiv = document.createElement('div');
+                            newDiv.innerHTML = newFormHtml;
+                            container.appendChild(newDiv.firstElementChild);
+                            totalFormsInput.value = parseInt(formIdx) + 1;
+                        });
+
+                        // Delete button delegation
+                        container.addEventListener('click', function(e) {
+                            if (e.target.closest('.delete-question-btn')) {
+                                const btn = e.target.closest('.delete-question-btn');
+                                const formRow = btn.closest('.question-form');
+                                
+                                // Check if it's an existing record (has ID)
+                                const deleteInput = formRow.querySelector('input[name$="-DELETE"]');
+                                if (deleteInput) {
+                                    deleteInput.checked = true;
+                                    formRow.style.display = 'none';
+                                } else {
+                                    // New unsaved row, just remove DOM
+                                    formRow.remove();
+                                    // Note: We don't decrement TOTAL_FORMS as per Django formset logic safest practice
+                                }
+                            }
+                        });
+
+                        const skillsContainer = document.getElementById('skills-container');
+                        let skills = [];
+                        const hiddenInputName = 'skills'; 
+                        let hiddenInput = document.querySelector(`input[name="${hiddenInputName}"]`);
+                        
+                        // If hidden input doesn't exist (because widget didn't render it correctly or custom widget not used), 
+                        // we might need to rely on the form field being there. 
+                        // In Django, {{ form.skills }} renders the input.
+                        
+                        const skillInput = document.getElementById('skill-input');
+                        const addSkillBtn = document.getElementById('add-skill-btn');
+                        const noSkillsMsg = document.getElementById('no-skills-msg');
+
+                        if (hiddenInput && hiddenInput.value) {
+                             skills = hiddenInput.value.split(',').filter(s => s.trim().length > 0);
+                             renderSkills();
+                        }
+
+                        function updateHiddenInput() {
+                            if (hiddenInput) {
+                                hiddenInput.value = skills.join(',');
+                            }
+                        }
+
+                        function renderSkills() {
+                            skillsContainer.innerHTML = ''; // Start clean
+                            
+                            if (skills.length === 0) {
+                                skillsContainer.appendChild(noSkillsMsg);
+                                noSkillsMsg.style.display = 'block';
+                            } else {
+                                noSkillsMsg.style.display = 'none';
+                                skillsContainer.appendChild(noSkillsMsg); // Keep in DOM
+                                
+                                skills.forEach((skill, index) => {
+                                    const tag = document.createElement('div');
+                                    tag.className = 'flex items-center gap-1 pl-3 pr-2 py-1 bg-white dark:bg-white/10 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600 shadow-sm animate-fadeIn transition-all hover:border-primary/50';
+                                    tag.innerHTML = `
+                                        <span>${skill}</span>
+                                        <button type="button" class="ml-1 p-0.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-red-500 transition-colors" data-index="${index}">
+                                            <span class="material-icons text-[14px] leading-none">close</span>
+                                        </button>
+                                    `;
+                                    skillsContainer.appendChild(tag);
+                                });
+                            }
+                        }
+
+                        function addSkill() {
+                            const val = skillInput.value.trim();
+                            if (val && !skills.includes(val)) {
+                                skills.push(val);
+                                updateHiddenInput();
+                                renderSkills();
+                                skillInput.value = '';
+                                skillInput.focus();
+                            } else if (skills.includes(val)) {
+                                // Shake effect
+                                skillInput.classList.add('ring-2', 'ring-red-500', 'border-red-500');
+                                setTimeout(() => skillInput.classList.remove('ring-2', 'ring-red-500', 'border-red-500'), 500);
+                            }
+                        }
+
+                        if (addSkillBtn) {
+                            addSkillBtn.addEventListener('click', addSkill);
+                        }
+
+                        if (skillInput) {
+                            skillInput.addEventListener('keydown', function(e) { // changed to keydown for better responsiveness
+                                if (e.key === 'Enter') {
+                                    e.preventDefault(); 
+                                    addSkill();
+                                }
+                            });
+                        }
+
+                        if (skillsContainer) {
+                            skillsContainer.addEventListener('click', function(e) {
+                                const btn = e.target.closest('button');
+                                if (btn && btn.hasAttribute('data-index')) {
+                                    const idx = parseInt(btn.getAttribute('data-index'));
+                                    skills.splice(idx, 1);
+                                    updateHiddenInput();
+                                    renderSkills();
+                                }
+                            });
+                        }
+
+
+
+                    });
+                </script>
             </div>
 
             <!-- Column 2: Sidebar Config (Span 4) -->
@@ -250,12 +418,44 @@
                         </div>
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white">Skills &amp; Tags</h2>
                     </div>
-                    <div class="flex flex-wrap gap-2">
-                         <button type="button" class="px-3 py-1 bg-background-light dark:bg-background-dark rounded-full text-xs font-bold text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary transition-colors">Add Skill +</button>
+                    
+                    {{ form.skills }} <!-- Hidden Field -->
+                    
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <input type="text" id="skill-input" placeholder="Type a skill and press Enter..." class="w-full bg-white dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary focus:border-transparent text-sm">
+                            <button type="button" id="add-skill-btn" class="absolute right-2 top-1/2 -translate-y-1/2 text-primary hover:text-primary-dark">
+                                <span class="material-icons">add_circle</span>
+                            </button>
+                        </div>
+                        
+                        <div id="skills-container" class="flex flex-wrap gap-2 min-h-[40px] p-2 bg-background-light dark:bg-background-dark rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
+                            <!-- Skills will be injected here -->
+                            <span class="text-xs text-gray-400 self-center w-full text-center" id="no-skills-msg">No skills added yet.</span>
+                        </div>
+                        <p class="text-xs text-slate-500">Press Enter or click + to add a skill.</p>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Mobile/Bottom Action Bar -->
+        <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-white dark:bg-surface-dark p-2 pr-2 pl-4 rounded-full shadow-2xl border border-gray-100 dark:border-gray-700 flex items-center gap-4 md:hidden">
+            <span class="text-sm font-bold text-slate-500 dark:text-slate-400">Ready?</span>
+            <button type="submit" class="bg-primary hover:bg-primary-dark text-slate-900 font-bold px-6 py-2.5 rounded-full shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+                <span>Post Job</span>
+                <span class="material-icons text-sm">rocket_launch</span>
+            </button>
+        </div>
+
+        <!-- Desktop Bottom Button -->
+        <div class="hidden md:flex justify-end pb-8">
+             <button type="submit" class="bg-primary hover:bg-primary-dark text-slate-900 font-bold px-8 py-3 rounded-full shadow-xl shadow-primary/20 transition-all transform hover:-translate-y-1 flex items-center gap-2 text-lg">
+                <span>{% if form.instance.pk %}Update{% else %}Publish{% endif %} Job</span>
+                <span class="material-icons">check_circle</span>
+            </button>
+        </div>
+
     </form>
 </main>
 
