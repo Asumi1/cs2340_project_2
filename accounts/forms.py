@@ -18,7 +18,7 @@ class CustomUserCreationForm(UserCreationForm):
         for field_name, field in self.fields.items():
             if field_name != 'role' and field.widget.input_type != 'radio':
                 existing_classes = field.widget.attrs.get('class', '')
-                field.widget.attrs['class'] = (existing_classes + ' glass-input w-full pl-11 pr-4 py-3 rounded-xl outline-none transition-all text-sm font-medium text-charcoal placeholder-gray-400').strip()
+                field.widget.attrs['class'] = (existing_classes + ' glass-input w-full px-4 py-3 rounded-xl outline-none transition-all text-sm font-medium text-charcoal placeholder-gray-400').strip()
         
         # Specific hidden logic for company_name is handled in template, but we adding basic style here.
 
@@ -48,5 +48,5 @@ class CustomAuthenticationForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             existing_classes = field.widget.attrs.get('class', '')
-            field.widget.attrs['class'] = (existing_classes + ' glass-input w-full pl-11 pr-4 py-3 rounded-xl outline-none transition-all text-sm font-medium text-charcoal placeholder-gray-400').strip()
+            field.widget.attrs['class'] = (existing_classes + ' glass-input w-full px-4 py-3 rounded-xl outline-none transition-all text-sm font-medium text-charcoal placeholder-gray-400').strip()
  

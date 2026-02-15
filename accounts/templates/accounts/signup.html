@@ -103,9 +103,6 @@
             <div class="space-y-1.5">
                 <label class="block text-sm font-bold text-charcoal ml-1" for="id_username">Username</label>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <span class="material-symbols-outlined text-gray-400 text-xl">person</span>
-                    </div>
                     {{ form.username }}
                 </div>
             </div>
@@ -114,18 +111,12 @@
                 <div class="space-y-1.5 w-full">
                     <label class="block text-sm font-bold text-charcoal ml-1" for="id_first_name">First Name</label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="material-symbols-outlined text-gray-400 text-xl">badge</span>
-                        </div>
                         {{ form.first_name }}
                     </div>
                 </div>
                 <div class="space-y-1.5 w-full">
                     <label class="block text-sm font-bold text-charcoal ml-1" for="id_last_name">Last Name</label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <span class="material-symbols-outlined text-gray-400 text-xl">badge</span>
-                        </div>
                         {{ form.last_name }}
                     </div>
                 </div>
@@ -134,9 +125,6 @@
             <div class="space-y-1.5">
                 <label class="block text-sm font-bold text-charcoal ml-1" for="id_email">Email</label>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <span class="material-symbols-outlined text-gray-400 text-xl">mail</span>
-                    </div>
                     {{ form.email }}
                 </div>
             </div>
@@ -144,9 +132,6 @@
             <div id="company-field-container" class="space-y-1.5 hidden">
                  <label class="block text-sm font-bold text-charcoal ml-1" for="id_company_name">Company Name</label>
                  <div class="relative">
-                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                         <span class="material-symbols-outlined text-gray-400 text-xl">domain</span>
-                     </div>
                      {{ form.company_name }}
                  </div>
             </div>
@@ -157,9 +142,6 @@
                     <div class="space-y-1.5">
                         <label class="block text-sm font-bold text-charcoal ml-1" for="{{ field.id_for_label }}">{{ field.label }}</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <span class="material-symbols-outlined text-gray-400 text-xl">lock</span>
-                            </div>
                             {{ field }}
                         </div>
                         {% if field.help_text %}
