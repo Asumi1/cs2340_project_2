@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Job, Application, Interview
@@ -15,13 +16,36 @@ def recruiter_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
-@login_required
+@staff_member_required
 def admin_dashboard(request):
-    return render(request, "jobboard/AdminDashboard.html")
+    pending_jobs = Job.objects.filter(is_approved=False, is_active=True).order_by('-created_at')
+    active_jobs_count = Job.objects.filter(is_approved=True, is_active=True).count()
+    total_users_count = CustomUser.objects.count()
+    
+    context = {
+        'pending_jobs': pending_jobs,
+        'active_jobs_count': active_jobs_count,
+        'total_users_count': total_users_count,
+    }
+    return render(request, 'jobboard/AdminDashboard.html', context)
+
+@staff_member_required
+def approve_job(request, pk):
+    job = get_object_or_404(Job, pk=pk)
+    if 'approve' in request.POST:
+        job.is_approved = True
+        job.save()
+        messages.success(request, f"Job {job.title} has been approved.")
+    elif 'reject' in request.POST:
+        job.is_active = False
+        job.save()
+        messages.warning(request, f"Job {job.title} has been rejected and deactivated.")
+    
+    return redirect('admin_dashboard')
 
 @login_required
 def jobseeker_dashboard(request):
-    jobs = Job.objects.filter(is_active=True).order_by('-created_at')
+    jobs = Job.objects.filter(is_active=True, is_approved=True).order_by('-created_at')[:5]
     
     # Get user's recent applications
     my_applications = Application.objects.filter(applicant=request.user).order_by('-applied_at')[:5]
@@ -40,7 +64,9 @@ def jobseeker_dashboard(request):
 
 @login_required
 def jobseeker_map_viewer(request):
-    return render(request, "jobboard/JobSeekerMapViewer.html")
+    # Only show jobs that are active and approved and have coordinates
+    jobs = Job.objects.filter(is_active=True, is_approved=True, latitude__isnull=False, longitude__isnull=False)
+    return render(request, "jobboard/JobSeekerMapViewer.html", {"jobs": jobs})
 
 @login_required
 def jobseeker_search(request):
@@ -50,7 +76,8 @@ def jobseeker_search(request):
     min_salary = request.GET.get('min_salary', '')
     visa = request.GET.get('visa_sponsorship', '')
 
-    jobs = Job.objects.filter(is_active=True).order_by('-created_at')
+    # Only show jobs that are active and approved
+    jobs = Job.objects.filter(is_active=True, is_approved=True).order_by('-created_at')
 
     if query:
         jobs = jobs.filter(
@@ -188,7 +215,7 @@ def job_delete(request, pk):
     return render(request, 'jobboard/job_confirm_delete.html', {'job': job})
 
 @login_required
-@login_required
+@recruiter_required
 def recruiter_kanban(request):
     jobs = Job.objects.filter(recruiter=request.user, is_active=True).order_by('-created_at')
     
@@ -217,9 +244,6 @@ def recruiter_kanban(request):
         for app in apps:
             if app.status in grouped_applications:
                 grouped_applications[app.status].append(app)
-            else:
-                # Fallback for statuses not in our main list (though defined in choices)
-                grouped_applications.setdefault('OTHER', []).append(app)
 
     # Create stats
     total_applications_count = 0
@@ -266,37 +290,36 @@ def recruiter_talent_search(request):
     }
     return render(request, "jobboard/RecruiterTalentSearch.html", context)
 
-
+@login_required
 @recruiter_required
 def recruiter_application_detail(request, pk):
     application = get_object_or_404(Application, pk=pk)
     
     # Security Check: Ensure the logged-in recruiter owns the job for this application
-    if application.job.posted_by != request.user:
+    if application.job.recruiter != request.user:
         messages.error(request, "You do not have permission to view this application.")
         return redirect('recruiter_dashboard')
 
     context = {
         'application': application,
-        'job': application.job, # Convenience
-        'applicant': application.applicant, # Convenience
+        'job': application.job,
+        'applicant': application.applicant,
         'profile': getattr(application.applicant, 'jobseekerprofile', None)
     }
     return render(request, "jobboard/RecruiterApplicationDetail.html", context)
 
-
+@login_required
 @recruiter_required
 def update_application_status(request, pk):
     application = get_object_or_404(Application, pk=pk)
     
     # Security Check: Ensure the logged-in recruiter owns the job for this application
-    if application.job.posted_by != request.user:
+    if application.job.recruiter != request.user:
         messages.error(request, "You do not have permission to modify this application.")
         return redirect('recruiter_dashboard')
 
     if request.method == 'POST':
         new_status = request.POST.get('status')
-        # Check if new_status is valid key in Status choices
         if new_status and new_status in dict(Application.STATUS_CHOICES):
             application.status = new_status
             application.save()
@@ -304,20 +327,21 @@ def update_application_status(request, pk):
         else:
             messages.error(request, "Invalid status provided.")
     
-    # Redirect back to the Kanban board for this job
     return redirect(f'/jobboard/recruiter/kanban/?job_id={application.job.id}')
-
 
 @login_required
 def job_detail(request, pk):
     job = get_object_or_404(Job, pk=pk)
+    
+    # Only allow unapproved jobs to be seen by the recruiter or an admin
+    if not job.is_approved and not request.user.is_staff and job.recruiter != request.user:
+        return redirect('jobseeker_search')
     
     # Check if user has already applied
     has_applied = False
     if request.user.role == CustomUser.Role.JOBSEEKER:
         has_applied = Application.objects.filter(job=job, applicant=request.user).exists()
     
-    # Application Form
     form = ApplicationForm()
 
     context = {
@@ -350,4 +374,3 @@ def apply_for_job(request, pk):
             return redirect('jobseeker_dashboard')
             
     return redirect('job_detail', pk=pk)
-

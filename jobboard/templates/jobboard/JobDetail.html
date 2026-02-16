@@ -7,6 +7,11 @@
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
+<!-- Leaflet for Map Display -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 <script>
     tailwind.config = {
         darkMode: "class",
@@ -271,6 +276,34 @@
                     </p>
                 </div>
             </div>
+
+            {% if job.latitude and job.longitude %}
+            <!-- Office Map Card -->
+            <div class="bg-white dark:bg-surface-dark rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 bento-card">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-primary/10 rounded-lg text-primary-dark">
+                        <span class="material-icons">map</span>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Office Location</h2>
+                </div>
+                <div id="job-location-map" class="w-full h-[250px] rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden"></div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const lat = {{ job.latitude }};
+                        const lng = {{ job.longitude }};
+                        const map = L.map('job-location-map').setView([lat, lng], 15);
+                        
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '© OpenStreetMap contributors'
+                        }).addTo(map);
+
+                        L.marker([lat, lng]).addTo(map)
+                            .bindPopup('{{ job.company_name }} Office')
+                            .openPopup();
+                    });
+                </script>
+            </div>
+            {% endif %}
         </div>
     </div>
 </main>

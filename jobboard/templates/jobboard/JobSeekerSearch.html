@@ -93,10 +93,10 @@
 </div>
 </div>
 <div class="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
-<div class="bg-gray-100/50 dark:bg-black/20 p-1 rounded-full flex items-center gap-1 border border-white/50 dark:border-white/5">
-<a class="px-5 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:bg-white hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white transition-all" href="#">Jobs</a>
-<a class="px-5 py-2 rounded-full text-sm font-bold text-gray-900 dark:text-white bg-white dark:bg-white/10 shadow-sm border border-black/5 dark:border-white/5" href="#">Map</a>
-<a class="px-5 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:bg-white hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white transition-all" href="#">Saved</a>
+<a class="px-5 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:bg-white hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white transition-all" href="{% url 'jobseeker_dashboard' %}">Dashboard</a>
+<a class="px-5 py-2 rounded-full text-sm font-bold text-gray-900 dark:text-white bg-white dark:bg-white/10 shadow-sm border border-black/5 dark:border-white/5" href="{% url 'jobseeker_search' %}">Jobs</a>
+<a class="px-5 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:bg-white hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white transition-all" href="{% url 'jobseeker_map_viewer' %}">Map</a>
+<a class="px-5 py-2 rounded-full text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-all" href="{% url 'logout' %}">Log Out</a>
 </div>
 </div>
 <div class="flex items-center gap-3 pr-1">
