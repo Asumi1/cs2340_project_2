@@ -31,11 +31,17 @@ class RecruiterProfile(models.Model):
 class JobSeekerProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     major = models.CharField(max_length=120, blank=True)
+    headline = models.CharField(max_length=255, blank=True, help_text="A short professional headline")
     bio = models.TextField(blank=True)
     skills = models.TextField(blank=True, help_text="Comma-separated skills")
+    education = models.TextField(blank=True, help_text="Education details")
+    work_experience = models.TextField(blank=True, help_text="Work experience details")
     linkedin_url = models.URLField(max_length=200, blank=True)
     portfolio_url = models.URLField(max_length=200, blank=True)
     resume_file = models.FileField(upload_to='resumes/', blank=True, null=True)
+    
+    # Privacy Settings
+    is_resume_public = models.BooleanField(default=True, help_text="Allow recruiters to see your resume")
 
     def clean(self):
         if hasattr(self.user, "recruiterprofile"):

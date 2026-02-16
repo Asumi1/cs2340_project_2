@@ -18,6 +18,7 @@ class Job(models.Model):
     salary_min = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     salary_max = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     skills = models.CharField(max_length=500, blank=True, help_text="Comma-separated list of required skills")
+    visa_sponsorship = models.BooleanField(default=False, help_text="Does this job offer visa sponsorship?")
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
