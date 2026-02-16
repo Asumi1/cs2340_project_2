@@ -289,8 +289,8 @@
                 <div id="job-location-map" class="w-full h-[250px] rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden"></div>
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                        const lat = {{ job.latitude }};
-                        const lng = {{ job.longitude }};
+                        const lat = parseFloat("{{ job.latitude|default:0 }}");
+                        const lng = parseFloat("{{ job.longitude|default:0 }}");
                         const map = L.map('job-location-map').setView([lat, lng], 15);
                         
                         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -298,7 +298,7 @@
                         }).addTo(map);
 
                         L.marker([lat, lng]).addTo(map)
-                            .bindPopup('{{ job.company_name }} Office')
+                            .bindPopup('{{ job.company_name|escapejs }} Office')
                             .openPopup();
                     });
                 </script>
