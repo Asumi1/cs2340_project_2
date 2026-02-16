@@ -65,17 +65,17 @@
         </div>
         <div class="flex items-center gap-2">
             {% if user.is_authenticated %}
-                <span class="text-sm font-semibold text-charcoal hidden sm:block">Hello, {{ user.username }}</span>
+                <a href="{% url 'edit_profile' %}" class="text-sm font-semibold text-charcoal hover:text-primary-dark transition-colors px-2 hidden sm:block">Profile</a>
                 <form action="{% url 'logout' %}" method="post" class="inline">
                     {% csrf_token %}
-                    <button type="submit" class="text-sm font-semibold text-charcoal hover:text-primary-dark transition-colors px-4">Log Out</button>
+                    <button type="submit" class="text-sm font-semibold text-charcoal hover:text-primary-dark transition-colors px-2">Log Out</button>
                 </form>
                 {% if user.role == "RECRUITER" %}
-                     <a href="#" class="bg-charcoal hover:bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-lg shadow-charcoal/20 flex items-center gap-2">
+                     <a href="{% url 'recruiter_dashboard' %}" class="bg-charcoal hover:bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-lg shadow-charcoal/20 flex items-center gap-2">
                         <span>Dashboard</span>
                     </a>
                 {% elif user.role == "JOBSEEKER" %}
-                    <a href="#" class="bg-charcoal hover:bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-lg shadow-charcoal/20 flex items-center gap-2">
+                    <a href="{% url 'jobseeker_dashboard' %}" class="bg-charcoal hover:bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-lg shadow-charcoal/20 flex items-center gap-2">
                         <span>Find Jobs</span>
                     </a>
                 {% endif %}

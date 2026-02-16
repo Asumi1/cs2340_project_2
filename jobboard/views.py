@@ -45,16 +45,46 @@ def jobseeker_map_viewer(request):
 @login_required
 def jobseeker_search(request):
     query = request.GET.get('q', '')
+    location = request.GET.get('location', '')
+    job_type = request.GET.get('job_type', '')
+    min_salary = request.GET.get('min_salary', '')
+    visa = request.GET.get('visa_sponsorship', '')
+
     jobs = Job.objects.filter(is_active=True).order_by('-created_at')
 
     if query:
         jobs = jobs.filter(
             Q(title__icontains=query) |
             Q(company_name__icontains=query) |
-            Q(description__icontains=query)
+            Q(description__icontains=query) |
+            Q(skills__icontains=query)
         )
     
-    return render(request, "jobboard/JobSeekerSearch.html", {'jobs': jobs, 'query': query, 'count': jobs.count()})
+    if location:
+        jobs = jobs.filter(location__icontains=location)
+    
+    if job_type:
+        jobs = jobs.filter(job_type=job_type)
+        
+    if min_salary:
+        try:
+            jobs = jobs.filter(salary_max__gte=min_salary)
+        except (ValueError, TypeError):
+            pass
+            
+    if visa == 'on':
+        jobs = jobs.filter(visa_sponsorship=True)
+    
+    context = {
+        'jobs': jobs, 
+        'query': query, 
+        'location': location,
+        'job_type': job_type,
+        'min_salary': min_salary,
+        'visa': visa,
+        'count': jobs.count()
+    }
+    return render(request, "jobboard/JobSeekerSearch.html", context)
 
 @login_required
 @recruiter_required

@@ -1,8 +1,8 @@
-1.⚠️ As a Job Seeker, I want to create a profile with my headline, skills, education, work experience, and links so recruiters can learn about me.
-2.⚠️ As a Job Seeker, I want to search for jobs with filters (title, skills, location, salary range, remote/on-site, visa sponsorship) so I can find opportunities that match my needs.
+1.✅ As a Job Seeker, I want to create a profile with my headline, skills, education, work experience, and links so recruiters can learn about me.
+2.✅ As a Job Seeker, I want to search for jobs with filters (title, skills, location, salary range, remote/on-site, visa sponsorship) so I can find opportunities that match my needs.
 3.✅ As a Job Seeker, I want to apply to a job with one click and include a tailored note so my application feels personalized.
 4.✅ As a Job Seeker, I want to track the status of my applications (Applied → Review → Interview → Offer → Closed) so I know where I stand.
-5.❌ As a Job Seeker, I want to set privacy options on my profile so I control what recruiters can see.
+5.✅ As a Job Seeker, I want to set privacy options on my profile so I control what recruiters can see.
 
 
 10.✅ As a Recruiter, I want to post and edit job roles so candidates can apply to my openings

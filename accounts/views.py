@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
-from .forms import CustomUserCreationForm, CustomAuthenticationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, JobSeekerProfileForm, RecruiterProfileForm
 from .models import JobSeekerProfile, RecruiterProfile, CustomUser
 
 def signup_view(request):
@@ -49,3 +51,40 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect("home")
+
+@login_required
+def edit_profile(request):
+    user = request.user
+    if user.role == CustomUser.Role.JOBSEEKER:
+        try:
+            profile = user.jobseekerprofile
+        except JobSeekerProfile.DoesNotExist:
+            profile = JobSeekerProfile.objects.create(user=user)
+        
+        if request.method == 'POST':
+            form = JobSeekerProfileForm(request.POST, request.FILES, instance=profile)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('jobseeker_dashboard')
+        else:
+            form = JobSeekerProfileForm(instance=profile)
+            
+    elif user.role == CustomUser.Role.RECRUITER:
+        try:
+            profile = user.recruiterprofile
+        except RecruiterProfile.DoesNotExist:
+            profile = RecruiterProfile.objects.create(user=user, company_name="Unknown")
+            
+        if request.method == 'POST':
+            form = RecruiterProfileForm(request.POST, instance=profile)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('recruiter_dashboard')
+        else:
+            form = RecruiterProfileForm(instance=profile)
+    else:
+        return redirect('home')
+    
+    return render(request, 'accounts/profile_edit.html', {'form': form})
