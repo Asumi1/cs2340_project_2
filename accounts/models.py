@@ -33,6 +33,7 @@ class JobSeekerProfile(models.Model):
     major = models.CharField(max_length=120, blank=True)
     headline = models.CharField(max_length=255, blank=True, help_text="A short professional headline")
     bio = models.TextField(blank=True)
+    location = models.CharField(max_length=255, blank=True, help_text="Current city/region")
     skills = models.TextField(blank=True, help_text="Comma-separated skills")
     education = models.TextField(blank=True, help_text="Education details")
     work_experience = models.TextField(blank=True, help_text="Work experience details")

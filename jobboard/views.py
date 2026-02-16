@@ -242,17 +242,28 @@ def recruiter_messaging(request):
 @recruiter_required
 def recruiter_talent_search(request):
     query = request.GET.get('q', '')
-    profiles = JobSeekerProfile.objects.all()
+    location = request.GET.get('location', '')
+    
+    # Only show profiles that are set to public
+    profiles = JobSeekerProfile.objects.filter(is_resume_public=True)
 
     if query:
         profiles = profiles.filter(
             Q(user__first_name__icontains=query) |
             Q(user__last_name__icontains=query) |
             Q(skills__icontains=query) |
-            Q(major__icontains=query)
+            Q(major__icontains=query) |
+            Q(headline__icontains=query)
         )
+    
+    if location:
+        profiles = profiles.filter(location__icontains=location)
 
-    context = {'profiles': profiles, 'query': query}
+    context = {
+        'profiles': profiles, 
+        'query': query,
+        'location': location
+    }
     return render(request, "jobboard/RecruiterTalentSearch.html", context)
 
 

@@ -121,14 +121,20 @@
             <div class="flex-1 w-full">
                 <h2 class="text-3xl font-bold mb-6 text-slate-900 dark:text-white">Find your next top performer</h2>
                 <form method="GET" action="{% url 'recruiter_talent_search' %}" class="flex flex-col md:flex-row gap-3 w-full">
-                    <div class="relative flex-grow group">
+                    <div class="relative flex-[2] group">
                         <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-dark transition-colors">
                             <span class="material-symbols-outlined">search</span>
                         </div>
                         <input name="q" value="{{ query|default:'' }}" class="w-full h-14 pl-12 pr-4 rounded-full bg-white dark:bg-surface-dark border-0 ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all" placeholder="Search by role, skill, or keyword..." type="text"/>
                     </div>
-                    <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-                        <button type="submit" class="flex items-center gap-2 h-14 px-5 rounded-full bg-slate-900 text-white hover:bg-slate-800 transition-all whitespace-nowrap font-bold shadow-lg">
+                    <div class="relative flex-1 group">
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-dark transition-colors">
+                            <span class="material-symbols-outlined">location_on</span>
+                        </div>
+                        <input name="location" value="{{ location|default:'' }}" class="w-full h-14 pl-12 pr-4 rounded-full bg-white dark:bg-surface-dark border-0 ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all" placeholder="Location..." type="text"/>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="flex items-center gap-2 h-14 px-8 rounded-full bg-slate-900 text-white hover:bg-slate-800 transition-all whitespace-nowrap font-bold shadow-lg">
                             Search
                         </button>
                     </div>
@@ -168,14 +174,22 @@
                          </div>
                     {% endif %}
                     <div>
-                        <h3 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">{{ profile.user.get_full_name }}</h3>
-                        <p class="text-sm text-slate-500 dark:text-slate-400">{{ profile.major|default:"Candidate" }}</p>
+                        <h3 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">{{ profile.user.get_full_name|default:profile.user.username }}</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">{{ profile.headline|default:profile.major|default:"Candidate" }}</p>
                     </div>
                 </div>
                 <button class="text-slate-400 hover:text-primary transition-colors">
                     <span class="material-symbols-outlined">bookmark</span>
                 </button>
             </div>
+            
+            {% if profile.location %}
+            <div class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-xs mb-3">
+                <span class="material-symbols-outlined text-sm">location_on</span>
+                {{ profile.location }}
+            </div>
+            {% endif %}
+
             <div class="flex flex-wrap gap-2 mb-6">
                 <!-- Mock skills for now if not iterable -->
                 {% if profile.skills %}
