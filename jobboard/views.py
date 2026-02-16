@@ -43,6 +43,32 @@ def approve_job(request, pk):
     
     return redirect('admin_dashboard')
 
+import csv
+from django.http import HttpResponse
+
+@staff_member_required
+def export_jobs_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="job_report.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Title', 'Company', 'Location', 'Job Type', 'Posted At', 'Is Approved', 'Total Applications'])
+
+    jobs = Job.objects.all().order_by('-created_at')
+    for job in jobs:
+        app_count = Application.objects.filter(job=job).count()
+        writer.writerow([
+            job.title,
+            job.company_name,
+            job.location,
+            job.get_job_type_display(),
+            job.created_at.strftime("%Y-%m-%d %H:%M"),
+            "Yes" if job.is_approved else "No",
+            app_count
+        ])
+
+    return response
+
 @login_required
 def jobseeker_dashboard(request):
     jobs = Job.objects.filter(is_active=True, is_approved=True).order_by('-created_at')[:5]

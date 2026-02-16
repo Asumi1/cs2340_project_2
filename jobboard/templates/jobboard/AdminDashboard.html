@@ -23,6 +23,10 @@
             <p class="text-slate-500 font-medium">Review and approve new job postings</p>
         </div>
         <div class="flex items-center gap-4">
+            <a href="{% url 'export_jobs_csv' %}" class="px-4 py-2 bg-primary text-slate-900 rounded-full text-sm font-bold hover:bg-primary-dark transition-all flex items-center gap-2 shadow-lg shadow-primary/20">
+                <span class="material-symbols-outlined text-lg">download</span>
+                Export Report
+            </a>
             <span class="px-4 py-2 bg-white rounded-full shadow-sm text-sm font-bold text-slate-700 border border-slate-100 uppercase tracking-wider">
                 System Administrator
             </span>
