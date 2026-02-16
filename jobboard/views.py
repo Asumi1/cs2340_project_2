@@ -62,7 +62,7 @@ def export_jobs_csv(request):
             job.company_name,
             job.location,
             job.get_job_type_display(),
-            job.created_at.strftime("%Y-%m-%d %H:%M"),
+            job.created_at.strftime("%b %d, %Y %H:%M"),
             "Yes" if job.is_approved else "No",
             app_count
         ])

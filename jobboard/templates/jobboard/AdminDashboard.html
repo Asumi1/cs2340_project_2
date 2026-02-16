@@ -1,106 +1,275 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Admin Dashboard - MintMatch{% endblock %}
 
 {% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <style>
-    .glass-panel {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-    }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 35, 30, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-button {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+        }
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.7);
+            transform: translateY(-1px);
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+        }
+        .dark .glass-nav {
+            background: rgba(15, 35, 30, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .shadow-glow {
+            box-shadow: 0 0 15px rgba(6, 249, 188, 0.3);
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
 </style>
 {% endblock %}
 
-{% block body_class %}bg-slate-50 font-display{% endblock %}
+{% block body_class %}bg-background-light dark:bg-background-dark font-display min-h-screen text-slate-800 dark:text-slate-100 selection:bg-primary selection:text-slate-900 transition-colors duration-300 overflow-x-hidden{% endblock %}
 
 {% block content %}
-<div class="min-h-screen p-8">
-    <header class="max-w-[1400px] mx-auto mb-12 flex justify-between items-center">
-        <div>
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Admin Moderation</h1>
-            <p class="text-slate-500 font-medium">Review and approve new job postings</p>
-        </div>
-        <div class="flex items-center gap-4">
-            <a href="{% url 'export_jobs_csv' %}" class="px-4 py-2 bg-primary text-slate-900 rounded-full text-sm font-bold hover:bg-primary-dark transition-all flex items-center gap-2 shadow-lg shadow-primary/20">
-                <span class="material-symbols-outlined text-lg">download</span>
-                Export Report
-            </a>
-            <span class="px-4 py-2 bg-white rounded-full shadow-sm text-sm font-bold text-slate-700 border border-slate-100 uppercase tracking-wider">
-                System Administrator
-            </span>
-            <a href="{% url 'home' %}" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-full text-sm font-bold hover:bg-slate-200 transition-all">Exit to Site</a>
-            <a href="{% url 'logout' %}" class="px-4 py-2 bg-rose-500 text-white rounded-full text-sm font-bold hover:bg-rose-600 transition-all">Logout</a>
-        </div>
-    </header>
+<div class="flex flex-col h-screen overflow-hidden relative">
+    <!-- Ambient Background Blobs -->
+    <div class="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[100px] pointer-events-none z-0"></div>
+    <div class="absolute bottom-[-10%] right-[-5%] w-[30%] h-[30%] bg-blue-300/20 rounded-full blur-[100px] pointer-events-none z-0"></div>
 
-    <div class="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="glass-panel p-6 rounded-3xl shadow-xl border-l-4 border-l-primary">
-            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Total Users</p>
-            <h3 class="text-3xl font-black text-slate-900">{{ total_users_count }}</h3>
-        </div>
-        <div class="glass-panel p-6 rounded-3xl shadow-xl border-l-4 border-l-blue-500">
-            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Active Jobs</p>
-            <h3 class="text-3xl font-black text-slate-900">{{ active_jobs_count }}</h3>
-        </div>
-        <div class="glass-panel p-6 rounded-3xl shadow-xl border-l-4 border-l-purple-500">
-            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Pending Review</p>
-            <h3 class="text-3xl font-black text-slate-900">{{ pending_jobs|length }}</h3>
-        </div>
+    <!-- Floating Navigation Bar -->
+    <div class="w-full px-6 pt-6 z-50 fixed top-0 left-0 right-0 flex justify-center pointer-events-none">
+        <nav class="glass-nav h-[4.5rem] w-full max-w-[1400px] rounded-full flex items-center justify-between px-3 pl-3 pr-3 pointer-events-auto transition-all duration-300">
+            <div class="flex items-center gap-3 pl-2">
+                <div class="size-10 rounded-full bg-gradient-to-tr from-primary to-emerald-400 flex items-center justify-center text-slate-900 shadow-glow shrink-0">
+                    <span class="material-symbols-outlined text-2xl">spa</span>
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hidden lg:block">MintMatch</span>
+            </div>
+
+            <div class="hidden md:flex items-center gap-1">
+                <a class="px-5 py-2.5 rounded-full bg-slate-900 text-white dark:bg-primary dark:text-slate-900 text-sm font-semibold shadow-md transition-all hover:shadow-lg" href="{% url 'admin_dashboard' %}">Dashboard</a>
+                <a class="px-5 py-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-white/10 text-sm font-medium transition-all" href="/admin/accounts/customuser/">Users</a>
+                <a class="px-5 py-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-white/10 text-sm font-medium transition-all" href="/admin/jobboard/job/">Jobs</a>
+                <a class="px-5 py-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-white/10 text-sm font-medium transition-all" href="{% url 'home' %}">Exit Site</a>
+            </div>
+
+            <div class="flex items-center gap-2 pr-1">
+                <div class="flex items-center gap-3 cursor-pointer group bg-white/40 dark:bg-black/20 pl-4 pr-1.5 py-1.5 rounded-full border border-white/40 dark:border-white/5 hover:bg-white/60 dark:hover:bg-black/30 transition-colors">
+                    <div class="text-right hidden xl:block">
+                        <p class="text-sm font-bold text-slate-800 dark:text-white leading-none">{{ user.get_full_name|default:user.username }}</p>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider mt-0.5">Admin</p>
+                    </div>
+                    <div class="size-9 rounded-full overflow-hidden border-2 border-white dark:border-slate-700 shadow-sm transition-transform group-hover:scale-105">
+                        <div class="h-full w-full bg-primary flex items-center justify-center text-xs font-bold text-slate-900">
+                            {{ user.username|first|upper }}
+                        </div>
+                    </div>
+                </div>
+                <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2"></div>
+                <a href="{% url 'logout' %}" class="glass-button size-10 rounded-full flex items-center justify-center text-rose-500 dark:text-rose-400">
+                    <span class="material-symbols-outlined text-[20px]">logout</span>
+                </a>
+            </div>
+        </nav>
     </div>
 
-    <div class="max-w-[1400px] mx-auto glass-panel rounded-[2.5rem] shadow-2xl overflow-hidden border border-white">
-        <div class="p-8 border-b border-slate-100 bg-white/30">
-            <h2 class="text-xl font-bold text-slate-900">Moderation Queue</h2>
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden relative z-10 w-full max-w-[1920px] mx-auto mt-24">
+        <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-8 py-6 shrink-0 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Admin Moderation</h1>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Reviewing recently posted job opportunities.</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="glass-button h-12 px-6 rounded-full flex items-center gap-2 text-slate-700 dark:text-white font-semibold hover:bg-white/60 transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">calendar_today</span>
+                    <span>{% now "M d, Y" %}</span>
+                </button>
+                <a href="{% url 'home' %}" class="bg-slate-900 hover:bg-slate-800 dark:bg-primary dark:hover:bg-primary-dark dark:text-slate-900 text-white h-12 px-6 rounded-full flex items-center gap-2 font-semibold shadow-lg shadow-slate-900/20 transition-all transform hover:scale-105">
+                    <span class="material-symbols-outlined text-[20px]">visibility</span>
+                    <span>View Site</span>
+                </a>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto px-8 pb-8 scrollbar-hide z-10">
+            <!-- Stats Bento Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="glass-panel p-6 rounded-3xl shadow-glass flex flex-col justify-between h-44 hover:scale-[1.02] transition-transform duration-300">
+                    <div class="flex justify-between items-start">
+                        <div class="p-3 bg-primary/10 rounded-2xl text-emerald-600 dark:text-primary">
+                            <span class="material-symbols-outlined">group</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 dark:text-slate-400 font-medium mb-1">Total Users</p>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white">{{ total_users_count }}</h3>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-3xl shadow-glass flex flex-col justify-between h-44 hover:scale-[1.02] transition-transform duration-300">
+                    <div class="flex justify-between items-start">
+                        <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-2xl text-blue-600 dark:text-blue-400">
+                            <span class="material-symbols-outlined">work</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 dark:text-slate-400 font-medium mb-1">Active Jobs</p>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white">{{ active_jobs_count }}</h3>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-3xl shadow-glass flex flex-col justify-between h-44 hover:scale-[1.02] transition-transform duration-300">
+                    <div class="flex justify-between items-start">
+                        <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-2xl text-purple-600 dark:text-purple-400">
+                            <span class="material-symbols-outlined">pending_actions</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-slate-500 dark:text-slate-400 font-medium mb-1">Pending Review</p>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white">{{ pending_jobs|length }}</h3>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-3xl shadow-glass flex flex-col justify-between h-44 hover:scale-[1.02] transition-transform duration-300 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-br from-primary/80 to-emerald-600 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="absolute -right-6 -top-6 size-32 bg-white/20 rounded-full blur-xl"></div>
+                    <div class="relative z-10 flex justify-between items-start">
+                        <div class="p-3 bg-white/20 rounded-2xl text-white backdrop-blur-sm">
+                            <span class="material-symbols-outlined">analytics</span>
+                        </div>
+                    </div>
+                    <div class="relative z-10 text-white">
+                        <p class="font-medium mb-1 opacity-90">Daily Activity</p>
+                        <h3 class="text-3xl font-bold">Stable</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job Management Table -->
+            <div class="glass-panel rounded-[2.5rem] p-8 shadow-glass min-h-[500px] flex flex-col">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Moderation Queue</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">Review, approve, or reject recently posted opportunities.</p>
+                    </div>
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <div class="relative group">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+                            <input class="pl-10 pr-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-full sm:w-64 transition-all" placeholder="Search moderation list..." type="text"/>
+                        </div>
+                        <a href="{% url 'export_jobs_csv' %}" class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-slate-900 to-slate-800 dark:from-primary dark:to-emerald-400 text-white dark:text-slate-900 rounded-full text-sm font-bold shadow-glow hover:shadow-lg hover:scale-105 transition-all">
+                            <span class="material-symbols-outlined text-[18px]">download</span>
+                            <span>Export CSV</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-slate-700/50">
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Job Details</th>
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Metadata</th>
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Status</th>
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Submitted On</th>
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-700/30">
+                            {% for job in pending_jobs %}
+                            <tr class="group hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
+                                <td class="py-5 px-4 align-middle">
+                                    <div class="flex items-center gap-3">
+                                        <div class="size-11 rounded-xl overflow-hidden bg-slate-900 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                                            {{ job.company_name|first|upper }}
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-slate-800 dark:text-slate-100 text-base leading-tight">{{ job.title }}</p>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ job.company_name }} • {{ job.location }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-4 align-middle">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-emerald-600 dark:text-primary">
+                                            {% if job.salary_min %}${{ job.salary_min|floatformat:0 }} - ${{ job.salary_max|floatformat:0 }}{% else %}Salary Negotiable{% endif %}
+                                        </span>
+                                        <span class="text-[10px] text-slate-400 font-medium uppercase mt-0.5">{{ job.get_job_type_display }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-4 align-middle">
+                                    <div class="flex items-center gap-2">
+                                        <div class="size-2 bg-amber-500 rounded-full shadow-sm"></div>
+                                        <span class="text-sm font-medium text-amber-600 dark:text-amber-400">Pending Review</span>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-4 align-middle">
+                                    <span class="text-sm text-slate-500 dark:text-slate-400">{{ job.created_at|date:"M d, Y" }}</span>
+                                </td>
+                                <td class="py-5 px-4 align-middle text-right">
+                                    <div class="flex items-center justify-end gap-2 translate-x-2 group-hover:translate-x-0 transition-transform">
+                                        <form action="{% url 'approve_job' job.id %}" method="POST" class="flex gap-1.5 px-2">
+                                            {% csrf_token %}
+                                            <button type="submit" name="approve" class="p-2 rounded-full text-emerald-600 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors" title="Approve">
+                                                <span class="material-symbols-outlined text-xl">check_circle</span>
+                                            </button>
+                                            <button type="submit" name="reject" class="p-2 rounded-full text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors" title="Reject">
+                                                <span class="material-symbols-outlined text-xl">cancel</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="py-24 text-center">
+                                    <div class="flex flex-col items-center">
+                                        <div class="size-24 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-6">
+                                            <span class="material-symbols-outlined text-5xl text-emerald-500">verified</span>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Queue Clear!</h3>
+                                        <p class="text-slate-500 dark:text-slate-400 max-w-xs mx-auto">All job postings have been moderated. Sit back and relax or check the analytics.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Mockup -->
+                <div class="pt-6 mt-4 border-t border-slate-200 dark:border-slate-700/50 flex items-center justify-between">
+                    <div class="text-sm text-slate-500 dark:text-slate-400">
+                        Showing pending moderation tasks.
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <div class="overflow-x-auto">
-            <table class="w-full text-left">
-                <thead>
-                    <tr class="bg-slate-50/50">
-                        <th class="px-8 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Job Details</th>
-                        <th class="px-8 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">Metadata</th>
-                        <th class="px-8 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Decision</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    {% for job in pending_jobs %}
-                    <tr class="hover:bg-white/40 transition-colors">
-                        <td class="px-8 py-6">
-                            <h4 class="font-bold text-slate-900 text-lg">{{ job.title }}</h4>
-                            <p class="text-slate-500 font-medium">{{ job.company_name }} • {{ job.location }}</p>
-                        </td>
-                        <td class="px-8 py-6">
-                            <div class="space-y-1">
-                                <p class="text-xs font-bold text-slate-400 uppercase tracking-tighter">Salary Range</p>
-                                <p class="text-sm font-bold text-slate-700">{% if job.salary_min %}${{ job.salary_min|floatformat:0 }} - ${{ job.salary_max|floatformat:0 }}{% else %}Not Listed{% endif %}</p>
-                            </div>
-                        </td>
-                        <td class="px-8 py-6">
-                            <div class="flex items-center justify-end gap-3">
-                                <form action="{% url 'approve_job' job.id %}" method="POST" class="inline">
-                                    {% csrf_token %}
-                                    <button type="submit" name="approve" class="px-5 py-2 bg-emerald-500 text-white rounded-full text-xs font-heavy hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 transition-all uppercase tracking-widest font-black">Approve</button>
-                                    <button type="submit" name="reject" class="px-5 py-2 bg-rose-500 text-white rounded-full text-xs font-heavy hover:bg-rose-600 shadow-lg shadow-rose-500/20 transition-all uppercase tracking-widest font-black">Reject</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="3" class="px-8 py-20 text-center">
-                            <div class="flex flex-col items-center">
-                                <span class="material-symbols-outlined text-6xl text-slate-200 mb-4">check_circle</span>
-                                <h3 class="text-xl font-bold text-slate-400">Moderation queue cleared!</h3>
-                                <p class="text-slate-400">All job postings have been reviewed.</p>
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    </main>
 </div>
 {% endblock %}
