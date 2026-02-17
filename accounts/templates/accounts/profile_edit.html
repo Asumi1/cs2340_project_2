@@ -67,40 +67,10 @@
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-neutral-900 dark:text-neutral-100 min-h-screen selection:bg-primary selection:text-neutral-900 transition-colors duration-300">
-
+{% include 'jobboard/includes/navbar.html' %} 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     
-    <!-- Floating Top Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 px-6 py-4">
-        <div class="glass-panel max-w-7xl mx-auto rounded-full px-6 py-3 flex items-center justify-between shadow-glass">
-            <div class="flex items-center gap-2">
-                <a href="{% url 'home' %}" class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center transform rotate-3">
-                        <span class="material-icons-round text-neutral-900 text-xl">bolt</span>
-                    </div>
-                    <span class="font-bold text-lg tracking-tight text-neutral-900 dark:text-white">MintMatch</span>
-                </a>
-            </div>
-            <div class="hidden md:flex items-center gap-8">
-                <a class="text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-primary font-medium text-sm transition-colors" href="{% if user.role == 'RECRUITER' %}{% url 'recruiter_dashboard' %}{% else %}{% url 'jobseeker_dashboard' %}{% endif %}">Dashboard</a>
-                <a class="text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-primary font-medium text-sm transition-colors" href="{% url 'jobseeker_search' %}">Matches</a>
-                <a class="text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-primary font-medium text-sm transition-colors" href="#">Messages</a>
-                <a class="text-neutral-900 dark:text-white font-semibold text-sm border-b-2 border-primary pb-0.5" href="{% url 'edit_profile' %}">Profile</a>
-            </div>
-            <div class="flex items-center gap-4">
-                <button type="button" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors text-neutral-600 dark:text-neutral-400">
-                    <span class="material-icons-round">notifications_none</span>
-                </button>
-                <div class="h-8 w-8 rounded-full bg-gradient-to-tr from-primary to-blue-400 p-[2px]">
-                    <div class="h-full w-full rounded-full bg-white flex items-center justify-center text-xs font-bold text-slate-900 overflow-hidden">
-                        {{ user.username|first|upper }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
     <!-- Main Content -->
     <main class="pt-28 pb-12 px-6 max-w-7xl mx-auto">
         <!-- Header Section -->

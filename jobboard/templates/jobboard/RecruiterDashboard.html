@@ -93,36 +93,6 @@
     <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-[100px]"></div>
 </div>
 
-<!-- Floating Navigation -->
-<nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-5xl glass-nav rounded-full px-6 py-3 flex items-center justify-between">
-    <!-- Logo -->
-    <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
-            <span class="material-icons text-charcoal text-lg font-bold">bolt</span>
-        </div>
-        <span class="font-bold text-lg tracking-tight text-charcoal dark:text-white">MintMatch</span>
-    </div>
-    <!-- Links -->
-    <div class="hidden md:flex items-center gap-1 bg-gray-100/50 dark:bg-black/20 p-1 rounded-full">
-        <a class="px-5 py-2 bg-white dark:bg-white/10 text-charcoal dark:text-white font-semibold rounded-full shadow-sm text-sm transition-all" href="#">Overview</a>
-        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="{% url 'job_create' %}">Post Job</a>
-        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="{% url 'recruiter_kanban' %}">Candidates</a>
-        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="{% url 'recruiter_messaging' %}">Messages</a>
-        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="{% url 'edit_profile' %}">Profile</a>
-        <a class="px-5 py-2 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all" href="{% url 'logout' %}">Log Out</a>
-    </div>
-    <!-- Profile & Actions -->
-    <div class="flex items-center gap-4">
-        <button class="relative p-2 text-charcoal-light dark:text-gray-300 hover:text-primary transition-colors">
-            <span class="material-icons">notifications_none</span>
-            <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
-        </button>
-        <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white dark:border-white/10 shadow-md">
-            <img alt="Recruiter profile photo" class="w-full h-full object-cover" src="{% static 'img/default-profile.png' %}" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDwOIPtNMrvGhOGc2-dV9q4kK2lvXwblEC-FzlB0x8SrLEDezo-1NGW72kJDdn8W99WhEaxdoxsLmd-Y6zhlw4tjUP4XIqNqYAURU_9Yu77URi86sqXZ5d7KJpDnb0CcYqw2ez9lbl3g3cSPug1WHXxjqNs18OtToJmLNF8bEne42LqStNzCvwm75vtrJXncNg1OmrYx3_96ukmYKROA2r2qgHbZ-Gkn4RRt18IppGeyK6NgiDQckUrqYVjnRDJ7xGkdO4Mm1n__vI'"/>
-        </div>
-    </div>
-</nav>
-
 <!-- Main Content Area -->
 <main class="pt-32 pb-12 px-4 md:px-8 max-w-7xl mx-auto">
     <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">

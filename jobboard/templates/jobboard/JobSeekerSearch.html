@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>MintMatch Map Search</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script>
-        tailwind.config = {
-            darkMode: "class",
+<html class="light" lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+        <title>MintMatch Map Search</title>
+        <link href="https://fonts.googleapis.com" rel="preconnect"/>
+        <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+        <script>
+            tailwind.config = {
+                darkMode: "class",
             theme: {
                 extend: {
                     colors: {
@@ -81,45 +82,7 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-background-light to-[#dcfce7] dark:from-background-dark dark:to-[#051a15] min-h-screen flex flex-col overflow-hidden text-[#0d1c18] dark:text-white transition-colors duration-300 relative">
-<div class="fixed top-6 left-0 right-0 z-50 flex justify-center px-6">
-<nav class="w-full max-w-5xl header-glass rounded-full px-2 py-2 md:px-3 md:py-2.5 transition-all duration-300">
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-2.5 pl-2">
-<div class="size-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 rotate-3 hover:rotate-0 transition-transform duration-300">
-<span class="material-symbols-outlined text-white text-[20px]">spa</span>
-</div>
-<div class="flex flex-col leading-none">
-<h1 class="text-lg font-extrabold tracking-tight text-gray-900 dark:text-white">Mint<span class="text-primary-dark dark:text-primary">Match</span></h1>
-</div>
-</div>
-<div class="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
-<a class="px-5 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:bg-white hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white transition-all" href="{% url 'jobseeker_dashboard' %}">Dashboard</a>
-<a class="px-5 py-2 rounded-full text-sm font-bold text-gray-900 dark:text-white bg-white dark:bg-white/10 shadow-sm border border-black/5 dark:border-white/5" href="{% url 'jobseeker_search' %}">Jobs</a>
-<a class="px-5 py-2 rounded-full text-sm font-semibold text-gray-500 dark:text-gray-400 hover:bg-white hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white transition-all" href="{% url 'jobseeker_map_viewer' %}">Map</a>
-<a class="px-5 py-2 rounded-full text-sm font-semibold text-rose-500 hover:bg-rose-50 transition-all" href="{% url 'logout' %}">Log Out</a>
-</div>
-</div>
-<div class="flex items-center gap-3 pr-1">
-<form method="GET" action="{% url 'jobseeker_search' %}" class="hidden lg:flex relative group w-48 mr-2">
-<input type="hidden" name="type" value="{{ request.GET.type }}">
-<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-<span class="material-symbols-outlined text-[18px]">search</span>
-</div>
-<input name="q" value="{{ query }}" class="block w-full pl-9 pr-3 py-2 rounded-full bg-transparent hover:bg-white/40 focus:bg-white dark:hover:bg-white/5 dark:focus:bg-black/40 border-none ring-0 focus:ring-1 focus:ring-primary/50 transition-all placeholder-gray-400 text-sm font-medium" placeholder="Search..." type="text"/>
-</form>
-<div class="h-6 w-[1px] bg-gray-200 dark:bg-gray-700 hidden lg:block mx-1"></div>
-<div class="flex items-center gap-2">
-<button class="size-9 flex items-center justify-center rounded-full bg-transparent hover:bg-white/60 dark:hover:bg-white/10 transition-all text-gray-500 dark:text-gray-300">
-<span class="material-symbols-outlined text-[20px]">notifications</span>
-</button>
-<button class="flex items-center justify-center rounded-full transition-all shadow-sm ring-2 ring-transparent hover:ring-primary/50">
-<img alt="User profile picture" class="size-9 rounded-full object-cover border-2 border-white dark:border-gray-600" data-alt="User Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXdaIo6_ot_RjHxqw-xUiykHNDGeTad4Fc60Zt7ZmYYowp65pnaVbRIsRpdT3Zf0g71lfDuJCiU_ZvLv8VOKCW9dpbViSysOuwKvzPra_EAQG3__v14C-Cv2kUPmorMM7YkwCYqJlI55Zwq0mSAifliaBVsQ0iB42wE_mxooNleWRBeH1CCgwAoB-jpawnuqGOQRHb53H71zZcyhTEMLG6T-rKeAZJ7hDMoE1SWan-k_6H9u2-_1jakVXgE6WsWyMJCr1wQ790GhY"/>
-</button>
-</div>
-</div>
-</div>
-</nav>
-</div>
+{% include 'jobboard/includes/navbar.html' %} 
 <main class="flex-1 flex gap-6 px-6 pb-6 pt-24 overflow-hidden h-screen">
 <div class="w-full lg:w-[45%] xl:w-[40%] flex flex-col gap-4 h-full pt-2">
 <div class="glass-panel dark:glass-panel-dark rounded-3xl p-6 shadow-glass shrink-0 flex flex-col gap-4">

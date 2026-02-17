@@ -100,43 +100,6 @@
 {% block body_class %}bg-animated-mesh dark:bg-background-dark text-slate-900 dark:text-white font-display min-h-screen flex flex-col transition-colors duration-300{% endblock %}
 
 {% block content %}
-<!-- Floating Navigation Bar -->
-<nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-7xl glass-panel rounded-full px-6 py-4 flex items-center justify-between shadow-glass">
-    <!-- Logo -->
-    <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
-            <span class="material-icons text-background-dark text-2xl">eco</span>
-        </div>
-        <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hidden sm:block">MintMatch</h1>
-    </div>
-
-    <!-- Center Menu -->
-    <div class="hidden md:flex items-center gap-1 bg-white/50 dark:bg-black/20 p-1.5 rounded-full border border-white/20 backdrop-blur-md">
-        <a href="{% url 'jobseeker_dashboard' %}" class="px-5 py-2 bg-white dark:bg-surface-dark text-slate-900 dark:text-primary shadow-sm rounded-full text-sm font-bold ring-1 ring-black/5 dark:ring-white/10">Dashboard</a>
-        <a href="{% url 'jobseeker_search' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Find Jobs</a>
-        <a href="{% url 'jobseeker_map_viewer' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Map View</a>
-    </div>
-
-    <!-- Right Actions -->
-    <div class="flex items-center gap-4">
-        <div class="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full bg-white/40 dark:bg-black/20 border border-white/50 dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/20 transition-colors cursor-pointer group">
-            <div class="text-right hidden xl:block">
-                <p class="text-xs font-bold text-slate-900 dark:text-white">{{ user.first_name|default:user.username }}</p>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Job Seeker</p>
-            </div>
-            <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-white dark:border-slate-700">
-                {% if user.jobseekerprofile.profile_picture %}
-                    <img alt="Profile" class="w-full h-full object-cover" src="{{ user.jobseekerprofile.profile_picture.url }}"/>
-                {% else %}
-                    <div class="w-full h-full bg-primary flex items-center justify-center text-xs font-bold text-slate-900">{{ user.username|first|upper }}</div>
-                {% endif %}
-            </div>
-        </div>
-        <a href="{% url 'logout' %}" class="w-10 h-10 rounded-full flex items-center justify-center bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white dark:hover:bg-rose-500 transition-all shadow-sm">
-            <span class="material-symbols-outlined text-xl">logout</span>
-        </a>
-    </div>
-</nav>
 
 <main class="flex-grow p-6 pb-12 w-full max-w-[1400px] mx-auto mt-24 pt-32">
 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 px-2">

@@ -10,6 +10,14 @@ class CustomUser(AbstractUser):
 
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.JOBSEEKER)
 
+    @property
+    def is_recruiter(self):
+        return self.role == self.Role.RECRUITER
+
+    @property
+    def is_jobseeker(self):
+        return self.role == self.Role.JOBSEEKER
+        
     def __str__(self):
         return self.username
 
