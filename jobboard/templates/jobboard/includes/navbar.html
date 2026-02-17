@@ -35,19 +35,29 @@
         <!-- Profile Dropdown -->
          {% if user.is_authenticated %}
             <div class="relative group">
+                {% if user.role == 'JOBSEEKER' and user.jobseekerprofile.profile_photo %}
                 <button class="w-9 h-9 rounded-full overflow-hidden border-2 border-white/20 hover:border-primary/50 transition-all">
-                    <img alt="Profile photo" class="w-full h-full object-cover" src="{% static 'img/default-profile.png' %}" onerror="this.src='https://lh3.googleusercontent.com/aida-public/AB6AXuDwOIPtNMrvGhOGc2-dV9q4kK2lvXwblEC-FzlB0x8SrLEDezo-1NGW72kJDdn8W99WhEaxdoxsLmd-Y6zhlw4tjUP4XIqNqYAURU_9Yu77URi86sqXZ5d7KJpDnb0CcYqw2ez9lbl3g3cSPug1WHXxjqNs18OtToJmLNF8bEne42LqStNzCvwm75vtrJXncNg1OmrYx3_96ukmYKROA2r2qgHbZ-Gkn4RRt18IppGeyK6NgiDQckUrqYVjnRDJ7xGkdO4Mm1n__vI'"/>
+                    <img alt="Profile photo" class="w-full h-full object-cover" src="{{user.jobseekerprofile.profile_photo.url }}">
                 </button>
+                {% elif user.role == 'RECRUITER' and user.recruiterprofile.profile_photo %}
+                <button class="w-9 h-9 rounded-full overflow-hidden border-2 border-white/20 hover:border-primary/50 transition-all">
+                    <img alt="Profile photo" class="w-full h-full object-cover" src="{{user.recruiterprofile.profile_photo.url }}">
+                </button>
+                {% else %}
+                <button class="w-9 h-9 rounded-full overflow-hidden border-2 border-white/20 hover:border-primary/50 transition-all bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-3xl text-neutral-400">account_circle</span>
+                </button>
+                {% endif %}
                 <div class="absolute right-0 mt-2 hidden group-hover:block bg-white dark:bg-slate-800 shadow-lg rounded-lg w-44 overflow-hidden">
                     <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
                         <span class="font-semibold text-sm text-slate-900 dark:text-white">{{ user.first_name|default:user.username }}</span>
                     </div>
-                        <a href="{% url 'edit_profile' %}" class="block px-4 py-2 ext-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Profile</a>
-                        <a href="{% url 'logout' %}" class="block px-4 py-2 ext-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Log Out</a>
+                        <a href="{% url 'edit_profile' %}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Profile</a>
+                        <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">Log Out</a>
                 </div>
             </div>
         {% else %}
-            <a href="{% url 'login' %}" class="nav-link" px-4 py-2 text-sm font-medium">Login</a>
+            <a href="{% url 'login' %}" class="nav-link px-4 py-2 text-sm font-medium">Login</a>
         {% endif %}
     </div>
 </nav>

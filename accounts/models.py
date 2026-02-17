@@ -48,6 +48,7 @@ class JobSeekerProfile(models.Model):
     linkedin_url = models.URLField(max_length=200, blank=True)
     portfolio_url = models.URLField(max_length=200, blank=True)
     resume_file = models.FileField(upload_to='resumes/', blank=True, null=True)
+    profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
     
     # Privacy Settings
     is_resume_public = models.BooleanField(default=True, help_text="Allow recruiters to see your resume")

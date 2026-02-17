@@ -125,7 +125,14 @@
 <div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 <div class="relative z-10">
 <div class="flex items-start justify-between">
-<div class="size-24 rounded-2xl bg-cover bg-center shadow-md ring-4 ring-white/50 dark:ring-white/10" data-alt="Close up portrait of Alex" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAhRTW6hxezba4cygHVaSfpzzZh2WNCRoghmuhQu2x4Y8bMlI3HFwH8FQAOMg_t1MEO6VU2WABWLQUxR4VEnpLM39DO5EQYNNJlzl15NloMbSNQo24N2DglgMkjnLx3yVkQ4eqhfh3MEptHPN8_N8iQXOdSi8FbqVbtrnSp-_HKuLYZSlw2iytVNPBb8jKo4jYa9tc6J1wl-l2yo_aef9YfsrS5VbYk2f5ANWZJzwMfNCkhkmkwWewkAGPbqyuJpRhsajZh7cRKqgs");'></div>
+{% if user.role == 'JOBSEEKER' and user.jobseekerprofile.profile_photo %}
+    <div class="size-24 rounded-2xl bg-cover bg-center shadow-md ring-4 ring-white/50 dark:ring-white/10"
+         style="background-image: url('{{ user.jobseekerprofile.profile_photo.url }}');"></div>
+{% else %}
+    <div class="size-24 rounded-2xl bg-cover bg-center shadow-md ring-4 ring-white/50 dark:ring-white/10 bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center">
+        <span class="material-symbols-outlined text-4xl text-neutral-400">account_circle</span>
+    </div>
+{% endif %}
 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800">
 <span class="relative flex h-2 w-2">
 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

@@ -111,13 +111,45 @@
                 <div class="bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-soft flex flex-col items-center text-center relative overflow-hidden group">
                     <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-primary/20 to-transparent"></div>
                     <div class="relative mt-4 mb-4">
-                        <div class="w-32 h-32 rounded-full p-1 bg-white dark:bg-neutral-800 shadow-xl relative z-10 flex items-center justify-center overflow-hidden">
-                            <span class="material-icons-round text-7xl text-gray-200">account_circle</span>
+                <!-- Profile Photo Preview-->
+                        <div class="w-32 h-32 rounded-full p-1 bg-white dark:bg-neutral-800 shadow-xl relative z-10 overflow-hidden">
+                            {% if user.jobseekerprofile_photo %}
+                                <img id="photo-preview" src="{{
+                                user.jobseekerprofile.profile_photo.url }}" class = "w-full h-full object-cover rounded-full" alt="Profile photo"/>
+                            {% elif user.recruiterprofile_photo %}
+                                <img id="photo-preview" src="{{user.recruiterprofile.profile_photo.url }}"
+                                class="w-full h-full object-cover rounded-full" alt="Profile photo"/>
+                            {% else %}
+                                <img id="photo-preview" src="" class="w-full h-full object-cover rounded-full hidden" alt="Profile photo"/>
+                                <span class="material-icons-round text-7xl text-gray-200 flex items-center justify-center w-full h-full">account_circle</span>
+                            {% endif %}
                         </div>
-                        <button type="button" class="absolute bottom-2 right-2 w-10 h-10 bg-neutral-900 text-white dark:bg-primary dark:text-neutral-900 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-20">
+
+                        <!-- Hidden file input -->
+                        <input
+                            type="file"
+                            id="photo-upload-input"
+                            name="profile_photo"
+                            accept="image/*"
+                            class="hidden"
+                        />
+
+                        <!-- Camera button triggers the file input -->
+                        <button
+                            type="button"
+                            onclick="document.getElementById('photo-upload-input').click()"
+                            class="absolute bottom-2 right-2 w-10 h-10 bg-neutral-900 text-white dark:bg-primary dark:text-neutral-900 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-20"
+                            title="Upload profile photo"
+                        >
                             <span class="material-icons-round text-lg">camera_alt</span>
                         </button>
                     </div>
+
+                    <!-- Upload status message -->
+                    <p id="photo-status" class="text-xs text-neutral-400 -mt-2 mb-2 hidden">
+                        <span class="text-primary font-semibold">✓</span> New photo selected — save to apply
+                    </p>
+                    
                     <h3 class="text-xl font-bold text-neutral-900 dark:text-white relative z-10">{{ user.get_full_name|default:user.username }}</h3>
                     <p class="text-sm text-neutral-500 dark:text-neutral-400 mb-6 relative z-10">
                         {% if user.role == 'RECRUITER' %}{{ user.recruiterprofile.company_name }}{% else %}{{ user.jobseekerprofile.major|default:"Professional" }}{% endif %}
@@ -272,5 +304,40 @@
 <div class="fixed top-20 right-0 -z-10 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 <div class="fixed bottom-0 left-0 -z-10 w-[600px] h-[600px] bg-blue-100/30 dark:bg-blue-900/10 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 
+</body>
+</html>
+
+<script>
+    document.getElementById('photo-upload-input').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate it's an image and under 5MB
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file (JPG, PNG, GIF, etc.)');
+            this.value = '';
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image must be under 5MB.');
+            this.value = '';
+            return;
+        }
+
+        // Show live preview
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const preview = document.getElementById('photo-preview');
+            const placeholder = document.getElementById('photo-placeholder');
+            const status = document.getElementById('photo-status');
+
+            preview.src = event.target.result;
+            preview.classList.remove('hidden');
+            if (placeholder) placeholder.classList.add('hidden');
+            status.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
 </body>
 </html>
