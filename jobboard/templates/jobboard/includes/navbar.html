@@ -26,7 +26,7 @@
                  <div class="hidden md:flex items-center gap-1 bg-white/50 dark:bg-black/20 p-1.5 rounded-full border border-white/20 backdrop-blur-md">
                     <a href="{% url 'admin_dashboard' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Dashboard</a>
                     <a href="/admin/accounts/customuser/" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Users</a>
-                    <a href= "/admin/jobboard/job/' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Jobs</a>
+                    <a href="/admin/jobboard/job/" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Jobs</a>
                     <a href= "{% url 'home' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Exit Site</a>
                 </div>
         {% else %}
@@ -60,7 +60,7 @@
             {% elif user.is_superuser %}
                 <a href="{% url 'admin_dashboard' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Dashboard</a>
                 <a href="/admin/accounts/customuser/" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Users</a>
-                <a href= "/admin/jobboard/job/' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Jobs</a>
+                <a href="/admin/jobboard/job/" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Jobs</a>
                 <a href= "{% url 'home' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Exit Site</a>
             {% else %}
                 <a href="{% url 'jobseeker_dashboard' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Dashboard</a>
