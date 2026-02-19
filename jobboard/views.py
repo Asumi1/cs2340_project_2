@@ -495,3 +495,6 @@ def apply_for_job(request, pk):
             return redirect('jobseeker_dashboard')
             
     return redirect('job_detail', pk=pk)
+
+def one_click_apply(request):
+    return render(request, "one-click_apply.html")

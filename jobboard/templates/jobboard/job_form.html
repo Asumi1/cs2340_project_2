@@ -90,40 +90,6 @@
 {% block body_class %}bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 font-display min-h-screen selection:bg-primary selection:text-background-dark flex flex-col overflow-x-hidden{% endblock %}
 
 {% block content %}
-<!-- Top Navigation Bar -->
-<nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-7xl glass-panel rounded-full px-6 py-4 flex items-center justify-between shadow-glass">
-    <!-- Center Menu -->
-    <div class="hidden md:flex items-center gap-1 bg-white/50 dark:bg-black/20 p-1.5 rounded-full border border-white/20 backdrop-blur-md">
-        <a href="{% url 'recruiter_dashboard' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Overview</a>
-        <a href="{% url 'recruiter_talent_search' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Candidates</a>
-        <a href="{% url 'recruiter_messaging' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Messages</a>
-        <a href="{% url 'job_create' %}" class="px-5 py-2 bg-white dark:bg-surface-dark text-slate-900 dark:text-primary shadow-sm rounded-full text-sm font-bold ring-1 ring-black/5 dark:ring-white/10">Post Job</a>
-        <a href="{% url 'logout' %}" class="px-5 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Log Out</a>
-    </div>
-
-    <!-- Right Actions -->
-    <div class="flex items-center gap-4">
-        <!-- Main 'Publish' Action in Navbar for Desktop -->
-        <button onclick="document.getElementById('job-form').submit();" class="hidden md:flex bg-primary hover:bg-primary-dark text-slate-900 font-bold px-5 py-2 rounded-full shadow-lg shadow-primary/20 transition-all items-center gap-2 text-sm ml-2">
-            <span>{% if form.instance.pk %}Save{% else %}Post{% endif %}</span>
-            <span class="material-icons text-sm">send</span>
-        </button>
-
-        <div class="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full bg-white/40 dark:bg-black/20 border border-white/50 dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/20 transition-colors cursor-pointer group">
-            <div class="text-right hidden xl:block">
-                <p class="text-xs font-bold text-slate-900 dark:text-white">{{ user.first_name|default:user.username }}</p>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Recruiter</p>
-            </div>
-            <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-white dark:border-slate-700">
-                {% if user.recruiterprofile.profile_picture %}
-                    <img alt="Profile" class="w-full h-full object-cover" src="{{ user.recruiterprofile.profile_picture.url }}"/>
-                {% else %}
-                    <div class="w-full h-full bg-primary flex items-center justify-center text-xs font-bold text-slate-900">{{ user.username|first|upper }}</div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</nav>
 
 <!-- Main Content Area -->
 <main class="w-full max-w-7xl mx-auto pt-32 p-4 md:p-8 relative min-h-screen">
