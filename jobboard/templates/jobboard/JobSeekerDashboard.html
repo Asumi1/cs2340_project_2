@@ -11,7 +11,6 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
         tailwind.config = {
-            darkMode: "class",
             theme: {
                 extend: {
                     colors: {
@@ -46,29 +45,19 @@
             border: 1px solid rgba(255, 255, 255, 0.8);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
         }
-        .dark .glass-card {
-            background: rgba(15, 35, 30, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-        }
         .bento-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-auto-rows: minmax(180px, auto);
             gap: 1.5rem;
-        }.bg-animated-mesh {
+        }
+        .bg-animated-mesh {
             background-color: #f5f8f8;
             background-image: 
                 radial-gradient(at 10% 10%, rgba(6, 249, 188, 0.15) 0px, transparent 50%),
                 radial-gradient(at 90% 90%, rgba(6, 249, 188, 0.1) 0px, transparent 50%),
                 radial-gradient(at 50% 50%, rgba(255, 255, 255, 0.8) 0px, transparent 50%);
             background-attachment: fixed;
-        }
-        .dark .bg-animated-mesh {
-            background-color: #0f231e;
-            background-image: 
-                radial-gradient(at 10% 10%, rgba(6, 249, 188, 0.05) 0px, transparent 50%),
-                radial-gradient(at 90% 90%, rgba(6, 249, 188, 0.03) 0px, transparent 50%);
         }.no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -97,24 +86,24 @@
     </style>
 {% endblock %}
 
-{% block body_class %}bg-animated-mesh dark:bg-background-dark text-slate-900 dark:text-white font-display min-h-screen flex flex-col transition-colors duration-300{% endblock %}
+{% block body_class %}bg-animated-mesh text-slate-900 font-display min-h-screen flex flex-col transition-colors duration-300{% endblock %}
 
 {% block content %}
 
 <main class="flex-grow p-6 pb-12 w-full max-w-[1400px] mx-auto mt-24 pt-32">
 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 px-2">
 <div>
-<p class="text-slate-500 dark:text-slate-400 font-medium mb-1">{% now "l, M jS" %}</p>
-<h1 class="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-                    Welcome back, <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-600 dark:from-primary dark:to-emerald-300">{{ user.first_name|default:user.username }}</span>
+<p class="text-slate-500 font-medium mb-1">{% now "l, M jS" %}</p>
+<h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+                    Welcome back, <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-600">{{ user.first_name|default:user.username }}</span>
 </h1>
 </div>
 <div class="flex gap-3 mt-4 md:mt-0">
-<a href="{% url 'edit_profile' %}" class="glass-card px-6 py-3 rounded-full text-sm font-bold text-slate-700 dark:text-white hover:bg-white dark:hover:bg-white/10 transition-colors flex items-center gap-2">
+<a href="{% url 'edit_profile' %}" class="glass-card px-6 py-3 rounded-full text-sm font-bold text-slate-700 hover:bg-white transition-colors flex items-center gap-2">
 <span class="material-symbols-outlined text-lg">edit</span>
                     Edit Profile
                 </a>
-<a href="{% url 'jobseeker_search' %}" class="bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors shadow-lg flex items-center gap-2">
+<a href="{% url 'jobseeker_search' %}" class="bg-slate-900 text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-slate-800 transition-colors shadow-lg flex items-center gap-2">
 <span class="material-symbols-outlined text-lg">search</span>
                     Find Jobs
                 </a>
@@ -126,14 +115,14 @@
 <div class="relative z-10">
 <div class="flex items-start justify-between">
 {% if user.role == 'JOBSEEKER' and user.jobseekerprofile.profile_photo %}
-    <div class="size-24 rounded-2xl bg-cover bg-center shadow-md ring-4 ring-white/50 dark:ring-white/10"
+    <div class="size-24 rounded-2xl bg-cover bg-center shadow-md ring-4 ring-white/50"
          style="background-image: url('{{ user.jobseekerprofile.profile_photo.url }}');"></div>
 {% else %}
-    <div class="size-24 rounded-2xl bg-cover bg-center shadow-md ring-4 ring-white/50 dark:ring-white/10 bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center">
+    <div class="size-24 rounded-2xl bg-cover bg-center shadow-md ring-4 ring-white/50 bg-neutral-200 flex items-center justify-center">
         <span class="material-symbols-outlined text-4xl text-neutral-400">account_circle</span>
     </div>
 {% endif %}
-<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">
 <span class="relative flex h-2 w-2">
 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -142,13 +131,13 @@
                         </span>
 </div>
                         <div class="mt-6">
-                            <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">{{ user.first_name }} {{ user.last_name }}</h2>
-                            <p class="text-lg text-slate-600 dark:text-slate-300 font-medium">{{ user.jobseekerprofile.major|default:"Valued Professional" }}</p>
-                            <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm leading-relaxed max-w-md">{{ user.jobseekerprofile.bio|default:"Complete your profile to share more about yourself."|truncatewords:20 }}</p>
+                            <h2 class="text-3xl font-bold text-slate-900 mb-2">{{ user.first_name }} {{ user.last_name }}</h2>
+                            <p class="text-lg text-slate-600 font-medium">{{ user.jobseekerprofile.major|default:"Valued Professional" }}</p>
+                            <p class="text-slate-500 mt-2 text-sm leading-relaxed max-w-md">{{ user.jobseekerprofile.bio|default:"Complete your profile to share more about yourself."|truncatewords:20 }}</p>
                         </div>
                     </div>
                     <div class="mt-8 relative z-10">
-                        <div class="flex gap-4 border-t border-slate-200/60 dark:border-white/10 pt-6">
+                        <div class="flex gap-4 border-t border-slate-200/60 pt-6">
                             {% if user.jobseekerprofile.portfolio_url %}
                             <div>
                                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Portfolio</p>
@@ -159,9 +148,9 @@
                             </div>
                             {% endif %}
                             {% if user.jobseekerprofile.resume_file %}
-                            <div class="{% if user.jobseekerprofile.portfolio_url %}border-l border-slate-200/60 dark:border-white/10 pl-4{% endif %}">
+                            <div class="{% if user.jobseekerprofile.portfolio_url %}border-l border-slate-200/60 pl-4{% endif %}">
                                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Resume</p>
-                                <a href="{{ user.jobseekerprofile.resume_file.url }}" target="_blank" class="text-lg font-bold text-slate-700 dark:text-white hover:text-primary mt-1 flex items-center gap-1">
+                                <a href="{{ user.jobseekerprofile.resume_file.url }}" target="_blank" class="text-lg font-bold text-slate-700 hover:text-primary mt-1 flex items-center gap-1">
                                     Download
                                     <span class="material-symbols-outlined text-sm">download</span>
                                 </a>
@@ -172,29 +161,29 @@
                 </div>
                 <div class="glass-card rounded-2xl p-6 col-span-1 row-span-2 flex flex-col">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-bold text-lg text-slate-900 dark:text-white">Active Applications</h3>
-                        <a href="#" class="size-8 flex items-center justify-center rounded-full bg-white/50 dark:bg-white/10 hover:bg-primary hover:text-slate-900 transition-colors">
+                        <h3 class="font-bold text-lg text-slate-900">Active Applications</h3>
+                        <a href="#" class="size-8 flex items-center justify-center rounded-full bg-white/50 hover:bg-primary hover:text-slate-900 transition-colors">
                             <span class="material-symbols-outlined text-sm">arrow_forward</span>
                         </a>
                     </div>
                     <div class="flex flex-col gap-3 flex-1 overflow-y-auto no-scrollbar pr-1">
                         {% for app in my_applications %}
-                        <div class="p-3 rounded-xl bg-white/40 dark:bg-white/5 border border-white/40 hover:bg-white/60 dark:hover:bg-white/10 transition-colors cursor-pointer group">
+                        <div class="p-3 rounded-xl bg-white/40 border border-white/40 hover:bg-white/60 transition-colors cursor-pointer group">
                             <div class="flex items-center gap-3 mb-2">
-                                <div class="size-8 rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm">
+                                <div class="size-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
                                     <span class="material-symbols-outlined text-emerald-500">work</span>
                                 </div>
                                 <div>
-                                    <p class="font-bold text-sm text-slate-900 dark:text-white">{{ app.job.company_name }}</p>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ app.job.title }}</p>
+                                    <p class="font-bold text-sm text-slate-900">{{ app.job.company_name }}</p>
+                                    <p class="text-xs text-slate-500">{{ app.job.title }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center justify-between mt-2">
                                 <span class="px-2 py-1 rounded 
-                                    {% if app.status == 'APPLIED' %}bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400
-                                    {% elif app.status == 'INTERVIEW' %}bg-primary/20 text-teal-800 dark:text-primary
-                                    {% elif app.status == 'REJECTED' %}bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300
-                                    {% else %}bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300{% endif %}
+                                    {% if app.status == 'APPLIED' %}bg-slate-100 text-slate-600
+                                    {% elif app.status == 'INTERVIEW' %}bg-primary/20 text-teal-800
+                                    {% elif app.status == 'REJECTED' %}bg-red-100 text-red-700
+                                    {% else %}bg-amber-100 text-amber-700{% endif %}
                                     text-[10px] font-bold uppercase tracking-wide">
                                     {{ app.get_status_display }}
                                 </span>
@@ -203,8 +192,8 @@
                         </div>
                         {% empty %}
                         <div class="text-center py-8">
-                            <span class="material-symbols-outlined text-4xl text-slate-300 dark:text-slate-600 mb-2">inbox</span>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">No active applications yet.</p>
+                            <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">inbox</span>
+                            <p class="text-sm text-slate-500">No active applications yet.</p>
                             <a href="{% url 'jobseeker_search' %}" class="text-primary text-xs font-bold hover:underline mt-2 inline-block">Start applying</a>
                         </div>
                         {% endfor %}
@@ -213,24 +202,24 @@
                 <div class="glass-card rounded-2xl p-6 col-span-1 flex flex-col justify-center">
                     <div class="flex items-center gap-2 mb-4">
                         <span class="material-symbols-outlined text-primary">psychology</span>
-                        <h3 class="font-bold text-slate-900 dark:text-white">Top Skills</h3>
+                        <h3 class="font-bold text-slate-900">Top Skills</h3>
                     </div>
                     <div class="flex flex-wrap gap-2">
                         {% for skill in user_skills %}
-                        <span class="px-3 py-1.5 rounded-full bg-white dark:bg-white/10 border border-slate-100 dark:border-white/5 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-sm">{{ skill }}</span>
+                        <span class="px-3 py-1.5 rounded-full bg-white border border-slate-100 text-xs font-bold text-slate-700 shadow-sm">{{ skill }}</span>
                         {% empty %}
                         <p class="text-sm text-slate-500 italic">No skills listed yet.</p>
                         {% endfor %}
                     </div>
                 </div>
                 <div class="glass-card rounded-2xl p-6 col-span-1 flex flex-col justify-center relative overflow-hidden">
-                    <div class="absolute -right-6 -top-6 bg-slate-100 dark:bg-slate-800 size-24 rounded-full opacity-50"></div>
+                    <div class="absolute -right-6 -top-6 bg-slate-100 size-24 rounded-full opacity-50"></div>
                     <div class="relative z-10">
-                        <div class="size-10 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 flex items-center justify-center mb-3">
+                        <div class="size-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-3">
                             <span class="material-symbols-outlined">school</span>
                         </div>
                         <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Education</p>
-                        <p class="font-bold text-slate-900 dark:text-white text-lg leading-tight mt-1">{{ user.jobseekerprofile.major|default:"Add your education" }}</p>
+                        <p class="font-bold text-slate-900 text-lg leading-tight mt-1">{{ user.jobseekerprofile.major|default:"Add your education" }}</p>
                         <p class="text-xs text-slate-500 mt-1">Major / Field of Study</p>
                     </div>
                 </div>
@@ -238,36 +227,36 @@
                     <div>
                         <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Profile Views</p>
                         <div class="flex items-end gap-2">
-                            <span class="text-3xl font-black text-slate-900 dark:text-white">--</span>
-                            <span class="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded mb-1.5">Coming Soon</span>
+                            <span class="text-3xl font-black text-slate-900">--</span>
+                            <span class="text-xs font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded mb-1.5">Coming Soon</span>
                         </div>
                     </div>
                     <div class="flex items-end gap-1.5 h-12 mt-4 opacity-50">
-                        <div class="w-full bg-slate-200 dark:bg-white/10 rounded-t h-[40%]"></div>
-                        <div class="w-full bg-slate-200 dark:bg-white/10 rounded-t h-[60%]"></div>
-                        <div class="w-full bg-slate-200 dark:bg-white/10 rounded-t h-[30%]"></div>
-                        <div class="w-full bg-slate-200 dark:bg-white/10 rounded-t h-[70%]"></div>
+                        <div class="w-full bg-slate-200 rounded-t h-[40%]"></div>
+                        <div class="w-full bg-slate-200 rounded-t h-[60%]"></div>
+                        <div class="w-full bg-slate-200 rounded-t h-[30%]"></div>
+                        <div class="w-full bg-slate-200 rounded-t h-[70%]"></div>
                         <div class="w-full bg-primary/50 rounded-t h-[90%]"></div>
-                        <div class="w-full bg-slate-200 dark:bg-white/10 rounded-t h-[50%]"></div>
+                        <div class="w-full bg-slate-200 rounded-t h-[50%]"></div>
                     </div>
                 </div>
 <div class="glass-card rounded-2xl p-1 col-span-1 md:col-span-2 flex relative group overflow-hidden">
 <div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-<button class="w-full h-full rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 dark:from-white dark:to-slate-200 text-white dark:text-slate-900 flex items-center justify-between px-8 py-4 shadow-lg hover:shadow-primary/20 transition-all relative z-10 group-hover:scale-[0.99]">
+<a href="{% if jobs %}{% url 'one_click_apply_form' jobs.0.pk %}{% else %}{% url 'jobseeker_search' %}{% endif %}" class="w-full h-full rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 text-white flex items-center justify-between px-8 py-4 shadow-lg hover:shadow-primary/20 transition-all relative z-10 group-hover:scale-[0.99]">
 <div class="flex flex-col items-start text-left">
 <span class="text-xs font-bold opacity-70 uppercase tracking-wider mb-1">Premium Feature</span>
 <span class="text-2xl font-black tracking-tight flex items-center gap-2">
                             One-Click Apply
-                            <span class="material-symbols-outlined text-primary dark:text-emerald-500" style="font-size: 28px;">bolt</span>
+                            <span class="material-symbols-outlined text-primary" style="font-size: 28px;">bolt</span>
 </span>
 </div>
-<div class="size-12 rounded-full bg-white/20 dark:bg-slate-900/10 flex items-center justify-center backdrop-blur-sm group-hover:bg-primary group-hover:text-slate-900 transition-colors">
+<div class="size-12 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm group-hover:bg-primary group-hover:text-slate-900 transition-colors">
 <span class="material-symbols-outlined text-2xl">arrow_forward</span>
 </div>
-</button>
+</a>
 </div>
 <div class="glass-card rounded-2xl p-0 col-span-1 overflow-hidden relative group">
-<div class="absolute top-3 left-3 z-10 bg-white/80 dark:bg-black/60 backdrop-blur px-2 py-1 rounded-md text-xs font-bold text-slate-800 dark:text-white shadow-sm flex items-center gap-1">
+<div class="absolute top-3 left-3 z-10 bg-white/80 backdrop-blur px-2 py-1 rounded-md text-xs font-bold text-slate-800 shadow-sm flex items-center gap-1">
 <span class="material-symbols-outlined text-[14px] text-primary">location_on</span>
                      San Francisco
                  </div>
@@ -280,12 +269,6 @@
 </div>
 </div>
 </main>
-<script>
-        // Simple script to toggle dark mode for demonstration
-        // In a real app, this would be handled by system preference or a toggle button
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark');
-        }
-    </script>
+
 {% endblock %}
 </body></html>

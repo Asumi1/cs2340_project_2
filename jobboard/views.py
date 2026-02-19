@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.urls import reverse
 from .models import Job, Application, Interview
 from .forms import JobForm, ApplicationForm, ScreeningQuestionFormSet
 from accounts.models import CustomUser, RecruiterProfile, JobSeekerProfile
@@ -138,6 +141,82 @@ def jobseeker_search(request):
         'count': jobs.count()
     }
     return render(request, "jobboard/JobSeekerSearch.html", context)
+
+@login_required
+def one_click_apply_form(request, pk):
+    """Display the one-click apply form with pre-filled data"""
+    if request.user.role != CustomUser.Role.JOBSEEKER:
+        messages.error(request, "Only job seekers can apply for jobs.")
+        return redirect('job_detail', pk=pk)
+    
+    job = get_object_or_404(Job, pk=pk)
+    
+    # Check if already applied
+    if Application.objects.filter(job=job, applicant=request.user).exists():
+        messages.warning(request, "You have already applied to this job.")
+        return redirect('job_detail', pk=pk)
+    
+    # Get user's profile data for pre-filling
+    user_profile = request.user.jobseekerprofile if hasattr(request.user, 'jobseekerprofile') else None
+    
+    context = {
+        'job': job,
+        'user_profile': user_profile,
+    }
+    return render(request, 'jobboard/OneClickApplyForm.html', context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def one_click_apply_submit(request, pk):
+    """Handle one-click apply submission"""
+    if request.user.role != CustomUser.Role.JOBSEEKER:
+        return JsonResponse({'error': 'Only job seekers can apply'}, status=403)
+    
+    job = get_object_or_404(Job, pk=pk)
+    
+    # Check if already applied
+    if Application.objects.filter(job=job, applicant=request.user).exists():
+        return JsonResponse({'error': 'You have already applied to this job'}, status=400)
+    
+    try:
+        # Create application
+        application = Application.objects.create(
+            job=job,
+            applicant=request.user,
+            status='APPLIED',
+            cover_letter=request.POST.get('tailored_note', ''),
+        )
+        
+        # Handle resume file if provided
+        if 'resume' in request.FILES:
+            application.resume = request.FILES['resume']
+            application.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Application submitted successfully!',
+            'application_id': application.id,
+            'redirect_url': reverse('one_click_apply_confirmation', kwargs={'pk': application.id})
+        })
+    except Exception as e:
+        return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=400)
+
+
+@login_required
+def one_click_apply_confirmation(request, pk):
+    """Display confirmation page after successful application"""
+    application = get_object_or_404(Application, pk=pk)
+    
+    # Ensure user can only view their own application
+    if application.applicant != request.user:
+        return redirect('jobseeker_dashboard')
+    
+    context = {
+        'application': application,
+        'job': application.job,
+    }
+    return render(request, 'jobboard/OneClickApplyConfirmation.html', context)
 
 @login_required
 @recruiter_required

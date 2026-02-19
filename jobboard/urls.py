@@ -11,6 +11,11 @@ urlpatterns = [
     path("jobseeker/search/", views.jobseeker_search, name="jobseeker_search"),
     path("job/<int:pk>/", views.job_detail, name="job_detail"),
     path("job/<int:pk>/apply/", views.apply_for_job, name="job_apply"),
+    
+    # One-click apply routes
+    path("job/<int:pk>/one-click-apply/", views.one_click_apply_form, name="one_click_apply_form"),
+    path("job/<int:pk>/one-click-apply/submit/", views.one_click_apply_submit, name="one_click_apply_submit"),
+    path("application/<int:pk>/confirmation/", views.one_click_apply_confirmation, name="one_click_apply_confirmation"),
 
     path("recruiter/dashboard/", views.recruiter_dashboard, name="recruiter_dashboard"),
     path("recruiter/job/new/", views.job_create, name="job_create"),
