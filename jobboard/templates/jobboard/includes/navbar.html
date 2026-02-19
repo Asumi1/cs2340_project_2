@@ -1,5 +1,5 @@
 {% load static %}
-<nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-5xl glass-nav rounded-full px-6 py-3">
+<nav class="fixed top-0 left-0 w-full z-50 bg-white shadow-md px-6 py-4">
     <!-- Top Row -->
     <div class="flex items-center justify-between">
         <!-- Logo -->
@@ -18,6 +18,7 @@
                 <!-- Recruiter Navigation -->
                 <a href="{% url 'recruiter_dashboard' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Dashboard</a>
                 <a href="{% url 'job_create' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Post Job</a>
+                <a href="{% url 'recruiter_talent_search' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Talent Search</a>
                 <a href= "{% url 'recruiter_kanban' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Candidates</a>
             </div>
         {% elif user.is_superuser %}
@@ -54,6 +55,7 @@
             {% if user.is_recruiter %}
               <a href="{% url 'recruiter_dashboard' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Dashboard</a>
               <a href="{% url 'job_create' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Post Job</a>
+              <a href="{% url 'recruiter_talent_search' %}" class="px-5 py-2 bg-white dark:bg-surface-dark text-slate-900 dark:text-primary shadow-sm rounded-full text-sm font-bold ring-1 ring-black/5 dark:ring-white/10">Candidates</a>
               <a href="{% url 'recruiter_kanban' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Candidates</a>
               <a href="{% url 'recruiter_messaging' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Messages</a>
             {% elif user.is_superuser %}
