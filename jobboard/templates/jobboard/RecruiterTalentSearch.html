@@ -94,18 +94,44 @@
     </div>
 
     <!-- Right Actions -->
-    <div class="flex items-center gap-4">
-        <div class="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full bg-white/40 dark:bg-black/20 border border-white/50 dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/20 transition-colors cursor-pointer group">
+    <div class="relative flex items-center gap-4">
+        <button
+            id="profileButtonTalent"
+            type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
+            class="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full bg-white/40 dark:bg-black/20 border border-white/50 dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/20 transition-colors"
+        >
             <div class="text-right hidden xl:block">
                 <p class="text-xs font-bold text-slate-900 dark:text-white">{{ user.first_name|default:user.username }}</p>
                 <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Recruiter</p>
             </div>
             <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-white dark:border-slate-700">
-                {% if recruiter_profile_picture_url %}
-                    <img alt="Profile" class="w-full h-full object-cover" src="{{ recruiter_profile_picture_url }}"/>
+                {% if user.recruiterprofile.profile_photo %}
+                    <img alt="Profile" class="w-full h-full object-cover" src="{{ user.recruiterprofile.profile_photo.url }}"/>
                 {% else %}
                     <div class="w-full h-full bg-primary flex items-center justify-center text-xs font-bold text-slate-900">{{ user.username|first|upper }}</div>
                 {% endif %}
+            </div>
+        </button>
+        <div
+            id="profileMenuTalent"
+            class="absolute right-0 top-full mt-2 hidden z-50"
+            role="menu"
+            aria-labelledby="profileButtonTalent"
+        >
+            <div class="bg-white dark:bg-slate-800 shadow-lg rounded-xl w-44 overflow-hidden border border-slate-100 dark:border-slate-700">
+                <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                    <span class="font-semibold text-sm text-slate-900 dark:text-white">{{ user.first_name|default:user.username }}</span>
+                </div>
+                <a href="{% url 'edit_profile' %}" role="menuitem"
+                    class="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <span class="material-symbols-outlined text-base">edit</span> Edit Profile
+                </a>
+                <a href="{% url 'logout' %}" role="menuitem"
+                    class="flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                    <span class="material-symbols-outlined text-base">logout</span> Log Out
+                </a>
             </div>
         </div>
     </div>
@@ -244,4 +270,37 @@
         </button>
     </div>
 </main>
+<script>
+  (function () {
+    const btn = document.getElementById("profileButtonTalent");
+    const menu = document.getElementById("profileMenuTalent");
+    if (!btn || !menu) return;
+
+    function openMenu() {
+      menu.classList.remove("hidden");
+      btn.setAttribute("aria-expanded", "true");
+    }
+
+    function closeMenu() {
+      menu.classList.add("hidden");
+      btn.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleMenu() {
+      const isHidden = menu.classList.contains("hidden");
+      isHidden ? openMenu() : closeMenu();
+    }
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleMenu();
+    });
+
+    menu.addEventListener("click", (e) => e.stopPropagation());
+    document.addEventListener("click", closeMenu);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeMenu();
+    });
+  })();
+</script>
 {% endblock %}

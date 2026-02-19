@@ -478,9 +478,12 @@ def recruiter_application_detail(request, pk):
 @recruiter_required
 def update_application_status(request, pk):
     application = get_object_or_404(Application, pk=pk)
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
     
     # Security Check: Ensure the logged-in recruiter owns the job for this application
     if application.job.recruiter != request.user:
+        if is_ajax:
+            return JsonResponse({'error': 'You do not have permission to modify this application.'}, status=403)
         messages.error(request, "You do not have permission to modify this application.")
         return redirect('recruiter_dashboard')
 
@@ -489,8 +492,16 @@ def update_application_status(request, pk):
         if new_status and new_status in dict(Application.STATUS_CHOICES):
             application.status = new_status
             application.save()
+            if is_ajax:
+                return JsonResponse({
+                    'success': True,
+                    'status': application.status,
+                    'status_display': application.get_status_display(),
+                })
             messages.success(request, f"Application status updated to {application.get_status_display()}.")
         else:
+            if is_ajax:
+                return JsonResponse({'error': 'Invalid status provided.'}, status=400)
             messages.error(request, "Invalid status provided.")
     
     return redirect(f'/jobboard/recruiter/kanban/?job_id={application.job.id}')

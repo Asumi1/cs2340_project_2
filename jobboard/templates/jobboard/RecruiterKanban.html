@@ -138,31 +138,101 @@
     </div>
     <div class="flex-1 overflow-x-auto overflow-y-hidden scroll-hidden pb-4">
         <div class="inline-flex h-full gap-6 min-w-full">
-            {% with column_apps=kanban_columns.APPLIED title="Sourcing" count=kanban_columns.APPLIED|length %}
+            {% with column_apps=kanban_columns.APPLIED title="Sourcing" count=kanban_columns.APPLIED|length status_key="APPLIED" %}
                 {% include "jobboard/includes/kanban_column.html" %}
             {% endwith %}
 
-            {% with column_apps=kanban_columns.SCREENING title="Screening" count=kanban_columns.SCREENING|length %}
+            {% with column_apps=kanban_columns.SCREENING title="Screening" count=kanban_columns.SCREENING|length status_key="SCREENING" %}
                 {% include "jobboard/includes/kanban_column.html" %}
             {% endwith %}
 
-            {% with column_apps=kanban_columns.INTERVIEW title="Interviewing" count=kanban_columns.INTERVIEW|length %}
+            {% with column_apps=kanban_columns.INTERVIEW title="Interviewing" count=kanban_columns.INTERVIEW|length status_key="INTERVIEW" %}
                 {% include "jobboard/includes/kanban_column.html" %}
             {% endwith %}
 
-            {% with column_apps=kanban_columns.OFFER title="Offer Sent" count=kanban_columns.OFFER|length %}
+            {% with column_apps=kanban_columns.OFFER title="Offer Sent" count=kanban_columns.OFFER|length status_key="OFFER" %}
                 {% include "jobboard/includes/kanban_column.html" %}
             {% endwith %}
 
-            {% with column_apps=kanban_columns.HIRED title="Hired" count=kanban_columns.HIRED|length %}
+            {% with column_apps=kanban_columns.HIRED title="Hired" count=kanban_columns.HIRED|length status_key="HIRED" %}
                 {% include "jobboard/includes/kanban_column.html" %}
             {% endwith %}
 
-            {% with column_apps=kanban_columns.REJECTED title="Rejected" count=kanban_columns.REJECTED|length %}
+            {% with column_apps=kanban_columns.REJECTED title="Rejected" count=kanban_columns.REJECTED|length status_key="REJECTED" %}
                 {% include "jobboard/includes/kanban_column.html" %}
             {% endwith %}
         </div>
     </div>
 </main>
+<script>
+  (function () {
+    const columns = document.querySelectorAll("[data-kanban-column]");
+    const cards = document.querySelectorAll("[data-kanban-card]");
+    const updateUrlTemplate = "{% url 'update_application_status' 0 %}";
+    let draggedCard = null;
+    let draggedApplicationId = null;
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+      return "";
+    }
+
+    cards.forEach((card) => {
+      card.addEventListener("dragstart", () => {
+        draggedCard = card;
+        draggedApplicationId = card.dataset.applicationId;
+        card.classList.add("opacity-60");
+      });
+      card.addEventListener("dragend", () => {
+        card.classList.remove("opacity-60");
+      });
+    });
+
+    columns.forEach((column) => {
+      const list = column.querySelector("[data-kanban-list]");
+      if (!list) return;
+
+      list.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        list.classList.add("ring-2", "ring-primary/50");
+      });
+
+      list.addEventListener("dragleave", () => {
+        list.classList.remove("ring-2", "ring-primary/50");
+      });
+
+      list.addEventListener("drop", async (e) => {
+        e.preventDefault();
+        list.classList.remove("ring-2", "ring-primary/50");
+        if (!draggedCard || !draggedApplicationId) return;
+
+        const targetStatus = column.dataset.status;
+        const updateUrl = updateUrlTemplate.replace("/0/", `/${draggedApplicationId}/`);
+
+        try {
+          const response = await fetch(updateUrl, {
+            method: "POST",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              status: targetStatus,
+            }),
+          });
+
+          if (response.ok) {
+            window.location.reload();
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      });
+    });
+  })();
+</script>
 {% endblock %}
 
