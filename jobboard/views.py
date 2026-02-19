@@ -78,6 +78,12 @@ def jobseeker_dashboard(request):
     
     # Get user's recent applications
     my_applications = Application.objects.filter(applicant=request.user).order_by('-applied_at')[:5]
+    applied_job_ids = set(
+        Application.objects.filter(applicant=request.user).values_list('job_id', flat=True)
+    )
+    one_click_job = Job.objects.filter(is_active=True, is_approved=True).exclude(
+        pk__in=applied_job_ids
+    ).order_by('-created_at').first()
     
     # Process skills for display
     user_skills = []
@@ -88,6 +94,7 @@ def jobseeker_dashboard(request):
         'jobs': jobs,
         'my_applications': my_applications,
         'user_skills': user_skills,
+        'one_click_job': one_click_job,
     }
     return render(request, "jobboard/JobSeekerDashboard.html", context)
 
@@ -160,8 +167,14 @@ def one_click_apply_form(request, pk):
     
     # Check if already applied
     if Application.objects.filter(job=job, applicant=request.user).exists():
-        messages.warning(request, "You have already applied to this job.")
-        return redirect('job_detail', pk=pk)
+        next_job = Job.objects.filter(is_active=True, is_approved=True).exclude(
+            applications__applicant=request.user
+        ).order_by('-created_at').first()
+        if next_job:
+            messages.info(request, "You already applied to that job. Showing the next available one-click job.")
+            return redirect('one_click_apply_form', pk=next_job.pk)
+        messages.warning(request, "You have already applied to all currently available jobs.")
+        return redirect('jobseeker_search')
     
     # Get user's profile data for pre-filling
     user_profile = request.user.jobseekerprofile if hasattr(request.user, 'jobseekerprofile') else None

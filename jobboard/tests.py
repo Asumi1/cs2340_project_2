@@ -113,6 +113,15 @@ class OneClickApplyTests(TestCase):
             is_active=True,
             is_approved=True,
         )
+        self.next_job = Job.objects.create(
+            recruiter=self.recruiter,
+            title="Frontend Engineer",
+            company_name="MintMatch",
+            location="Remote",
+            description="Build frontend",
+            is_active=True,
+            is_approved=True,
+        )
 
     def test_one_click_submit_creates_application_and_redirects(self):
         self.client.login(username="jobseeker3", password="testpass123")
@@ -140,3 +149,14 @@ class OneClickApplyTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
+
+    def test_one_click_form_redirects_to_next_unapplied_job(self):
+        Application.objects.create(job=self.job, applicant=self.jobseeker, status="APPLIED")
+        self.client.login(username="jobseeker3", password="testpass123")
+        response = self.client.get(reverse("one_click_apply_form", args=[self.job.pk]))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(
+            reverse("one_click_apply_form", args=[self.next_job.pk]),
+            response.url,
+        )

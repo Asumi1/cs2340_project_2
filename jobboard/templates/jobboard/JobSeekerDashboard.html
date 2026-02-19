@@ -242,7 +242,7 @@
                 </div>
 <div class="glass-card rounded-2xl p-1 col-span-1 md:col-span-2 flex relative group overflow-hidden">
 <div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-<a href="{% if jobs %}{% url 'one_click_apply_form' jobs.0.pk %}{% else %}{% url 'jobseeker_search' %}{% endif %}" class="w-full h-full rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 text-white flex items-center justify-between px-8 py-4 shadow-lg hover:shadow-primary/20 transition-all relative z-10 group-hover:scale-[0.99]">
+<a href="{% if one_click_job %}{% url 'one_click_apply_form' one_click_job.pk %}{% else %}{% url 'jobseeker_search' %}{% endif %}" class="w-full h-full rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 text-white flex items-center justify-between px-8 py-4 shadow-lg hover:shadow-primary/20 transition-all relative z-10 group-hover:scale-[0.99]">
 <div class="flex flex-col items-start text-left">
 <span class="text-xs font-bold opacity-70 uppercase tracking-wider mb-1">Premium Feature</span>
 <span class="text-2xl font-black tracking-tight flex items-center gap-2">
