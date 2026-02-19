@@ -310,3 +310,60 @@ class RecruiterPipelineTests(TestCase):
         self.assertEqual(response.status_code, 403)
         self.application.refresh_from_db()
         self.assertEqual(self.application.status, "APPLIED")
+
+
+class JobSearchFilterTests(TestCase):
+    def setUp(self):
+        self.recruiter = CustomUser.objects.create_user(
+            username="recruiter8",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+        )
+        self.jobseeker = CustomUser.objects.create_user(
+            username="jobseeker8",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        self.remote_job = Job.objects.create(
+            recruiter=self.recruiter,
+            title="Remote Backend Engineer",
+            company_name="MintMatch",
+            location="Atlanta, GA",
+            description="Work from anywhere",
+            work_mode="REMOTE",
+            salary_min=100000,
+            salary_max=150000,
+            is_active=True,
+            is_approved=True,
+        )
+        self.onsite_job = Job.objects.create(
+            recruiter=self.recruiter,
+            title="On-site Data Analyst",
+            company_name="MintMatch",
+            location="Atlanta, GA",
+            description="In-office role",
+            work_mode="ONSITE",
+            salary_min=70000,
+            salary_max=90000,
+            is_active=True,
+            is_approved=True,
+        )
+
+    def test_search_filters_by_work_mode(self):
+        self.client.login(username="jobseeker8", password="testpass123")
+        response = self.client.get(reverse("jobseeker_search"), {"work_mode": "REMOTE"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.remote_job, response.context["jobs"])
+        self.assertNotIn(self.onsite_job, response.context["jobs"])
+
+    def test_search_filters_by_salary_range(self):
+        self.client.login(username="jobseeker8", password="testpass123")
+        response = self.client.get(
+            reverse("jobseeker_search"),
+            {"min_salary": "120000", "max_salary": "160000"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.remote_job, response.context["jobs"])
+        self.assertNotIn(self.onsite_job, response.context["jobs"])

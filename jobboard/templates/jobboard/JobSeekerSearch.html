@@ -129,10 +129,10 @@
             </div>
             <select name="job_type" class="w-full h-14 pl-12 pr-12 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 focus:ring-2 focus:ring-primary shadow-sm text-gray-900 dark:text-white transition-all cursor-pointer">
                 <option value="">All Job Types</option>
-                <option value="FT" {% if job_type == 'FT' %}selected{% endif %}>Full-time</option>
-                <option value="PT" {% if job_type == 'PT' %}selected{% endif %}>Part-time</option>
-                <option value="CT" {% if job_type == 'CT' %}selected{% endif %}>Contract</option>
-                <option value="IN" {% if job_type == 'IN' %}selected{% endif %}>Internship</option>
+                <option value="FULL_TIME" {% if job_type == 'FULL_TIME' %}selected{% endif %}>Full-time</option>
+                <option value="PART_TIME" {% if job_type == 'PART_TIME' %}selected{% endif %}>Part-time</option>
+                <option value="CONTRACT" {% if job_type == 'CONTRACT' %}selected{% endif %}>Contract</option>
+                <option value="INTERNSHIP" {% if job_type == 'INTERNSHIP' %}selected{% endif %}>Internship</option>
             </select>
         </div>
 
@@ -146,7 +146,27 @@
     </div>
 
     <!-- Filters Row 2 -->
-    <div class="flex gap-3">
+    <div class="flex flex-col md:flex-row gap-3">
+        <!-- Work Mode -->
+        <div class="relative flex-1 group">
+            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
+                <span class="material-symbols-outlined">home_work</span>
+            </div>
+            <select name="work_mode" class="w-full h-14 pl-12 pr-12 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 focus:ring-2 focus:ring-primary shadow-sm text-gray-900 dark:text-white transition-all cursor-pointer">
+                <option value="">Remote + On-site</option>
+                <option value="REMOTE" {% if work_mode == 'REMOTE' %}selected{% endif %}>Remote</option>
+                <option value="ONSITE" {% if work_mode == 'ONSITE' %}selected{% endif %}>On-site</option>
+            </select>
+        </div>
+
+        <!-- Max Salary -->
+        <div class="relative flex-1 group">
+            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
+                <span class="material-symbols-outlined">payments</span>
+            </div>
+            <input name="max_salary" value="{{ max_salary|default:'' }}" type="number" placeholder="Max Salary..." class="w-full h-14 pl-12 pr-4 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 focus:ring-2 focus:ring-primary shadow-sm text-gray-900 dark:text-white placeholder:text-gray-500 transition-all"/>
+        </div>
+
         <!-- Visa Sponsorship Checkbox -->
         <label class="flex items-center gap-3 px-4 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/20 transition-all flex-1">
             <input type="checkbox" name="visa_sponsorship" value="on" {% if visa == 'on' %}checked{% endif %} class="w-4 h-4 rounded cursor-pointer accent-primary"/>
@@ -160,7 +180,7 @@
     </div>
 
     <!-- Clear Filters Link -->
-    {% if query or location or job_type or min_salary or visa %}
+    {% if query or location or job_type or work_mode or min_salary or max_salary or visa %}
     <a href="{% url 'jobseeker_search' %}" class="text-sm text-primary-dark hover:underline font-medium">Clear all filters</a>
     {% endif %}
 </form>
@@ -185,6 +205,7 @@
 </div>
 <div class="flex flex-wrap gap-2 mb-4">
 <span class="px-3 py-1 rounded-full bg-primary/10 text-primary-dark dark:text-primary text-xs font-bold border border-primary/20">{{ job.get_job_type_display }}</span>
+<span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 text-xs font-bold border border-slate-200 dark:border-white/20">{{ job.get_work_mode_display }}</span>
 </div>
     <div class="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-white/5">
         <p class="font-bold text-gray-900 dark:text-white">

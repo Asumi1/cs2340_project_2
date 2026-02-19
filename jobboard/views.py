@@ -113,7 +113,9 @@ def jobseeker_search(request):
     query = request.GET.get('q', '')
     location = request.GET.get('location', '')
     job_type = request.GET.get('job_type', '')
+    work_mode = request.GET.get('work_mode', '')
     min_salary = request.GET.get('min_salary', '')
+    max_salary = request.GET.get('max_salary', '')
     visa = request.GET.get('visa_sponsorship', '')
 
     # Only show jobs that are active and approved
@@ -131,11 +133,28 @@ def jobseeker_search(request):
         jobs = jobs.filter(location__icontains=location)
     
     if job_type:
+        # Backward compatibility for any legacy short codes in URLs.
+        legacy_job_type_map = {
+            'FT': 'FULL_TIME',
+            'PT': 'PART_TIME',
+            'CT': 'CONTRACT',
+            'IN': 'INTERNSHIP',
+        }
+        job_type = legacy_job_type_map.get(job_type, job_type)
         jobs = jobs.filter(job_type=job_type)
+
+    if work_mode:
+        jobs = jobs.filter(work_mode=work_mode)
         
     if min_salary:
         try:
             jobs = jobs.filter(salary_max__gte=min_salary)
+        except (ValueError, TypeError):
+            pass
+
+    if max_salary:
+        try:
+            jobs = jobs.filter(salary_min__lte=max_salary)
         except (ValueError, TypeError):
             pass
             
@@ -153,7 +172,9 @@ def jobseeker_search(request):
         'query': query, 
         'location': location,
         'job_type': job_type,
+        'work_mode': work_mode,
         'min_salary': min_salary,
+        'max_salary': max_salary,
         'visa': visa,
         'count': jobs.count(),
         'applied_job_ids': applied_job_ids,

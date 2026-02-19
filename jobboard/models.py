@@ -8,6 +8,10 @@ class Job(models.Model):
         ('CONTRACT', 'Contract'),
         ('INTERNSHIP', 'Internship'),
     )
+    WORK_MODES = (
+        ('ONSITE', 'On-site'),
+        ('REMOTE', 'Remote'),
+    )
 
     recruiter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posted_jobs')
     title = models.CharField(max_length=255)
@@ -17,6 +21,7 @@ class Job(models.Model):
     job_type = models.CharField(max_length=50, choices=JOB_TYPES, default='FULL_TIME')
     salary_min = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     salary_max = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    work_mode = models.CharField(max_length=20, choices=WORK_MODES, default='ONSITE')
     skills = models.CharField(max_length=500, blank=True, help_text="Comma-separated list of required skills")
     visa_sponsorship = models.BooleanField(default=False, help_text="Does this job offer visa sponsorship?")
     
