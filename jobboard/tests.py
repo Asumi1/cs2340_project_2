@@ -160,3 +160,56 @@ class OneClickApplyTests(TestCase):
             reverse("one_click_apply_form", args=[self.next_job.pk]),
             response.url,
         )
+
+
+class ApplicationTrackingStageTests(TestCase):
+    def setUp(self):
+        self.recruiter = CustomUser.objects.create_user(
+            username="recruiter4",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+        )
+        self.jobseeker = CustomUser.objects.create_user(
+            username="jobseeker4",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        self.jobseeker_alt = CustomUser.objects.create_user(
+            username="jobseeker5",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        self.job = Job.objects.create(
+            recruiter=self.recruiter,
+            title="Software Engineer",
+            company_name="MintMatch",
+            location="Remote",
+            description="Build features",
+            is_active=True,
+            is_approved=True,
+        )
+
+    def test_screening_maps_to_review_for_tracking(self):
+        app = Application.objects.create(
+            job=self.job,
+            applicant=self.jobseeker,
+            status="SCREENING",
+        )
+        self.assertEqual(app.get_tracking_stage_display(), "Review")
+        self.assertEqual(app.get_tracking_stage_step(), 2)
+
+    def test_hired_and_rejected_map_to_closed_for_tracking(self):
+        hired_app = Application.objects.create(
+            job=self.job,
+            applicant=self.jobseeker,
+            status="HIRED",
+        )
+        rejected_app = Application.objects.create(
+            job=self.job,
+            applicant=self.jobseeker_alt,
+            status="REJECTED",
+        )
+        self.assertEqual(hired_app.get_tracking_stage_display(), "Closed")
+        self.assertEqual(hired_app.get_tracking_stage_step(), 5)
+        self.assertEqual(rejected_app.get_tracking_stage_display(), "Closed")
+        self.assertEqual(rejected_app.get_tracking_stage_step(), 5)

@@ -40,6 +40,22 @@ class Application(models.Model):
         ('HIRED', 'Hired'),
         ('REJECTED', 'Rejected'),
     )
+    TRACKING_STAGE_LABELS = {
+        'APPLIED': 'Applied',
+        'SCREENING': 'Review',
+        'INTERVIEW': 'Interview',
+        'OFFER': 'Offer',
+        'HIRED': 'Closed',
+        'REJECTED': 'Closed',
+    }
+    TRACKING_STAGE_ORDER = {
+        'APPLIED': 1,
+        'SCREENING': 2,
+        'INTERVIEW': 3,
+        'OFFER': 4,
+        'HIRED': 5,
+        'REJECTED': 5,
+    }
 
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
     applicant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='applications')
@@ -54,6 +70,12 @@ class Application(models.Model):
 
     def __str__(self):
         return f"{self.applicant} applied to {self.job}"
+
+    def get_tracking_stage_display(self):
+        return self.TRACKING_STAGE_LABELS.get(self.status, self.get_status_display())
+
+    def get_tracking_stage_step(self):
+        return self.TRACKING_STAGE_ORDER.get(self.status, 1)
 
 class ScreeningQuestion(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='screening_questions')
