@@ -4,6 +4,7 @@ from .models import CustomUser
 
 class CustomUserCreationForm(UserCreationForm):
     company_name = forms.CharField(required=False, help_text="Required for Recruiters")
+    REQUIRED_FIELDS = ("username", "email", "first_name", "last_name", "role", "password1", "password2")
 
     class Meta:
         model = CustomUser
@@ -14,12 +15,18 @@ class CustomUserCreationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        for field_name in self.REQUIRED_FIELDS:
+            if field_name in self.fields:
+                self.fields[field_name].required = True
+
         # Add glass-input styling to all fields except role
         for field_name, field in self.fields.items():
             is_radio = getattr(field.widget, 'input_type', None) == 'radio'
             if field_name != 'role' and not is_radio:
                 existing_classes = field.widget.attrs.get('class', '')
                 field.widget.attrs['class'] = (existing_classes + ' glass-input w-full px-4 py-3 rounded-xl outline-none transition-all text-sm font-medium text-charcoal placeholder-gray-400').strip()
+            if field.required:
+                field.widget.attrs['required'] = 'required'
         
         # Specific hidden logic for company_name is handled in template, but we adding basic style here.
 

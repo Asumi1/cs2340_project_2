@@ -63,3 +63,37 @@ class AuthTests(TestCase):
         profile = RecruiterProfile.objects.get(user=user)
         self.assertEqual(profile.company_name, 'TechCorp')
 
+    def test_signup_requires_first_and_last_name(self):
+        data = {
+            'username': 'missingnames',
+            'email': 'missing@example.com',
+            'first_name': '',
+            'last_name': '',
+            'role': 'JOBSEEKER',
+            'password1': 'testpassword123',
+            'password2': 'testpassword123',
+        }
+        response = self.client.post(self.signup_url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(CustomUser.objects.filter(username='missingnames').exists())
+        form = response.context['form']
+        self.assertIn('first_name', form.errors)
+        self.assertIn('last_name', form.errors)
+
+    def test_signup_recruiter_requires_company_name(self):
+        data = {
+            'username': 'recruiternocompany',
+            'email': 'recruiternocompany@example.com',
+            'first_name': 'No',
+            'last_name': 'Company',
+            'role': 'RECRUITER',
+            'company_name': '',
+            'password1': 'testpassword123',
+            'password2': 'testpassword123',
+        }
+        response = self.client.post(self.signup_url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(CustomUser.objects.filter(username='recruiternocompany').exists())
+        form = response.context['form']
+        self.assertIn('company_name', form.errors)
+
