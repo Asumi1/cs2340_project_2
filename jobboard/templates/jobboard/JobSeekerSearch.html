@@ -44,28 +44,31 @@
     </script>
 <style>
         body {
-            font-family: "Manrope", sans-serif
-        }.custom-scrollbar::-webkit-scrollbar {
-            width: 6px
+            font-family: "Manrope", sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent
+            background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background-color: rgba(6, 249, 188, 0.3);
-            border-radius: 20px
-        }.glass-panel {
+            border-radius: 20px;
+        }
+        .glass-panel {
             background: rgba(255, 255, 255, 0.65);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.6)
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
         .glass-panel-dark {
             background: rgba(15, 35, 30, 0.65);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1)
-        }.map-bg {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .map-bg {
             background-color: #e5e7eb;
             background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuDVMI-hgtGlSZNlDAYgsoLpd3IYCUiwW7sOO4_3ezZNYfiYmlniFMoLuIZNUWCmj3vUO8Z1dqzHAalITAQXYBNvysXCem1NT9EDrzOkZ3wtXnewYVMAWZ6Sk9T1CNcg7Xy1283d8EmlusPe4LTl69M729lLDWP88t0XXFk00cZyJxdhzdtnbFn2uPGqxV2-0jePV0qjZFbCzOsByCoHlhCZqkxzhzy7a7m4yanjJ0UVA8wJTrOUMj_kviErJWPFtPqe_rjx3jiW5w4)
         }.header-glass {
@@ -79,37 +82,89 @@
             background: rgba(15, 35, 30, 0.75);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-background-light to-[#dcfce7] dark:from-background-dark dark:to-[#051a15] min-h-screen flex flex-col overflow-hidden text-[#0d1c18] dark:text-white transition-colors duration-300 relative">
+<body class="bg-gradient-to-br from-background-light to-[#dcfce7] dark:from-background-dark dark:to-[#051a15] min-h-screen flex flex-col text-[#0d1c18] dark:text-white transition-colors duration-300 relative">
 {% include 'jobboard/includes/navbar.html' %} 
-<main class="flex-1 flex gap-6 px-6 pb-6 pt-24 overflow-hidden h-screen">
-<div class="w-full lg:w-[45%] xl:w-[40%] flex flex-col gap-4 h-full pt-2">
+<main class="flex-1 flex gap-6 px-6 pb-6 pt-24 h-screen">
+<div class="w-full lg:w-[55%] xl:w-[50%] flex flex-col gap-4 pt-2 h-full">
 <div class="glass-panel dark:glass-panel-dark rounded-3xl p-6 shadow-glass shrink-0 flex flex-col gap-4">
 <div class="flex justify-between items-center">
 <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Find your next role</h2>
 <span class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ count }} jobs found</span>
 </div>
-<div class="flex gap-3 overflow-x-auto pb-1 no-scrollbar mask-gradient-r">
-<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-[#0d1c18] font-bold text-sm shadow-sm hover:shadow-md transition-all whitespace-nowrap">
-<span class="material-symbols-outlined text-[18px]">tune</span>
-                    All Filters
-                </button>
-<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-100 dark:border-white/5 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/20 transition-all whitespace-nowrap">
-                    Remote
-                </button>
-<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-100 dark:border-white/5 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/20 transition-all whitespace-nowrap">
-                    Full-time
-                </button>
-<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-100 dark:border-white/5 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/20 transition-all whitespace-nowrap">
-                    $100k+
-                </button>
-<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-100 dark:border-white/5 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/20 transition-all whitespace-nowrap">
-                    Design
-                </button>
-</div>
-</div>
-<div class="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-4 pb-24">
+<form method="GET" action="{% url 'jobseeker_search' %}" class="flex flex-col gap-4">
+    <!-- Search Input -->
+    <div class="relative group">
+        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
+            <span class="material-symbols-outlined">search</span>
+        </div>
+        <input name="q" value="{{ query|default:'' }}" type="text" placeholder="Search by title, skills..." class="w-full h-14 pl-12 pr-4 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 focus:ring-2 focus:ring-primary shadow-sm text-gray-900 dark:text-white placeholder:text-gray-500 transition-all"/>
+    </div>
+
+    <!-- Filters Row 1 -->
+    <div class="flex flex-col md:flex-row gap-3">
+        <!-- Location -->
+        <div class="relative flex-1 group">
+            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
+                <span class="material-symbols-outlined">location_on</span>
+            </div>
+            <input name="location" value="{{ location|default:'' }}" type="text" placeholder="Location..." class="w-full h-14 pl-12 pr-4 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 focus:ring-2 focus:ring-primary shadow-sm text-gray-900 dark:text-white placeholder:text-gray-500 transition-all"/>
+        </div>
+
+        <!-- Job Type -->
+        <div class="relative flex-1 group">
+            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
+                <span class="material-symbols-outlined">category</span>
+            </div>
+            <select name="job_type" class="w-full h-14 pl-12 pr-12 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 focus:ring-2 focus:ring-primary shadow-sm text-gray-900 dark:text-white transition-all cursor-pointer">
+                <option value="">All Job Types</option>
+                <option value="FT" {% if job_type == 'FT' %}selected{% endif %}>Full-time</option>
+                <option value="PT" {% if job_type == 'PT' %}selected{% endif %}>Part-time</option>
+                <option value="CT" {% if job_type == 'CT' %}selected{% endif %}>Contract</option>
+                <option value="IN" {% if job_type == 'IN' %}selected{% endif %}>Internship</option>
+            </select>
+        </div>
+
+        <!-- Min Salary -->
+        <div class="relative flex-1 group">
+            <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
+                <span class="material-symbols-outlined">attach_money</span>
+            </div>
+            <input name="min_salary" value="{{ min_salary|default:'' }}" type="number" placeholder="Min Salary..." class="w-full h-14 pl-12 pr-4 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 focus:ring-2 focus:ring-primary shadow-sm text-gray-900 dark:text-white placeholder:text-gray-500 transition-all"/>
+        </div>
+    </div>
+
+    <!-- Filters Row 2 -->
+    <div class="flex gap-3">
+        <!-- Visa Sponsorship Checkbox -->
+        <label class="flex items-center gap-3 px-4 py-2 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/20 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/20 transition-all flex-1">
+            <input type="checkbox" name="visa_sponsorship" value="on" {% if visa == 'on' %}checked{% endif %} class="w-4 h-4 rounded cursor-pointer accent-primary"/>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Visa Sponsorship</span>
+        </label>
+
+        <!-- Search Button -->
+        <button type="submit" class="px-6 py-2 rounded-full bg-primary hover:bg-primary-dark text-gray-900 font-bold shadow-sm transition-all">
+            Search
+        </button>
+    </div>
+
+    <!-- Clear Filters Link -->
+    {% if query or location or job_type or min_salary or visa %}
+    <a href="{% url 'jobseeker_search' %}" class="text-sm text-primary-dark hover:underline font-medium">Clear all filters</a>
+    {% endif %}
+</form>
+<div class="flex-1 overflow-y-auto custom-scrollbar space-y-4 pb-24">
 {% for job in jobs %}
 <div class="group relative glass-panel dark:glass-panel-dark rounded-3xl p-5 shadow-glass hover:shadow-glass-hover hover:-translate-y-1 transition-all duration-300 {% if forloop.first %}border-l-4 border-l-primary{% endif %}">
 <div class="flex justify-between items-start mb-4">
