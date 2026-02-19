@@ -60,43 +60,6 @@
     <div class="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[100px] pointer-events-none z-0"></div>
     <div class="absolute bottom-[-10%] right-[-5%] w-[30%] h-[30%] bg-blue-300/20 rounded-full blur-[100px] pointer-events-none z-0"></div>
 
-    <!-- Floating Navigation Bar -->
-    <div class="w-full px-6 pt-6 z-50 fixed top-0 left-0 right-0 flex justify-center pointer-events-none">
-        <nav class="glass-nav h-[4.5rem] w-full max-w-[1400px] rounded-full flex items-center justify-between px-3 pl-3 pr-3 pointer-events-auto transition-all duration-300">
-            <div class="flex items-center gap-3 pl-2">
-                <div class="size-10 rounded-full bg-gradient-to-tr from-primary to-emerald-400 flex items-center justify-center text-slate-900 shadow-glow shrink-0">
-                    <span class="material-symbols-outlined text-2xl">spa</span>
-                </div>
-                <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hidden lg:block">MintMatch</span>
-            </div>
-
-            <div class="hidden md:flex items-center gap-1">
-                <a class="px-5 py-2.5 rounded-full bg-slate-900 text-white dark:bg-primary dark:text-slate-900 text-sm font-semibold shadow-md transition-all hover:shadow-lg" href="{% url 'admin_dashboard' %}">Dashboard</a>
-                <a class="px-5 py-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-white/10 text-sm font-medium transition-all" href="/admin/accounts/customuser/">Users</a>
-                <a class="px-5 py-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-white/10 text-sm font-medium transition-all" href="/admin/jobboard/job/">Jobs</a>
-                <a class="px-5 py-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-white/10 text-sm font-medium transition-all" href="{% url 'home' %}">Exit Site</a>
-            </div>
-
-            <div class="flex items-center gap-2 pr-1">
-                <div class="flex items-center gap-3 cursor-pointer group bg-white/40 dark:bg-black/20 pl-4 pr-1.5 py-1.5 rounded-full border border-white/40 dark:border-white/5 hover:bg-white/60 dark:hover:bg-black/30 transition-colors">
-                    <div class="text-right hidden xl:block">
-                        <p class="text-sm font-bold text-slate-800 dark:text-white leading-none">{{ user.get_full_name|default:user.username }}</p>
-                        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider mt-0.5">Admin</p>
-                    </div>
-                    <div class="size-9 rounded-full overflow-hidden border-2 border-white dark:border-slate-700 shadow-sm transition-transform group-hover:scale-105">
-                        <div class="h-full w-full bg-primary flex items-center justify-center text-xs font-bold text-slate-900">
-                            {{ user.username|first|upper }}
-                        </div>
-                    </div>
-                </div>
-                <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2"></div>
-                <a href="{% url 'logout' %}" class="glass-button size-10 rounded-full flex items-center justify-center text-rose-500 dark:text-rose-400">
-                    <span class="material-symbols-outlined text-[20px]">logout</span>
-                </a>
-            </div>
-        </nav>
-    </div>
-
     <!-- Main Content -->
     <main class="flex-1 flex flex-col overflow-hidden relative z-10 w-full max-w-[1920px] mx-auto mt-24">
         <header class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-8 py-6 shrink-0 gap-4">
