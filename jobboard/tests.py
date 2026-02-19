@@ -213,3 +213,45 @@ class ApplicationTrackingStageTests(TestCase):
         self.assertEqual(hired_app.get_tracking_stage_step(), 5)
         self.assertEqual(rejected_app.get_tracking_stage_display(), "Closed")
         self.assertEqual(rejected_app.get_tracking_stage_step(), 5)
+
+
+class AdminModerationTests(TestCase):
+    def setUp(self):
+        self.admin_user = CustomUser.objects.create_user(
+            username="admin1",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+            is_staff=True,
+            is_superuser=True,
+        )
+        self.recruiter = CustomUser.objects.create_user(
+            username="recruiter5",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+        )
+        self.job = Job.objects.create(
+            recruiter=self.recruiter,
+            title="Spam Job",
+            company_name="BadCo",
+            location="Remote",
+            description="Unwanted posting",
+            is_active=True,
+            is_approved=True,
+        )
+
+    def test_admin_dashboard_contains_live_job_for_moderation(self):
+        self.client.login(username="admin1", password="testpass123")
+        response = self.client.get(reverse("admin_dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.job, response.context["moderation_jobs"])
+
+    def test_admin_can_remove_live_job(self):
+        self.client.login(username="admin1", password="testpass123")
+        response = self.client.post(
+            reverse("approve_job", args=[self.job.pk]),
+            {"remove": "1"},
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.job.refresh_from_db()
+        self.assertFalse(self.job.is_active)

@@ -138,7 +138,7 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800 dark:text-white">Moderation Queue</h2>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm">Review, approve, or reject recently posted opportunities.</p>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">Moderate live postings and remove spam or abusive content.</p>
                     </div>
                     <div class="flex items-center gap-3 w-full sm:w-auto">
                         <div class="relative group">
@@ -164,7 +164,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-700/30">
-                            {% for job in pending_jobs %}
+                            {% for job in moderation_jobs %}
                             <tr class="group hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
                                 <td class="py-5 px-4 align-middle">
                                     <div class="flex items-center gap-3">
@@ -187,8 +187,13 @@
                                 </td>
                                 <td class="py-5 px-4 align-middle">
                                     <div class="flex items-center gap-2">
+                                        {% if job.is_approved %}
+                                        <div class="size-2 bg-emerald-500 rounded-full shadow-sm"></div>
+                                        <span class="text-sm font-medium text-emerald-600 dark:text-emerald-400">Live</span>
+                                        {% else %}
                                         <div class="size-2 bg-amber-500 rounded-full shadow-sm"></div>
                                         <span class="text-sm font-medium text-amber-600 dark:text-amber-400">Pending Review</span>
+                                        {% endif %}
                                     </div>
                                 </td>
                                 <td class="py-5 px-4 align-middle">
@@ -198,10 +203,12 @@
                                     <div class="flex items-center justify-end gap-2 translate-x-2 group-hover:translate-x-0 transition-transform">
                                         <form action="{% url 'approve_job' job.id %}" method="POST" class="flex gap-1.5 px-2">
                                             {% csrf_token %}
+                                            {% if not job.is_approved %}
                                             <button type="submit" name="approve" class="p-2 rounded-full text-emerald-600 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors" title="Approve">
                                                 <span class="material-symbols-outlined text-xl">check_circle</span>
                                             </button>
-                                            <button type="submit" name="reject" class="p-2 rounded-full text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors" title="Reject">
+                                            {% endif %}
+                                            <button type="submit" name="remove" class="p-2 rounded-full text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors" title="Remove">
                                                 <span class="material-symbols-outlined text-xl">cancel</span>
                                             </button>
                                         </form>
@@ -215,8 +222,8 @@
                                         <div class="size-24 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-6">
                                             <span class="material-symbols-outlined text-5xl text-emerald-500">verified</span>
                                         </div>
-                                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Queue Clear!</h3>
-                                        <p class="text-slate-500 dark:text-slate-400 max-w-xs mx-auto">All job postings have been moderated. Sit back and relax or check the analytics.</p>
+                                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">No Active Jobs</h3>
+                                        <p class="text-slate-500 dark:text-slate-400 max-w-xs mx-auto">There are currently no active job postings to moderate.</p>
                                     </div>
                                 </td>
                             </tr>
@@ -228,7 +235,7 @@
                 <!-- Pagination Mockup -->
                 <div class="pt-6 mt-4 border-t border-slate-200 dark:border-slate-700/50 flex items-center justify-between">
                     <div class="text-sm text-slate-500 dark:text-slate-400">
-                        Showing pending moderation tasks.
+                        Showing active jobs available for moderation.
                     </div>
                 </div>
             </div>

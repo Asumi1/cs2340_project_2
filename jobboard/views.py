@@ -21,11 +21,13 @@ def recruiter_required(view_func):
 
 @staff_member_required
 def admin_dashboard(request):
-    pending_jobs = Job.objects.filter(is_approved=False, is_active=True).order_by('-created_at')
-    active_jobs_count = Job.objects.filter(is_approved=True, is_active=True).count()
+    moderation_jobs = Job.objects.filter(is_active=True).order_by('-created_at')
+    pending_jobs = moderation_jobs.filter(is_approved=False)
+    active_jobs_count = moderation_jobs.filter(is_approved=True).count()
     total_users_count = CustomUser.objects.count()
     
     context = {
+        'moderation_jobs': moderation_jobs,
         'pending_jobs': pending_jobs,
         'active_jobs_count': active_jobs_count,
         'total_users_count': total_users_count,
@@ -37,12 +39,14 @@ def approve_job(request, pk):
     job = get_object_or_404(Job, pk=pk)
     if 'approve' in request.POST:
         job.is_approved = True
+        job.is_active = True
         job.save()
         messages.success(request, f"Job {job.title} has been approved.")
-    elif 'reject' in request.POST:
+    elif 'reject' in request.POST or 'remove' in request.POST:
         job.is_active = False
+        job.is_approved = False
         job.save()
-        messages.warning(request, f"Job {job.title} has been rejected and deactivated.")
+        messages.warning(request, f"Job {job.title} has been removed from public listings.")
     
     return redirect('admin_dashboard')
 
