@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-
+{% extends "base.html" %}
+{% load static %}
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -77,33 +78,8 @@
   </style>
 </head>
 <body class="bg-mesh-light dark:bg-mesh-dark min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
-<!-- BEGIN: MainHeader -->
-<header class="sticky top-0 z-50 glass-card border-b border-white/20 dark:border-mint/10 px-6 py-4">
-<div class="max-w-7xl mx-auto flex items-center justify-between">
-<div class="flex items-center gap-2" data-purpose="logo-container">
-<div class="w-10 h-10 bg-mint rounded-xl flex items-center justify-center shadow-lg shadow-mint/20">
-<span class="material-symbols-outlined text-black font-bold">query_stats</span>
-</div>
-<span class="text-xl font-extrabold tracking-tight dark:text-white">MintMatch</span>
-</div>
-<nav class="hidden md:flex items-center gap-8 text-sm font-medium">
-<a class="text-mint border-b-2 border-mint pb-1" href="#">Jobs</a>
-<a class="opacity-60 hover:opacity-100 transition-opacity" href="#">Messages</a>
-<a class="opacity-60 hover:opacity-100 transition-opacity" href="#">My Profile</a>
-</nav>
-<div class="flex items-center gap-4">
-<button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors" onclick="document.documentElement.classList.toggle('dark')">
-<span class="material-symbols-outlined dark:hidden">dark_mode</span>
-<span class="material-symbols-outlined hidden dark:block">light_mode</span>
-</button>
-<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-mint/30">
-<img alt="User Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjwBeHddKxu1oqyT5OikT0LnSo7S90y3vEiYCQtHM5dXimdF7m8r1Jq53PvpPetouDMQg6qBZiHbfpWz1HbcAv7Nau50PDEOFUeSp4rOy7vsXcUmGaf6Cx9rVj_tPqgTsUoBtfJuyz8sqR2jJ5qJQj5gk3NYudAYVm0be4A0TYEKnEtegxDp5ZKSblEtZhPSQ1Y7xI5Qyi5xINoytbAVHruJGREtNUGMaHK4_3QlVDbw60JHN9qaKCuoIW1FmMsjnFTrclCCOvVmFh"/>
-</div>
-</div>
-</div>
-</header>
-<!-- END: MainHeader -->
-<main class="max-w-4xl mx-auto px-4 py-10 space-y-8">
+{% block content %}
+<main class="max-w-4xl mx-auto px-4 py-10 space-y-8 pt-28">
 <!-- BEGIN: JobSummaryCard -->
 <section class="glass-card rounded-3xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl shadow-mint/5" data-purpose="job-summary">
 <div class="flex items-start gap-5">
@@ -266,6 +242,7 @@ I've been a long-time admirer of Stripe's focus on user-centric fintech solution
 <!-- END: FormFooter -->
 </form>
 </main>
+{% endblock %}
 <!-- BEGIN: FooterLinks -->
 <footer class="max-w-7xl mx-auto px-6 py-12 border-t border-black/5 dark:border-white/5">
 <div class="flex flex-col md:flex-row justify-between items-center gap-6 opacity-40 text-xs font-bold uppercase tracking-widest">
