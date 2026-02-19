@@ -37,6 +37,22 @@
         body {
             font-family: 'Manrope', sans-serif;
         }
+        /* Fix for gradient text on WebKit (Chrome/Safari) when using bg-clip-text */
+        .bg-clip-text {
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Explicit gradient text fallback for Chrome/Tailwind variable issues */
+        .gradient-text {
+            background-image: linear-gradient(to right, #04dcb5, #6b7280);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+            line-height: 1;
+            white-space: nowrap;
+        }
     </style>
     
     {% block extra_head %}{% endblock %}
