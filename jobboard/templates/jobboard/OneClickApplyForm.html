@@ -1,281 +1,51 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>One-Click Apply | MintMatch</title>
-<!-- Google Fonts: Manrope -->
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<!-- Material Symbols Outlined -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-<!-- Tailwind CSS v3 -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            mint: {
-              DEFAULT: '#06f9bc',
-              dark: '#04d6a1',
-              light: '#82fce1',
-            },
-            mesh: {
-              light: '#f5f8f8',
-              dark: '#0f231e',
-            }
-          },
-          fontFamily: {
-            sans: ['Manrope', 'sans-serif'],
-          },
-        }
-      }
-    }
-  </script>
-<style data-purpose="custom-gradients">
-    body {
-      font-family: 'Manrope', sans-serif;
-      transition: background-color 0.3s ease;
-    }
-    /* Mesh Gradient Backgrounds */
-    .bg-mesh-light {
-      background-color: #f5f8f8;
-      background-image: 
-        radial-gradient(at 0% 0%, hsla(164,74%,90%,1) 0, transparent 50%), 
-        radial-gradient(at 50% 0%, hsla(164,74%,95%,1) 0, transparent 50%), 
-        radial-gradient(at 100% 0%, hsla(164,74%,90%,1) 0, transparent 50%);
-    }
-    .dark .bg-mesh-dark {
-      background-color: #0f231e;
-      background-image: 
-        radial-gradient(at 0% 0%, hsla(164,74%,10%,1) 0, transparent 50%), 
-        radial-gradient(at 50% 0%, hsla(164,74%,5%,1) 0, transparent 50%), 
-        radial-gradient(at 100% 0%, hsla(164,74%,10%,1) 0, transparent 50%);
-    }
-    /* Glassmorphism utility */
-    .glass-card {
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-    .dark .glass-card {
-      background: rgba(15, 35, 30, 0.6);
-      border: 1px solid rgba(6, 249, 188, 0.1);
-    }
-    /* Hide scrollbar but allow scrolling */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-  </style>
-</head>
-<body class="bg-mesh-light dark:bg-mesh-dark min-h-screen text-slate-800 dark:text-slate-100 transition-colors duration-300">
-<!-- BEGIN: MainHeader -->
-<header class="sticky top-0 z-50 glass-card border-b border-white/20 dark:border-mint/10 px-6 py-4">
-<div class="max-w-7xl mx-auto flex items-center justify-between">
-<div class="flex items-center gap-2" data-purpose="logo-container">
-<div class="w-10 h-10 bg-mint rounded-xl flex items-center justify-center shadow-lg shadow-mint/20">
-<span class="material-symbols-outlined text-black font-bold">query_stats</span>
-</div>
-<span class="text-xl font-extrabold tracking-tight dark:text-white">MintMatch</span>
-</div>
-<nav class="hidden md:flex items-center gap-8 text-sm font-medium">
-<a class="text-mint border-b-2 border-mint pb-1" href="#">Jobs</a>
-<a class="opacity-60 hover:opacity-100 transition-opacity" href="#">Messages</a>
-<a class="opacity-60 hover:opacity-100 transition-opacity" href="#">My Profile</a>
-</nav>
-<div class="flex items-center gap-4">
-<button class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors" onclick="document.documentElement.classList.toggle('dark')">
-<span class="material-symbols-outlined dark:hidden">dark_mode</span>
-<span class="material-symbols-outlined hidden dark:block">light_mode</span>
-</button>
-<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-mint/30">
-<img alt="User Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjwBeHddKxu1oqyT5OikT0LnSo7S90y3vEiYCQtHM5dXimdF7m8r1Jq53PvpPetouDMQg6qBZiHbfpWz1HbcAv7Nau50PDEOFUeSp4rOy7vsXcUmGaf6Cx9rVj_tPqgTsUoBtfJuyz8sqR2jJ5qJQj5gk3NYudAYVm0be4A0TYEKnEtegxDp5ZKSblEtZhPSQ1Y7xI5Qyi5xINoytbAVHruJGREtNUGMaHK4_3QlVDbw60JHN9qaKCuoIW1FmMsjnFTrclCCOvVmFh"/>
-</div>
-</div>
-</div>
-</header>
-<!-- END: MainHeader -->
-<main class="max-w-4xl mx-auto px-4 py-10 space-y-8">
-<!-- BEGIN: JobSummaryCard -->
-<section class="glass-card rounded-3xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl shadow-mint/5" data-purpose="job-summary">
-<div class="flex items-start gap-5">
-<div class="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
-<img alt="Company Logo" class="w-10 h-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBumL_Z2QQcxFVdXPhvQq9PPfGGvN01Lvge8t_vw7RZAPycFaKfQLOHWl5lcy29WC0cqhg0gZOYSCfxW1OCs7aOPtWYWFMrxEILIA59h_d2eAc19kQvGMVYaYQ-I9qC7J5mZTf7iqHbxc3LjerRJaj2kQ34zpIPt2_cT36SLnhbsu7nk409jzBep3VY6kH0GZuODse5NCn5HjjCg9yYPlBBCgINT6r3ntBGsQL6WB9cRMRG2J2xQrwSrPajiR4IhiKDvLZcVi7qeYgi"/>
-</div>
-<div>
-<h1 class="text-2xl md:text-3xl font-bold mb-1 tracking-tight">Senior Product Designer</h1>
-<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm opacity-70 font-medium">
-<span class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]">business</span>
-              Stripe Inc.
-            </span>
-<span class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[18px]">location_on</span>
-              San Francisco, CA (Remote Friendly)
-            </span>
-<span class="bg-mint/10 text-mint px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">Full-Time</span>
-</div>
-</div>
-</div>
-<div class="text-right shrink-0">
-<div class="text-xs font-bold uppercase tracking-widest opacity-40 mb-1">Match Score</div>
-<div class="text-3xl font-black text-mint">98%</div>
-</div>
-</section>
-<!-- END: JobSummaryCard -->
-<form class="grid grid-cols-1 md:grid-cols-2 gap-8" onsubmit="event.preventDefault(); alert('Application Submitted Successfully!');">
-<!-- BEGIN: PersonalInformation -->
-<section class="glass-card rounded-3xl p-6 space-y-6 shadow-lg shadow-black/5" data-purpose="personal-info">
-<div class="flex items-center gap-3 border-b border-black/5 dark:border-white/5 pb-4">
-<span class="material-symbols-outlined text-mint">badge</span>
-<h2 class="text-xl font-bold">Personal Information</h2>
-</div>
-<div class="space-y-4">
-<div class="space-y-1.5">
-<label class="text-xs font-bold uppercase tracking-wider opacity-60 ml-1">Full Name</label>
-<input class="w-full bg-white/50 dark:bg-black/20 border-0 rounded-2xl p-4 focus:ring-2 focus:ring-mint transition-all" placeholder="Enter full name" type="text" value="Alexander Sterling"/>
-</div>
-<div class="space-y-1.5">
-<label class="text-xs font-bold uppercase tracking-wider opacity-60 ml-1">Email Address</label>
-<input class="w-full bg-white/50 dark:bg-black/20 border-0 rounded-2xl p-4 focus:ring-2 focus:ring-mint transition-all" placeholder="Enter email" type="email" value="alex.sterling@example.com"/>
-</div>
-<div class="space-y-1.5">
-<label class="text-xs font-bold uppercase tracking-wider opacity-60 ml-1">Phone Number</label>
-<input class="w-full bg-white/50 dark:bg-black/20 border-0 rounded-2xl p-4 focus:ring-2 focus:ring-mint transition-all" placeholder="Enter phone" type="tel" value="+1 (555) 123-4567"/>
-</div>
-</div>
-</section>
-<!-- END: PersonalInformation -->
-<!-- BEGIN: ProfessionalAssets -->
-<section class="glass-card rounded-3xl p-6 space-y-6 shadow-lg shadow-black/5" data-purpose="professional-assets">
-<div class="flex items-center gap-3 border-b border-black/5 dark:border-white/5 pb-4">
-<span class="material-symbols-outlined text-mint">description</span>
-<h2 class="text-xl font-bold">Professional Assets</h2>
-</div>
-<div class="space-y-5">
-<!-- Resume Selection -->
-<div class="space-y-2">
-<label class="text-xs font-bold uppercase tracking-wider opacity-60 ml-1">Resume</label>
-<div class="flex items-center gap-3 p-4 bg-mint/5 border-2 border-mint/20 rounded-2xl cursor-pointer hover:border-mint/40 transition-all">
-<span class="material-symbols-outlined text-mint">picture_as_pdf</span>
-<div class="flex-1">
-<div class="text-sm font-bold">Sterling_Design_2024.pdf</div>
-<div class="text-xs opacity-50 text-slate-500 dark:text-slate-400">Updated 2 days ago</div>
-</div>
-<span class="material-symbols-outlined text-mint text-[20px]">check_circle</span>
-</div>
-<button class="text-xs font-bold text-mint hover:underline flex items-center gap-1 ml-1 mt-2" type="button">
-<span class="material-symbols-outlined text-[16px]">upload_file</span>
-              Upload new version
-            </button>
-</div>
-<!-- Links -->
-<div class="space-y-4 pt-2">
-<div class="relative">
-<span class="material-symbols-outlined absolute left-4 top-4 text-slate-400">link</span>
-<input class="w-full bg-white/50 dark:bg-black/20 border-0 rounded-2xl p-4 pl-12 focus:ring-2 focus:ring-mint transition-all text-sm" placeholder="Portfolio URL" type="url" value="https://alexsterling.design"/>
-</div>
-<div class="relative">
-<span class="material-symbols-outlined absolute left-4 top-4 text-slate-400">share</span>
-<input class="w-full bg-white/50 dark:bg-black/20 border-0 rounded-2xl p-4 pl-12 focus:ring-2 focus:ring-mint transition-all text-sm" placeholder="LinkedIn URL" type="url" value="linkedin.com/in/alexsterling"/>
-</div>
-</div>
-</div>
-</section>
-<!-- END: ProfessionalAssets -->
-<!-- BEGIN: ExperienceEducation -->
-<section class="md:col-span-2 glass-card rounded-3xl p-6 md:p-8 space-y-6 shadow-lg shadow-black/5" data-purpose="experience-education">
-<div class="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-4">
-<div class="flex items-center gap-3">
-<span class="material-symbols-outlined text-mint">history_edu</span>
-<h2 class="text-xl font-bold">Experience &amp; Education</h2>
-</div>
-<button class="text-sm font-bold bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl hover:bg-black/10 transition-all" type="button">Edit All</button>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-<!-- Experience Items -->
-<div class="space-y-6">
-<h3 class="text-xs font-black uppercase tracking-widest text-mint">Latest Experience</h3>
-<div class="relative pl-6 border-l-2 border-mint/20 space-y-6">
-<div class="relative">
-<div class="absolute -left-[31px] top-1 w-4 h-4 bg-mint border-4 border-white dark:border-slate-900 rounded-full"></div>
-<div class="font-bold text-lg">Senior Visual Designer</div>
-<div class="text-sm opacity-60">Figma • 2021 — Present</div>
-<p class="text-sm mt-2 opacity-80 leading-relaxed">Leading the design systems team for core platform features. Reduced dev handoff time by 30%.</p>
-</div>
-<div class="relative">
-<div class="absolute -left-[31px] top-1 w-4 h-4 bg-slate-300 dark:bg-slate-600 border-4 border-white dark:border-slate-900 rounded-full"></div>
-<div class="font-bold text-lg">Product Designer</div>
-<div class="text-sm opacity-60">Adobe • 2018 — 2021</div>
-</div>
-</div>
-</div>
-<!-- Education Items -->
-<div class="space-y-6">
-<h3 class="text-xs font-black uppercase tracking-widest text-mint">Education</h3>
-<div class="space-y-6">
-<div class="flex gap-4">
-<div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined opacity-40">school</span>
-</div>
-<div>
-<div class="font-bold text-lg">BFA Interaction Design</div>
-<div class="text-sm opacity-60">Rhode Island School of Design</div>
-<div class="text-xs opacity-40 mt-1">Class of 2018</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- END: ExperienceEducation -->
-<!-- BEGIN: TailoredNote -->
-<section class="md:col-span-2 glass-card rounded-3xl p-6 md:p-8 space-y-6 shadow-lg shadow-black/5" data-purpose="tailored-note">
-<div class="flex items-center gap-3 border-b border-black/5 dark:border-white/5 pb-4">
-<span class="material-symbols-outlined text-mint">auto_fix_high</span>
-<h2 class="text-xl font-bold">Personalized Note to Recruiter</h2>
-</div>
-<div class="space-y-4">
-<p class="text-sm opacity-60">MintMatch AI has drafted a note based on your profile and the job description. Feel free to edit it.</p>
-<textarea class="w-full bg-white/50 dark:bg-black/20 border-0 rounded-2xl p-6 focus:ring-2 focus:ring-mint transition-all text-sm leading-relaxed" placeholder="Write something professional..." rows="5">Hi Recruiting Team,
+{% block title %}One-Click Apply{% endblock %}
 
-I've been a long-time admirer of Stripe's focus on user-centric fintech solutions. My recent work at Figma scaling design systems directly aligns with the Senior Product Designer role. I'm excited about the possibility of bringing my systems-thinking approach to the Stripe ecosystem.</textarea>
-</div>
-</section>
-<!-- END: TailoredNote -->
-<!-- BEGIN: FormFooter -->
-<div class="md:col-span-2 py-10 flex flex-col items-center justify-center gap-6" data-purpose="form-actions">
-<div class="flex items-center gap-2 text-sm opacity-60">
-<span class="material-symbols-outlined text-[18px]">lock</span>
-          Your information is securely shared with Stripe Inc. only.
-        </div>
-<button class="group relative px-12 py-5 bg-mint hover:bg-mint-dark text-black font-extrabold text-xl rounded-2xl shadow-xl shadow-mint/20 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center gap-3" type="submit">
-          Submit Application
-          <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">send</span>
-</button>
-<button class="text-sm font-bold opacity-40 hover:opacity-100 transition-opacity" type="button">Save Progress &amp; Exit</button>
-</div>
-<!-- END: FormFooter -->
-</form>
+{% block content %}
+<main class="max-w-3xl mx-auto px-4 py-28">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 md:p-8 shadow-sm">
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">One-Click Apply</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            {{ job.title }} at {{ job.company_name }}
+        </p>
+
+        <form method="post" action="{% url 'one_click_apply_submit' job.pk %}" enctype="multipart/form-data" class="mt-6 space-y-5">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Full Name</label>
+                    <input type="text" value="{{ request.user.first_name }} {{ request.user.last_name }}" readonly class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Email</label>
+                    <input type="email" value="{{ request.user.email }}" readonly class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm">
+                </div>
+            </div>
+
+            <div>
+                <label for="tailored_note" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Tailored Note</label>
+                <textarea id="tailored_note" name="tailored_note" rows="5" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm" placeholder="Add a short personalized note to the recruiter."></textarea>
+            </div>
+
+            <div>
+                <label for="resume" class="block text-xs font-semibold text-slate-500 uppercase mb-1">Resume (Optional)</label>
+                <input id="resume" name="resume" type="file" class="block w-full text-sm text-slate-600 dark:text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 dark:file:bg-slate-700 file:px-3 file:py-2">
+                {% if user_profile and user_profile.resume_file %}
+                <p class="text-xs text-slate-500 mt-2">
+                    Current profile resume: <a href="{{ user_profile.resume_file.url }}" target="_blank" class="text-teal-600 hover:underline">View</a>
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center gap-3 pt-2">
+                <button type="submit" class="inline-flex items-center gap-2 bg-teal-400 hover:bg-teal-500 text-slate-900 font-bold px-5 py-2.5 rounded-xl transition-colors">
+                    Submit Application
+                </button>
+                <a href="{% url 'job_detail' job.pk %}" class="text-sm text-slate-600 dark:text-slate-300 hover:underline">Cancel</a>
+            </div>
+        </form>
+    </div>
 </main>
-<!-- BEGIN: FooterLinks -->
-<footer class="max-w-7xl mx-auto px-6 py-12 border-t border-black/5 dark:border-white/5">
-<div class="flex flex-col md:flex-row justify-between items-center gap-6 opacity-40 text-xs font-bold uppercase tracking-widest">
-<div>© 2024 MintMatch Technologies</div>
-<div class="flex gap-8">
-<a class="hover:text-mint transition-colors" href="#">Privacy Policy</a>
-<a class="hover:text-mint transition-colors" href="#">Terms of Service</a>
-<a class="hover:text-mint transition-colors" href="#">Help Center</a>
-</div>
-</div>
-</footer>
-<!-- END: FooterLinks -->
-</body></html>
+{% endblock %}

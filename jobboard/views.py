@@ -8,7 +8,7 @@ from django.urls import reverse
 from .models import Job, Application, Interview
 from .forms import JobForm, ApplicationForm, ScreeningQuestionFormSet
 from accounts.models import CustomUser, RecruiterProfile, JobSeekerProfile
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.utils import timezone
 
 # Helper to ensure only recruiters access certain views
@@ -131,6 +131,12 @@ def jobseeker_search(request):
     if visa == 'on':
         jobs = jobs.filter(visa_sponsorship=True)
     
+    applied_job_ids = set()
+    if request.user.role == CustomUser.Role.JOBSEEKER:
+        applied_job_ids = set(
+            Application.objects.filter(applicant=request.user).values_list('job_id', flat=True)
+        )
+
     context = {
         'jobs': jobs, 
         'query': query, 
@@ -138,7 +144,8 @@ def jobseeker_search(request):
         'job_type': job_type,
         'min_salary': min_salary,
         'visa': visa,
-        'count': jobs.count()
+        'count': jobs.count(),
+        'applied_job_ids': applied_job_ids,
     }
     return render(request, "jobboard/JobSeekerSearch.html", context)
 
@@ -193,12 +200,15 @@ def one_click_apply_submit(request, pk):
             application.resume = request.FILES['resume']
             application.save()
         
-        return JsonResponse({
-            'success': True,
-            'message': 'Application submitted successfully!',
-            'application_id': application.id,
-            'redirect_url': reverse('one_click_apply_confirmation', kwargs={'pk': application.id})
-        })
+        redirect_url = reverse('one_click_apply_confirmation', kwargs={'pk': application.id})
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'message': 'Application submitted successfully!',
+                'application_id': application.id,
+                'redirect_url': redirect_url
+            })
+        return redirect('one_click_apply_confirmation', pk=application.id)
     except Exception as e:
         return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=400)
 
@@ -322,7 +332,9 @@ def job_delete(request, pk):
 @login_required
 @recruiter_required
 def recruiter_kanban(request):
-    jobs = Job.objects.filter(recruiter=request.user, is_active=True).order_by('-created_at')
+    jobs = Job.objects.filter(recruiter=request.user, is_active=True).annotate(
+        application_count=Count("applications")
+    ).order_by('-created_at')
     
     # Get selected job from query param or default to first job
     selected_job_id = request.GET.get('job_id')
@@ -331,7 +343,8 @@ def recruiter_kanban(request):
     if selected_job_id:
         selected_job = jobs.filter(pk=selected_job_id).first()
     elif jobs.exists():
-        selected_job = jobs.first()
+        # Prefer the first job that already has candidates.
+        selected_job = jobs.filter(application_count__gt=0).first() or jobs.first()
 
     # Dictionary to hold applications by status
     grouped_applications = {
@@ -353,7 +366,7 @@ def recruiter_kanban(request):
     # Create stats
     total_applications_count = 0
     if selected_job:
-        total_applications_count = Application.objects.filter(job=selected_job).count()
+        total_applications_count = selected_job.application_count
 
     context = {
         'jobs': jobs,

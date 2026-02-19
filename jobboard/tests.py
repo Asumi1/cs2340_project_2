@@ -1,3 +1,142 @@
 from django.test import TestCase
+from django.urls import reverse
 
-# Create your tests here.
+from accounts.models import CustomUser
+from .models import Application, Job
+
+
+class JobApplyFlowTests(TestCase):
+    def setUp(self):
+        self.recruiter = CustomUser.objects.create_user(
+            username="recruiter1",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+        )
+        self.jobseeker = CustomUser.objects.create_user(
+            username="jobseeker1",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        self.job = Job.objects.create(
+            recruiter=self.recruiter,
+            title="Backend Engineer",
+            company_name="MintMatch",
+            location="Atlanta, GA",
+            description="Build APIs",
+            is_active=True,
+            is_approved=True,
+        )
+
+    def test_jobseeker_apply_creates_application(self):
+        self.client.login(username="jobseeker1", password="testpass123")
+        response = self.client.post(reverse("job_apply", args=[self.job.pk]), follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            Application.objects.filter(job=self.job, applicant=self.jobseeker).exists()
+        )
+
+    def test_duplicate_application_is_blocked(self):
+        Application.objects.create(job=self.job, applicant=self.jobseeker, status="APPLIED")
+        self.client.login(username="jobseeker1", password="testpass123")
+        response = self.client.post(reverse("job_apply", args=[self.job.pk]), follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            Application.objects.filter(job=self.job, applicant=self.jobseeker).count(), 1
+        )
+
+
+class RecruiterKanbanSelectionTests(TestCase):
+    def setUp(self):
+        self.recruiter = CustomUser.objects.create_user(
+            username="recruiter2",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+        )
+        self.jobseeker = CustomUser.objects.create_user(
+            username="jobseeker2",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        self.new_job_no_apps = Job.objects.create(
+            recruiter=self.recruiter,
+            title="Newest Job",
+            company_name="MintMatch",
+            location="Remote",
+            description="No applicants yet",
+            is_active=True,
+            is_approved=True,
+        )
+        self.older_job_with_apps = Job.objects.create(
+            recruiter=self.recruiter,
+            title="Older Job",
+            company_name="MintMatch",
+            location="Atlanta, GA",
+            description="Has applicants",
+            is_active=True,
+            is_approved=True,
+        )
+        Application.objects.create(
+            job=self.older_job_with_apps,
+            applicant=self.jobseeker,
+            status="APPLIED",
+        )
+
+    def test_kanban_defaults_to_job_with_applications(self):
+        self.client.login(username="recruiter2", password="testpass123")
+        response = self.client.get(reverse("recruiter_kanban"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["selected_job"].pk, self.older_job_with_apps.pk)
+        self.assertEqual(response.context["total_applications_count"], 1)
+
+
+class OneClickApplyTests(TestCase):
+    def setUp(self):
+        self.recruiter = CustomUser.objects.create_user(
+            username="recruiter3",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+        )
+        self.jobseeker = CustomUser.objects.create_user(
+            username="jobseeker3",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        self.job = Job.objects.create(
+            recruiter=self.recruiter,
+            title="UI Engineer",
+            company_name="MintMatch",
+            location="Remote",
+            description="Build web UI",
+            is_active=True,
+            is_approved=True,
+        )
+
+    def test_one_click_submit_creates_application_and_redirects(self):
+        self.client.login(username="jobseeker3", password="testpass123")
+        response = self.client.post(
+            reverse("one_click_apply_submit", args=[self.job.pk]),
+            {"tailored_note": "Excited to apply."},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            Application.objects.filter(
+                job=self.job,
+                applicant=self.jobseeker,
+                cover_letter="Excited to apply.",
+            ).exists()
+        )
+
+    def test_one_click_duplicate_is_blocked(self):
+        Application.objects.create(job=self.job, applicant=self.jobseeker, status="APPLIED")
+        self.client.login(username="jobseeker3", password="testpass123")
+        response = self.client.post(
+            reverse("one_click_apply_submit", args=[self.job.pk]),
+            {"tailored_note": "Duplicate attempt"},
+        )
+
+        self.assertEqual(response.status_code, 400)

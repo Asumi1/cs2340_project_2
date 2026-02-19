@@ -37,6 +37,9 @@
         background-color: rgba(6, 249, 188, 0.3);
         border-radius: 20px;
     }
+    details[open] .job-switch-menu {
+        display: block;
+    }
 </style>
 {% endblock %}
 
@@ -52,23 +55,23 @@
                     <span class="px-2 py-0.5 rounded-full bg-primary/20 text-xs font-bold text-green-800 dark:text-green-200 border border-primary/30">Active</span>
                 </div>
                 <!-- Job Selector Dropdown -->
-                <div class="relative group inline-block">
-                    <button class="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm font-medium hover:text-charcoal dark:hover:text-white transition-colors">
-                        Pipeline ID: #JOB-{{ selected_job.id }} • Created {{ selected_job.created_at|timesince }} ago
+                <details class="relative inline-block">
+                    <summary class="list-none cursor-pointer flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm font-medium hover:text-charcoal dark:hover:text-white transition-colors">
+                        Pipeline ID: #JOB-{{ selected_job.id }} &middot; Created {{ selected_job.created_at|timesince }} ago
                         <span class="material-symbols-outlined text-sm">expand_more</span>
-                    </button>
+                    </summary>
                     <!-- Dropdown for job switching -->
-                    <div class="absolute left-0 top-full mt-2 w-64 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 hidden group-hover:block z-50 overflow-hidden">
+                    <div class="job-switch-menu absolute left-0 top-full mt-2 w-64 bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 hidden z-50 overflow-hidden">
                         <div class="max-h-60 overflow-y-auto">
                             {% for job in jobs %}
                             <a href="?job_id={{ job.id }}" class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-white/5 border-b border-gray-50 dark:border-gray-700 last:border-0 transition-colors">
                                 <p class="text-sm font-bold text-charcoal dark:text-white">{{ job.title }}</p>
-                                <p class="text-xs text-gray-500 truncate">{{ job.location }} • {{ job.created_at|date:"M d" }}</p>
+                                <p class="text-xs text-gray-500 truncate">{{ job.location }} &middot; {{ job.created_at|date:"M d" }}</p>
                             </a>
                             {% endfor %}
                         </div>
                     </div>
-                </div>
+                </details>
                 {% else %}
                 <div class="flex items-center gap-3 mb-1">
                     <h1 class="text-3xl font-extrabold text-charcoal dark:text-white tracking-tight">No Active Jobs</h1>
@@ -162,3 +165,4 @@
     </div>
 </main>
 {% endblock %}
+
