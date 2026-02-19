@@ -255,3 +255,58 @@ class AdminModerationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.job.refresh_from_db()
         self.assertFalse(self.job.is_active)
+
+
+class RecruiterPipelineTests(TestCase):
+    def setUp(self):
+        self.recruiter = CustomUser.objects.create_user(
+            username="recruiter6",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+        )
+        self.other_recruiter = CustomUser.objects.create_user(
+            username="recruiter7",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+        )
+        self.jobseeker = CustomUser.objects.create_user(
+            username="jobseeker6",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        self.job = Job.objects.create(
+            recruiter=self.recruiter,
+            title="Backend Engineer",
+            company_name="MintMatch",
+            location="Remote",
+            description="Pipeline test",
+            is_active=True,
+            is_approved=True,
+        )
+        self.application = Application.objects.create(
+            job=self.job,
+            applicant=self.jobseeker,
+            status="APPLIED",
+        )
+
+    def test_owner_recruiter_can_move_candidate_stage(self):
+        self.client.login(username="recruiter6", password="testpass123")
+        response = self.client.post(
+            reverse("update_application_status", args=[self.application.pk]),
+            {"status": "SCREENING"},
+            follow=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.application.refresh_from_db()
+        self.assertEqual(self.application.status, "SCREENING")
+
+    def test_non_owner_recruiter_cannot_move_candidate_stage(self):
+        self.client.login(username="recruiter7", password="testpass123")
+        response = self.client.post(
+            reverse("update_application_status", args=[self.application.pk]),
+            {"status": "SCREENING"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+        self.assertEqual(response.status_code, 403)
+        self.application.refresh_from_db()
+        self.assertEqual(self.application.status, "APPLIED")
