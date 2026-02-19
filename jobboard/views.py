@@ -372,6 +372,7 @@ def recruiter_messaging(request):
 def recruiter_talent_search(request):
     query = request.GET.get('q', '')
     location = request.GET.get('location', '')
+    skill = request.GET.get('skill', '')
     
     # Only show profiles that are set to public
     profiles = JobSeekerProfile.objects.filter(is_resume_public=True)
@@ -382,16 +383,31 @@ def recruiter_talent_search(request):
             Q(user__last_name__icontains=query) |
             Q(skills__icontains=query) |
             Q(major__icontains=query) |
-            Q(headline__icontains=query)
+            Q(headline__icontains=query) |
+            Q(work_experience__icontains=query)
         )
     
     if location:
         profiles = profiles.filter(location__icontains=location)
+    
+    if skill:
+        profiles = profiles.filter(skills__icontains=skill)
+
+    # Get all unique skills for the dropdown
+    all_skills_raw = JobSeekerProfile.objects.filter(is_resume_public=True).exclude(skills__isnull=True).exclude(skills='').values_list('skills', flat=True)
+    all_skills = set()
+    for skill_list in all_skills_raw:
+        if skill_list:
+            skills_split = [s.strip() for s in skill_list.split(',')]
+            all_skills.update(skills_split)
+    all_skills = sorted(list(all_skills))
 
     context = {
         'profiles': profiles, 
         'query': query,
-        'location': location
+        'location': location,
+        'skill': skill,
+        'all_skills': all_skills
     }
     return render(request, "jobboard/RecruiterTalentSearch.html", context)
 

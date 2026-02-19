@@ -133,6 +133,17 @@
                         </div>
                         <input name="location" value="{{ location|default:'' }}" class="w-full h-14 pl-12 pr-4 rounded-full bg-white dark:bg-surface-dark border-0 ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all" placeholder="Location..." type="text"/>
                     </div>
+                    <div class="relative flex-1 group">
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-dark transition-colors">
+                            <span class="material-symbols-outlined">build</span>
+                        </div>
+                        <select name="skill" onchange="this.form.submit()" class="w-full h-14 pl-12 pr-4 rounded-full bg-white dark:bg-surface-dark border-0 ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary shadow-sm text-slate-900 dark:text-white transition-all appearance-none">
+                            <option value="">All Skills</option>
+                            {% for s in all_skills %}
+                            <option value="{{ s }}" {% if skill == s %}selected{% endif %}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <div class="flex gap-2">
                         <button type="submit" class="flex items-center gap-2 h-14 px-8 rounded-full bg-slate-900 text-white hover:bg-slate-800 transition-all whitespace-nowrap font-bold shadow-lg">
                             Search
