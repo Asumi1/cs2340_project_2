@@ -1,13 +1,13 @@
 {% load static %}
-<nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-5xl glass-nav rounded-full px-6 py-3 flex items-center justify-between">
-    <!-- Logo -->
-    <div class="flex items-center gap-3">
-        <!-- Put website logo here-->
-        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
-            <img src="{% static 'img/leaf.png' %}" alt="logo"
-               height="40" />
-        </div>
-        <!-- End of website logo code-->
+<nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-5xl glass-nav rounded-full px-6 py-3">
+    <!-- Top Row -->
+    <div class="flex items-center justify-between">
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
+                <img src="{% static 'img/leaf.png' %}" alt="logo"
+                height="40" />
+            </div>
         <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hidden sm:block">MintMatch</h1>
     </div>
 
@@ -30,8 +30,39 @@
              </div>
         {% endif %}
     {% endif %}
-<!-- Right Side Actions-->
-    <div class="flex items-center gap-3">
+<!-- Right Side Actions -->
+    <div class="flex items-center gap-2">
+      <!-- Hamburger (only shows on small screens) -->
+      {% if user.is_authenticated %}
+        <details class="md:hidden relative group">
+          <summary
+            class="list-none cursor-pointer w-9 h-9 rounded-full border-2 border-white/20 hover:border-primary/50 transition-all bg-white/40 dark:bg-black/20 flex items-center justify-center"
+            aria-label="Toggle navigation"
+          >
+            <span class="material-symbols-outlined text-xl text-slate-700 dark:text-slate-200">menu</span>
+          </summary>
+
+          <!-- Mobile Menu Panel -->
+          <div class="absolute right-0 mt-3 w-56 bg-white dark:bg-slate-800 shadow-lg rounded-xl overflow-hidden border border-slate-100 dark:border-slate-700 z-50">
+            {% if user.is_recruiter %}
+              <a href="{% url 'recruiter_dashboard' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Dashboard</a>
+              <a href="{% url 'job_create' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Post Job</a>
+              <a href="{% url 'recruiter_kanban' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Candidates</a>
+              <a href="{% url 'recruiter_messaging' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Messages</a>
+            {% else %}
+              <a href="{% url 'jobseeker_dashboard' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Dashboard</a>
+              <a href="{% url 'jobseeker_search' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Find Jobs</a>
+              <a href="{% url 'jobseeker_map_viewer' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Map View</a>
+            {% endif %}
+
+            <div class="h-px bg-slate-200 dark:bg-slate-700"></div>
+
+            <a href="{% url 'edit_profile' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Edit Profile</a>
+            <a href="{% url 'logout' %}" class="block px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">Log Out</a>
+          </div>
+        </details>
+      {% endif %}
+
         <!-- Profile Dropdown -->
          {% if user.is_authenticated %}
             <div class="relative">
