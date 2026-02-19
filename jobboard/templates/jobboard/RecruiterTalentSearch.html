@@ -101,8 +101,8 @@
                 <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider">Recruiter</p>
             </div>
             <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-white dark:border-slate-700">
-                {% if user.recruiterprofile.profile_picture %}
-                    <img alt="Profile" class="w-full h-full object-cover" src="{{ user.recruiterprofile.profile_picture.url }}"/>
+                {% if recruiter_profile_picture_url %}
+                    <img alt="Profile" class="w-full h-full object-cover" src="{{ recruiter_profile_picture_url }}"/>
                 {% else %}
                     <div class="w-full h-full bg-primary flex items-center justify-center text-xs font-bold text-slate-900">{{ user.username|first|upper }}</div>
                 {% endif %}

@@ -431,13 +431,28 @@ def recruiter_talent_search(request):
             skills_split = [s.strip() for s in skill_list.split(',')]
             all_skills.update(skills_split)
     all_skills = sorted(list(all_skills))
+    # Safely resolve the recruiter's profile picture URL so template doesn't trigger a relation lookup
+    recruiter_profile_picture_url = None
+    try:
+        rp = getattr(request.user, 'recruiterprofile', None)
+        if rp is not None:
+            # migrations used both `profile_photo` and `profile_picture` in history; check both
+            photo_field = getattr(rp, 'profile_photo', None) or getattr(rp, 'profile_picture', None)
+            if photo_field:
+                try:
+                    recruiter_profile_picture_url = photo_field.url
+                except Exception:
+                    recruiter_profile_picture_url = None
+    except Exception:
+        recruiter_profile_picture_url = None
 
     context = {
         'profiles': profiles, 
         'query': query,
         'location': location,
         'skill': skill,
-        'all_skills': all_skills
+        'all_skills': all_skills,
+        'recruiter_profile_picture_url': recruiter_profile_picture_url,
     }
     return render(request, "jobboard/RecruiterTalentSearch.html", context)
 
