@@ -24,6 +24,7 @@ class CustomUser(AbstractUser):
 class RecruiterProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     company_name = models.CharField(max_length=255)
+    profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
 
     def clean(self):
         if hasattr(self.user, "jobseekerprofile"):
