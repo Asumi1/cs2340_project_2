@@ -26,7 +26,7 @@ class Job(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
-    is_approved = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.title} at {self.company_name}"
