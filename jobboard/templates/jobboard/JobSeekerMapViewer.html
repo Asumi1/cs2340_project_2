@@ -94,7 +94,6 @@
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
-<<<<<<< HEAD
 window.addEventListener('load', function() {
     var defaultLat = 33.7490;
     var defaultLng = -84.3880;
@@ -105,9 +104,6 @@ window.addEventListener('load', function() {
     {% endif %}
 
     var map = L.map('map').setView([defaultLat, defaultLng], 11);
-=======
-    var map = L.map('map').setView([33.7490, -84.3880], 11);
->>>>>>> e7648364ff8cfb77d051f7667085b7e526f70e3f
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -124,7 +120,6 @@ window.addEventListener('load', function() {
 
     {% for job in jobs %}
     {% if job.latitude and job.longitude %}
-<<<<<<< HEAD
     (function() {
         var lat = parseFloat("{{ job.latitude }}");
         var lng = parseFloat("{{ job.longitude }}");
@@ -140,27 +135,8 @@ window.addEventListener('load', function() {
             { className: 'custom-popup' }
         );
         markers["{{ job.id }}"] = marker;
+        bounds.extend([lat, lng]);
     })();
-    {% endif %}
-    {% endfor %}
-
-    window.focusJob = function(lat, lng, id) {
-=======
-    var marker = L.marker([{{ job.latitude }}, {{ job.longitude }}]).addTo(map);
-    marker.bindPopup(`
-        <div class="custom-popup p-1">
-            <p class="text-xs font-bold text-teal-600 mb-1 uppercase tracking-tighter">{{ job.company_name }}</p>
-            <h3 class="font-bold text-slate-900 leading-tight mb-2">{{ job.title }}</h3>
-            <div class="flex items-center justify-between gap-4 mt-2">
-                <span class="text-[10px] font-bold text-slate-500">
-                    {% if job.salary_min and job.salary_max %}${{ job.salary_min }} - ${{ job.salary_max }}{% elif job.salary_min %}From ${{ job.salary_min }}{% elif job.salary_max %}Up to ${{ job.salary_max }}{% else %}Salary not listed{% endif %}
-                </span>
-                <a href="{% url 'job_detail' job.id %}" class="px-3 py-1.5 bg-teal-500 text-white rounded-lg text-[10px] font-bold hover:bg-teal-600 transition-all">Details</a>
-            </div>
-        </div>
-    `, { className: 'custom-popup' });
-    markers[{{ job.id }}] = marker;
-    bounds.extend([{{ job.latitude }}, {{ job.longitude }}]);
     {% endif %}
     {% endfor %}
 
@@ -168,8 +144,7 @@ window.addEventListener('load', function() {
         map.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
     }
 
-    function focusJob(lat, lng, id) {
->>>>>>> e7648364ff8cfb77d051f7667085b7e526f70e3f
+    window.focusJob = function(lat, lng, id) {
         map.setView([lat, lng], 14, {
             animate: true,
             duration: 1.0
