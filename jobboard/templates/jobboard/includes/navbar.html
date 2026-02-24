@@ -1,205 +1,161 @@
 {% load static %}
-<nav class="fixed top-0 left-0 w-full z-50 bg-white shadow-md px-6 py-4">
-    <!-- Top Row -->
-    <div class="flex items-center justify-between">
+<!-- Floating Glass Navbar — scrolls with page -->
+<nav class="w-full px-4 sm:px-6 py-4 z-50 relative">
+    <div class="glass-panel max-w-7xl mx-auto rounded-full px-5 sm:px-6 py-3 flex items-center justify-between shadow-glass">
         <!-- Logo -->
-        <div class="flex items-center gap-3">
+        <a href="{% url 'home' %}" class="flex items-center gap-3 shrink-0">
             <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
-                <img src="{% static 'img/leaf.png' %}" alt="logo"
-                height="40" />
+                <img src="{% static 'img/leaf.png' %}" alt="logo" class="h-8"/>
             </div>
-        <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white hidden sm:block">MintMatch</h1>
-    </div>
+            <span class="text-xl font-bold tracking-tight text-neutral-900 dark:text-white hidden sm:block">MintMatch</span>
+        </a>
 
-    <!-- Center Menu -->
-    {% if user.is_authenticated %}
-        {% if user.is_recruiter %}
-            <div class="hidden md:flex items-center gap-1 bg-white/50 dark:bg-black/20 p-1.5 rounded-full border border-white/20 backdrop-blur-md">
-                <!-- Recruiter Navigation -->
-                <a href="{% url 'recruiter_dashboard' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Dashboard</a>
-                <a href="{% url 'job_create' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Post Job</a>
-                <a href="{% url 'recruiter_talent_search' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Talent Search</a>
-                <a href= "{% url 'recruiter_kanban' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Candidates</a>
-                <a href="{% url 'recruiter_messaging' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Messages</a>
-                <a href="{% url 'recruiter_applicant_map' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Map</a>
-            </div>
-        {% elif user.is_superuser %}
-                <!-- Admin Navigation -->
-                 <div class="hidden md:flex items-center gap-1 bg-white/50 dark:bg-black/20 p-1.5 rounded-full border border-white/20 backdrop-blur-md">
-                    <a href="{% url 'admin_dashboard' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Dashboard</a>
-                    <a href="/admin/accounts/customuser/" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Users</a>
-                    <a href="/admin/jobboard/job/" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Jobs</a>
-                    <a href= "{% url 'home' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Exit Site</a>
-                </div>
-        {% else %}
-        <!-- Job Seeker Navigation -->
-             <div class="hidden md:flex items-center gap-1 bg-white/50 dark:bg-black/20 p-1.5 rounded-full border border-white/20 backdrop-blur-md">
-                <a href="{% url 'jobseeker_dashboard' %}" class="px-4 py-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Dashboard</a>
-                <a href="{% url 'jobseeker_search' %}" class="px-4 py-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Find Jobs</a>
-                <a href="{% url 'jobseeker_map_viewer' %}" class="px-4 py-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Map View</a>
-                <a href="{% url 'messaging' %}" class="px-4 py-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 rounded-full text-sm font-semibold transition-all">Messages</a>
-             </div>
-        {% endif %}
-    {% else %}
-            <div class="hidden md:flex items-center gap-1 bg-white/40 p-1 rounded-full border border-white/20">
-                <a class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 hover:text-charcoal hover:bg-white/50 transition-all" href="#">Discover</a>
-                <a class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 hover:text-charcoal hover:bg-white/50 transition-all" href="#">Talent</a>
-                <a class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 hover:text-charcoal hover:bg-white/50 transition-all" href="#">Companies</a>
-                <a class="px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 hover:text-charcoal hover:bg-white/50 transition-all" href="#">Pricing</a>
-            </div>
-    {% endif %}
-<!-- Right Side Actions -->
-    <div class="flex items-center gap-2">
-      <!-- Hamburger (only shows on small screens) -->
-      {% if user.is_authenticated %}
-        <details class="md:hidden relative group">
-          <summary
-            class="list-none cursor-pointer w-9 h-9 rounded-full border-2 border-white/20 hover:border-primary/50 transition-all bg-white/40 dark:bg-black/20 flex items-center justify-center"
-            aria-label="Toggle navigation"
-          >
-            <span class="material-symbols-outlined text-xl text-slate-700 dark:text-slate-200">menu</span>
-          </summary>
-
-          <!-- Menu Panel -->
-          <div class="absolute right-0 mt-3 w-56 bg-white dark:bg-slate-800 shadow-lg rounded-xl overflow-hidden border border-slate-100 dark:border-slate-700 z-50">
+        <!-- Center Navigation Links (desktop) -->
+        {% if user.is_authenticated %}
             {% if user.is_recruiter %}
-              <a href="{% url 'recruiter_dashboard' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Dashboard</a>
-              <a href="{% url 'job_create' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Post Job</a>
-              <a href="{% url 'recruiter_talent_search' %}" class="px-5 py-2 bg-white dark:bg-surface-dark text-slate-900 dark:text-primary shadow-sm rounded-full text-sm font-bold ring-1 ring-black/5 dark:ring-white/10">Candidates</a>
-              <a href="{% url 'recruiter_kanban' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Candidates</a>
-              <a href="{% url 'recruiter_messaging' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Messages</a>
+                <div class="hidden md:flex items-center gap-6 lg:gap-8">
+                    <a href="{% url 'recruiter_dashboard' %}" class="nav-link">Dashboard</a>
+                    <a href="{% url 'job_create' %}" class="nav-link">Post Job</a>
+                    <a href="{% url 'recruiter_talent_search' %}" class="nav-link">Talent Search</a>
+                    <a href="{% url 'recruiter_kanban' %}" class="nav-link">Candidates</a>
+                    <a href="{% url 'recruiter_messaging' %}" class="nav-link">Messages</a>
+                    <a href="{% url 'recruiter_applicant_map' %}" class="nav-link">Map</a>
+                </div>
             {% elif user.is_superuser %}
-                <a href="{% url 'admin_dashboard' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Dashboard</a>
-                <a href="/admin/accounts/customuser/" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Users</a>
-                <a href="/admin/jobboard/job/" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Jobs</a>
-                <a href= "{% url 'home' %}" class="px-4 py-1.5 text-charcoal-light dark:text-gray-300 hover:text-charcoal dark:hover:text-white font-medium rounded-full hover:bg-white/50 dark:hover:bg-white/5 text-sm transition-all">Exit Site</a>
+                <div class="hidden md:flex items-center gap-6 lg:gap-8">
+                    <a href="{% url 'admin_dashboard' %}" class="nav-link">Dashboard</a>
+                    <a href="/admin/accounts/customuser/" class="nav-link">Users</a>
+                    <a href="/admin/jobboard/job/" class="nav-link">Jobs</a>
+                    <a href="{% url 'home' %}" class="nav-link">Exit Site</a>
+                </div>
             {% else %}
-                <a href="{% url 'jobseeker_dashboard' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Dashboard</a>
-                <a href="{% url 'jobseeker_search' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Find Jobs</a>
-                <a href="{% url 'jobseeker_map_viewer' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Map View</a>
-            {% endif %}
-
-            <div class="h-px bg-slate-200 dark:bg-slate-700"></div>
-            {% if not user.is_superuser %}
-                 <a href="{% url 'edit_profile' %}" class="block px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">Edit Profile</a>
-            {% endif %}
-            <a href="{% url 'logout' %}" class="block px-4 py-3 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">Log Out</a>
-          </div>
-        </details>
-      {% endif %}
-
-        <!-- Profile Dropdown -->
-         {% if user.is_authenticated and not user.is_superuser %}
-            <div class="relative">
-                <button
-                    id="profileButton"
-                    type="button"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                    class="w-9 h-9 rounded-full overflow-hidden border-2 border-white/20 hover:border-primary/50 transition-all bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center"
-                >
-                    {% if user.role == 'JOBSEEKER' and user.jobseekerprofile.profile_photo %}
-                        <img alt="Profile photo" class="w-full h-full object-cover" src="{{user.jobseekerprofile.profile_photo.url }}">
-                    {% elif user.role == 'RECRUITER' and user.recruiterprofile.profile_photo %}
-                        <img alt="Profile photo" class="w-full h-full object-cover" src="{{user.recruiterprofile.profile_photo.url }}">
-                    {% else %}
-                        <span class="material-symbols-outlined text-3xl text-neutral-400">account_circle</span>
-                    {% endif %}
-                </button>
-
-                <div
-                    id="profileMenu"
-                    class="absolute right-0 mt-2 hidden z-50"
-                    role="menu"
-                    aria-labelledby="profileButton"
-                >
-                    <div class="bg-white dark:bg-slate-800 shadow-lg rounded-xl w-44 overflow-hidden border border-slate-100 dark:border-slate-700">
-                        <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-                            <span class="font-semibold text-sm text-slate-900 dark:text-white">{{ user.first_name|default:user.username }}</span>
-                        </div>
-                        {% if not user.is_superuser %}
-                            <a href="{% url 'edit_profile' %}" role="menuitem"
-                                class="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                                <span class="material-symbols-outlined text-base">edit</span> Edit Profile
-                            </a>
-                        {% endif %}
-                            <a href="{% url 'logout' %}" role="menuitem"
-                                class="flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                                <span class="material-symbols-outlined text-base">logout</span> Log Out
-                            </a>
-                    </div>
+                <div class="hidden md:flex items-center gap-6 lg:gap-8">
+                    <a href="{% url 'jobseeker_dashboard' %}" class="nav-link">Dashboard</a>
+                    <a href="{% url 'jobseeker_search' %}" class="nav-link">Find Jobs</a>
+                    <a href="{% url 'jobseeker_map_viewer' %}" class="nav-link">Map View</a>
+                    <a href="{% url 'messaging' %}" class="nav-link">Messages</a>
                 </div>
-            </div>
-        {% elif user.is_superuser %}
-        <div class="flex items-center gap-2 pr-1">
-                <div class="flex items-center gap-3 cursor-pointer group bg-white/40 dark:bg-black/20 pl-4 pr-1.5 py-1.5 rounded-full border border-white/40 dark:border-white/5 hover:bg-white/60 dark:hover:bg-black/30 transition-colors">
-                    <div class="text-right hidden xl:block">
-                        <p class="text-sm font-bold text-slate-800 dark:text-white leading-none">{{ user.get_full_name|default:user.username }}</p>
-                        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium uppercase tracking-wider mt-0.5">Admin</p>
-                    </div>
-                    <div class="size-9 rounded-full overflow-hidden border-2 border-white dark:border-slate-700 shadow-sm transition-transform group-hover:scale-105">
-                        <div class="h-full w-full bg-primary flex items-center justify-center text-xs font-bold text-slate-900">
-                            {{ user.username|first|upper }}
-                        </div>
-                    </div>
-                </div>
-                <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2"></div>
-                <a href="{% url 'logout' %}" class="glass-button size-10 rounded-full flex items-center justify-center text-rose-500 dark:text-rose-400">
-                    <span class="material-symbols-outlined text-[20px]">logout</span>
-                </a>
-        </div>
+            {% endif %}
         {% else %}
-           <a class="text-sm font-semibold text-charcoal hover:text-primary-dark transition-colors px-4 hidden sm:block" href="{% url 'login' %}">Log in</a>
-                <a class="bg-charcoal hover:bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-lg shadow-charcoal/20 flex items-center gap-2" href="{% url 'signup' %}">
+            <div class="hidden md:flex items-center gap-6 lg:gap-8">
+                <a href="{% url 'home' %}" class="nav-link">Discover</a>
+                <a href="{% url 'signup' %}" class="nav-link">Get Started</a>
+            </div>
+        {% endif %}
+
+        <!-- Right Side Actions -->
+        <div class="flex items-center gap-3 shrink-0">
+            {% if user.is_authenticated %}
+                <!-- Mobile hamburger (small screens only) -->
+                <details id="mobileNav" class="md:hidden relative">
+                    <summary class="list-none cursor-pointer w-10 h-10 rounded-full flex items-center justify-center hover:bg-neutral-200/60 dark:hover:bg-neutral-800 transition-colors text-neutral-600 dark:text-neutral-400">
+                        <span class="material-symbols-outlined text-xl">menu</span>
+                    </summary>
+                    <div class="absolute right-0 mt-3 w-56 glass-panel rounded-xl overflow-hidden shadow-glass z-50">
+                        {% if user.is_recruiter %}
+                            <a href="{% url 'recruiter_dashboard' %}" class="mobile-link">Dashboard</a>
+                            <a href="{% url 'job_create' %}" class="mobile-link">Post Job</a>
+                            <a href="{% url 'recruiter_talent_search' %}" class="mobile-link">Talent Search</a>
+                            <a href="{% url 'recruiter_kanban' %}" class="mobile-link">Candidates</a>
+                            <a href="{% url 'recruiter_messaging' %}" class="mobile-link">Messages</a>
+                            <a href="{% url 'recruiter_applicant_map' %}" class="mobile-link">Map</a>
+                        {% elif user.is_superuser %}
+                            <a href="{% url 'admin_dashboard' %}" class="mobile-link">Dashboard</a>
+                            <a href="/admin/accounts/customuser/" class="mobile-link">Users</a>
+                            <a href="/admin/jobboard/job/" class="mobile-link">Jobs</a>
+                            <a href="{% url 'home' %}" class="mobile-link">Exit Site</a>
+                        {% else %}
+                            <a href="{% url 'jobseeker_dashboard' %}" class="mobile-link">Dashboard</a>
+                            <a href="{% url 'jobseeker_search' %}" class="mobile-link">Find Jobs</a>
+                            <a href="{% url 'jobseeker_map_viewer' %}" class="mobile-link">Map View</a>
+                            <a href="{% url 'messaging' %}" class="mobile-link">Messages</a>
+                        {% endif %}
+                        <div class="h-px bg-neutral-200 dark:bg-neutral-700 my-1"></div>
+                        {% if not user.is_superuser %}
+                            <a href="{% url 'edit_profile' %}" class="mobile-link">Edit Profile</a>
+                        {% endif %}
+                        <a href="{% url 'logout' %}" class="block px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">Log Out</a>
+                    </div>
+                </details>
+
+                <!-- Profile avatar + dropdown (non-admin) -->
+                {% if not user.is_superuser %}
+                    <div class="relative">
+                        <button id="profileButton" type="button" aria-haspopup="true" aria-expanded="false"
+                            class="h-9 w-9 rounded-full bg-gradient-to-tr from-primary to-blue-400 p-[2px] hover:scale-105 transition-transform">
+                            {% if user.role == 'JOBSEEKER' and user.jobseekerprofile.profile_photo %}
+                                <img alt="Profile" class="h-full w-full rounded-full object-cover border-2 border-white dark:border-neutral-900" src="{{ user.jobseekerprofile.profile_photo.url }}">
+                            {% elif user.role == 'RECRUITER' and user.recruiterprofile.profile_photo %}
+                                <img alt="Profile" class="h-full w-full rounded-full object-cover border-2 border-white dark:border-neutral-900" src="{{ user.recruiterprofile.profile_photo.url }}">
+                            {% else %}
+                                <div class="h-full w-full rounded-full bg-white dark:bg-neutral-900 flex items-center justify-center border-2 border-white dark:border-neutral-900">
+                                    <span class="text-sm font-bold text-neutral-900 dark:text-white">{{ user.username|first|upper }}</span>
+                                </div>
+                            {% endif %}
+                        </button>
+                        <div id="profileMenu" class="absolute right-0 mt-3 hidden z-50" role="menu" aria-labelledby="profileButton">
+                            <div class="glass-panel rounded-xl w-48 overflow-hidden shadow-glass">
+                                <div class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700">
+                                    <span class="font-bold text-sm text-neutral-900 dark:text-white">{{ user.first_name|default:user.username }}</span>
+                                    <p class="text-xs text-neutral-500 mt-0.5 capitalize">{{ user.role|lower }}</p>
+                                </div>
+                                <a href="{% url 'edit_profile' %}" role="menuitem"
+                                    class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:bg-primary/10 hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined text-base">edit</span> Edit Profile
+                                </a>
+                                <a href="{% url 'logout' %}" role="menuitem"
+                                    class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                    <span class="material-symbols-outlined text-base">logout</span> Log Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Admin: avatar badge + logout -->
+                    <div class="flex items-center gap-3">
+                        <div class="hidden sm:flex items-center gap-2">
+                            <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
+                                <span class="text-sm font-bold text-neutral-900">{{ user.username|first|upper }}</span>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-bold text-neutral-900 dark:text-white leading-none">{{ user.get_full_name|default:user.username }}</p>
+                                <p class="text-[10px] text-neutral-500 font-medium uppercase tracking-wider mt-0.5">Admin</p>
+                            </div>
+                        </div>
+                        <a href="{% url 'logout' %}" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-red-500">
+                            <span class="material-symbols-outlined">logout</span>
+                        </a>
+                    </div>
+                {% endif %}
+            {% else %}
+                <!-- Not authenticated -->
+                <a href="{% url 'login' %}" class="text-sm font-semibold text-neutral-600 hover:text-primary transition-colors hidden sm:block">Log in</a>
+                <a href="{% url 'signup' %}" class="bg-neutral-900 hover:bg-neutral-800 text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:shadow-lg flex items-center gap-2">
                     <span>Sign up</span>
                     <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
                 </a>
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
 </nav>
 
-<style>
-    .nav-link {
-        @apply text-slate-700 dark:text-slate-100 hover:text-primary transition-colors;
-  }
-</style>
-
 <script>
-  (function () {
+(function () {
+    /* Profile dropdown */
     const btn = document.getElementById("profileButton");
     const menu = document.getElementById("profileMenu");
-    if (!btn || !menu) return;
-
-    function openMenu() {
-      menu.classList.remove("hidden");
-      btn.setAttribute("aria-expanded", "true");
+    if (btn && menu) {
+        const toggle = () => { menu.classList.toggle("hidden"); btn.setAttribute("aria-expanded", !menu.classList.contains("hidden")); };
+        const close  = () => { menu.classList.add("hidden"); btn.setAttribute("aria-expanded", "false"); };
+        btn.addEventListener("click", e => { e.stopPropagation(); toggle(); });
+        menu.addEventListener("click", e => e.stopPropagation());
+        document.addEventListener("click", close);
+        document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
     }
-
-    function closeMenu() {
-      menu.classList.add("hidden");
-      btn.setAttribute("aria-expanded", "false");
+    /* Close mobile <details> when clicking outside */
+    const details = document.getElementById("mobileNav");
+    if (details) {
+        document.addEventListener("click", e => { if (!details.contains(e.target)) details.removeAttribute("open"); });
     }
-
-    function toggleMenu() {
-      const isHidden = menu.classList.contains("hidden");
-      isHidden ? openMenu() : closeMenu();
-    }
-
-    // Toggle on button click
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      toggleMenu();
-    });
-
-    // Click inside menu shouldn't close it
-    menu.addEventListener("click", (e) => e.stopPropagation());
-
-    // Click outside closes
-    document.addEventListener("click", closeMenu);
-
-    // ESC closes
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeMenu();
-    });
-  })();
+})();
 </script>

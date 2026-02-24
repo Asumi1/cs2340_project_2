@@ -8,24 +8,37 @@
     <!-- Dependencies -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     
     <!-- Global Tailwind Config -->
     <script>
         tailwind.config = {
-            darkMode: "false",
+            darkMode: "class",
             theme: {
                 extend: {
                     colors: {
                         "primary": "#06f9bc",
-                        "primary-dark": "#04dcb5",
+                        "primary-dark": "#05dcb1",
                         "mint-dark": "#04c794",
                         "charcoal": "#1a1f24",
                         "charcoal-light": "#4b5563",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f231e",
+                        "neutral-900": "#1a2e29",
+                        "neutral-800": "#243c36",
+                        "neutral-600": "#5a7a72",
+                        "neutral-400": "#9cbdb5",
+                        "neutral-200": "#e0ebe9",
+                        "neutral-100": "#eff6f5",
                         "white": "#ffffff"
                     },
                     fontFamily: {
                         "display": ["Manrope", "sans-serif"]
+                    },
+                    boxShadow: {
+                        "soft": "0 4px 20px -2px rgba(6,249,188,0.05), 0 0 3px rgba(0,0,0,0.05)",
+                        "glass": "0 8px 32px 0 rgba(31,38,135,0.07)"
                     }
                 },
             },
@@ -37,13 +50,46 @@
         body {
             font-family: 'Manrope', sans-serif;
         }
-        /* Fix for gradient text on WebKit (Chrome/Safari) when using bg-clip-text */
+        /* Glass morphism panel */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 35, 30, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        /* Nav link style (used by navbar include) */
+        .nav-link {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #5a7a72;
+            transition: color 0.15s;
+        }
+        .nav-link:hover {
+            color: #06f9bc;
+        }
+        /* Mobile menu link */
+        .mobile-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #5a7a72;
+            transition: background 0.15s, color 0.15s;
+        }
+        .mobile-link:hover {
+            background: rgba(6, 249, 188, 0.1);
+            color: #06f9bc;
+        }
+        /* Fix for gradient text on WebKit */
         .bg-clip-text {
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        /* Explicit gradient text fallback for Chrome/Tailwind variable issues */
         .gradient-text {
             background-image: linear-gradient(to right, #04dcb5, #6b7280);
             -webkit-background-clip: text;
@@ -53,13 +99,18 @@
             line-height: 1;
             white-space: nowrap;
         }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
     
     {% block extra_head %}{% endblock %}
 </head>
-<body class="{% block body_class %}text-charcoal bg-gray-50{% endblock %}">
+<body class="{% block body_class %}bg-background-light font-display text-neutral-900 min-h-screen{% endblock %}">
     {% include "jobboard/includes/navbar.html" %}
-    <main class="flex-1 p-6">
+    <main class="flex-1 px-6 pb-6">
     {% block content %}
     {% endblock %}
     </main>
