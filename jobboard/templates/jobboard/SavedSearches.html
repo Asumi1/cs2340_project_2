@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Saved Searches - MintMatch{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="pt-32 pb-12 px-4 md:px-8 max-w-4xl mx-auto">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900">Saved Searches</h1>
+            <p class="text-slate-500 text-sm mt-1">Quickly re-run your favorite talent searches.</p>
+        </div>
+        <a href="{% url 'recruiter_talent_search' %}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition-all shadow-lg">
+            <span class="material-symbols-outlined text-lg">search</span>
+            New Search
+        </a>
+    </div>
+
+    <div class="glass-panel rounded-3xl p-6 shadow-lg">
+        <div class="space-y-4">
+            {% for ss in saved_searches %}
+            <div class="flex items-center justify-between p-4 rounded-xl bg-white/50 border border-white/60 hover:bg-white/80 transition-all group">
+                <div class="flex items-center gap-4">
+                    <div class="size-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600">
+                        <span class="material-symbols-outlined">bookmark</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800">{{ ss.name|default:"Untitled Search" }}</h3>
+                        <div class="flex items-center gap-2 mt-1 text-xs text-slate-400">
+                            {% if ss.query %}<span class="px-2 py-0.5 bg-slate-100 rounded-full">{{ ss.query }}</span>{% endif %}
+                            {% if ss.location %}<span class="px-2 py-0.5 bg-slate-100 rounded-full">{{ ss.location }}</span>{% endif %}
+                            {% if ss.skill %}<span class="px-2 py-0.5 bg-slate-100 rounded-full">{{ ss.skill }}</span>{% endif %}
+                            <span>&bull; Saved {{ ss.created_at|timesince }} ago</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="{% url 'recruiter_talent_search' %}?q={{ ss.query|urlencode }}&location={{ ss.location|urlencode }}&skill={{ ss.skill|urlencode }}" class="px-4 py-2 rounded-full bg-teal-500/10 text-teal-700 font-bold text-sm hover:bg-teal-500/20 transition-colors">
+                        Run Search
+                    </a>
+                    <form method="POST" action="{% url 'delete_saved_search' ss.pk %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="p-2 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Delete">
+                            <span class="material-symbols-outlined text-lg">delete</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-12">
+                <span class="material-symbols-outlined text-5xl text-slate-300 mb-4">bookmarks</span>
+                <h3 class="text-lg font-bold text-slate-600 mb-2">No Saved Searches</h3>
+                <p class="text-sm text-slate-400 mb-4">Save your talent searches for quick access.</p>
+                <a href="{% url 'recruiter_talent_search' %}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-teal-500 text-white font-bold text-sm hover:bg-teal-600 transition-all">
+                    Start Searching
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</main>
+{% endblock %}

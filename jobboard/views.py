@@ -2,14 +2,17 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
-from .models import Job, Application, Interview
-from .forms import JobForm, ApplicationForm, ScreeningQuestionFormSet
+from django.core.mail import send_mail
+from django.conf import settings as django_settings
+from .models import Job, Application, Interview, Message, SavedSearch, Notification
+from .forms import JobForm, ApplicationForm, ScreeningQuestionFormSet, EmailCandidateForm
 from accounts.models import CustomUser, RecruiterProfile, JobSeekerProfile
 from django.db.models import Q, Count
 from django.utils import timezone
+import csv
 
 # Helper to ensure only recruiters access certain views
 def recruiter_required(view_func):
@@ -25,12 +28,29 @@ def admin_dashboard(request):
     pending_jobs = moderation_jobs.filter(is_approved=False)
     active_jobs_count = moderation_jobs.filter(is_approved=True).count()
     total_users_count = CustomUser.objects.count()
+
+    # User management (Story 19)
+    user_search = request.GET.get('user_search', '')
+    role_filter = request.GET.get('role_filter', '')
+    all_users = CustomUser.objects.all().order_by('-date_joined')
+    if user_search:
+        all_users = all_users.filter(
+            Q(username__icontains=user_search) |
+            Q(email__icontains=user_search) |
+            Q(first_name__icontains=user_search) |
+            Q(last_name__icontains=user_search)
+        )
+    if role_filter:
+        all_users = all_users.filter(role=role_filter)
     
     context = {
         'moderation_jobs': moderation_jobs,
         'pending_jobs': pending_jobs,
         'active_jobs_count': active_jobs_count,
         'total_users_count': total_users_count,
+        'all_users': all_users,
+        'user_search': user_search,
+        'role_filter': role_filter,
     }
     return render(request, 'jobboard/AdminDashboard.html', context)
 
@@ -49,9 +69,6 @@ def approve_job(request, pk):
         messages.warning(request, f"Job {job.title} has been removed from public listings.")
     
     return redirect('admin_dashboard')
-
-import csv
-from django.http import HttpResponse
 
 @staff_member_required
 def export_jobs_csv(request):
@@ -76,6 +93,42 @@ def export_jobs_csv(request):
 
     return response
 
+
+@staff_member_required
+@require_http_methods(["POST"])
+def admin_toggle_user_active(request, pk):
+    """Toggle a user's is_active status"""
+    target_user = get_object_or_404(CustomUser, pk=pk)
+    if target_user == request.user:
+        messages.error(request, "You cannot deactivate yourself.")
+        return redirect('admin_dashboard')
+    target_user.is_active = not target_user.is_active
+    target_user.save()
+    status = "activated" if target_user.is_active else "deactivated"
+    messages.success(request, f"User {target_user.username} has been {status}.")
+    return redirect('admin_dashboard')
+
+
+@staff_member_required
+@require_http_methods(["POST"])
+def admin_change_user_role(request, pk):
+    """Change a user's role"""
+    target_user = get_object_or_404(CustomUser, pk=pk)
+    new_role = request.POST.get('role', '')
+    if new_role in [CustomUser.Role.RECRUITER, CustomUser.Role.JOBSEEKER]:
+        old_role = target_user.role
+        target_user.role = new_role
+        target_user.save()
+        # Create corresponding profile if it doesn't exist
+        if new_role == CustomUser.Role.JOBSEEKER and not hasattr(target_user, 'jobseekerprofile'):
+            JobSeekerProfile.objects.create(user=target_user)
+        elif new_role == CustomUser.Role.RECRUITER and not hasattr(target_user, 'recruiterprofile'):
+            RecruiterProfile.objects.create(user=target_user, company_name="Pending")
+        messages.success(request, f"User {target_user.username} role changed from {old_role} to {new_role}.")
+    else:
+        messages.error(request, "Invalid role specified.")
+    return redirect('admin_dashboard')
+
 @login_required
 def jobseeker_dashboard(request):
     jobs = Job.objects.filter(is_active=True, is_approved=True).order_by('-created_at')[:5]
@@ -94,11 +147,37 @@ def jobseeker_dashboard(request):
     if hasattr(request.user, 'jobseekerprofile') and request.user.jobseekerprofile.skills:
         user_skills = [s.strip() for s in request.user.jobseekerprofile.skills.split(',') if s.strip()]
 
+    # Story 6: Job recommendations based on skills
+    recommended_jobs = []
+    if user_skills:
+        q_filter = Q()
+        for skill in user_skills:
+            q_filter |= Q(skills__icontains=skill)
+        recommended_jobs = list(
+            Job.objects.filter(q_filter, is_active=True, is_approved=True)
+            .exclude(pk__in=applied_job_ids)
+            .distinct()
+            .order_by('-created_at')[:6]
+        )
+        # Calculate match score for each recommended job
+        for rj in recommended_jobs:
+            job_skills = [s.strip().lower() for s in rj.skills.split(',') if s.strip()] if rj.skills else []
+            user_skills_lower = [s.lower() for s in user_skills]
+            matching = len(set(user_skills_lower) & set(job_skills))
+            total = max(len(set(user_skills_lower) | set(job_skills)), 1)
+            rj.match_score = int((matching / total) * 100)
+        recommended_jobs.sort(key=lambda j: j.match_score, reverse=True)
+
+    # Unread message count
+    unread_messages = Message.objects.filter(receiver=request.user, is_read=False).count()
+
     context = {
         'jobs': jobs,
         'my_applications': my_applications,
         'user_skills': user_skills,
         'one_click_job': one_click_job,
+        'recommended_jobs': recommended_jobs,
+        'unread_messages': unread_messages,
     }
     return render(request, "jobboard/JobSeekerDashboard.html", context)
 
@@ -283,11 +362,50 @@ def recruiter_dashboard(request):
 
     # Upcoming Interviews (Today)
     today = timezone.now().date()
-    # Filter strictly for today for the "Today's Schedule" section
     todays_interviews = Interview.objects.filter(
         recruiter=request.user, 
         date_time__date=today
     ).order_by('date_time')
+
+    # Story 16: Candidate recommendations for job postings
+    top_candidates = []
+    recruiter_jobs = Job.objects.filter(recruiter=request.user, is_active=True, is_approved=True)
+    if recruiter_jobs.exists():
+        # Collect all skills from recruiter's job postings
+        all_job_skills = set()
+        for job in recruiter_jobs:
+            if job.skills:
+                for s in job.skills.split(','):
+                    s = s.strip().lower()
+                    if s:
+                        all_job_skills.add(s)
+        
+        if all_job_skills:
+            # Find candidates whose skills match
+            q_filter = Q()
+            for skill in all_job_skills:
+                q_filter |= Q(skills__icontains=skill)
+            
+            candidate_profiles = JobSeekerProfile.objects.filter(
+                q_filter, is_resume_public=True
+            ).select_related('user').distinct()[:20]
+            
+            for profile in candidate_profiles:
+                candidate_skills = [s.strip().lower() for s in profile.skills.split(',') if s.strip()] if profile.skills else []
+                matching = len(all_job_skills & set(candidate_skills))
+                total = max(len(all_job_skills | set(candidate_skills)), 1)
+                match_pct = int((matching / total) * 100)
+                top_candidates.append({
+                    'profile': profile,
+                    'match_pct': match_pct,
+                    'matching_skills': matching,
+                })
+            
+            top_candidates.sort(key=lambda c: c['match_pct'], reverse=True)
+            top_candidates = top_candidates[:6]
+
+    # Unread messages count
+    unread_messages = Message.objects.filter(receiver=request.user, is_read=False).count()
 
     context = {
         'jobs': jobs,
@@ -296,6 +414,8 @@ def recruiter_dashboard(request):
         'pending_applications': pending_applications,
         'todays_interviews': todays_interviews,
         'today': today,
+        'top_candidates': top_candidates,
+        'unread_messages': unread_messages,
     }
     return render(request, "jobboard/RecruiterDashboard.html", context)
 
@@ -415,8 +535,227 @@ def recruiter_kanban(request):
     return render(request, "jobboard/RecruiterKanban.html", context)
 
 @login_required
-def recruiter_messaging(request):
-    return render(request, "jobboard/RecruiterMessaging.html")
+def recruiter_messaging(request, receiver_id=None):
+    """Messaging hub - list conversations and show messages (Story 13)"""
+    user = request.user
+
+    # Get all users the current user has exchanged messages with
+    sent_to = set(Message.objects.filter(sender=user).values_list('receiver_id', flat=True))
+    received_from = set(Message.objects.filter(receiver=user).values_list('sender_id', flat=True))
+    conversation_user_ids = sent_to | received_from
+
+    conversations = []
+    for uid in conversation_user_ids:
+        try:
+            other_user = CustomUser.objects.get(pk=uid)
+        except CustomUser.DoesNotExist:
+            continue
+        last_msg = Message.objects.filter(
+            Q(sender=user, receiver_id=uid) | Q(sender_id=uid, receiver=user)
+        ).order_by('-timestamp').first()
+        unread_count = Message.objects.filter(sender_id=uid, receiver=user, is_read=False).count()
+        conversations.append({
+            'user': other_user,
+            'last_message': last_msg,
+            'unread_count': unread_count,
+        })
+    conversations.sort(key=lambda c: c['last_message'].timestamp if c['last_message'] else timezone.now(), reverse=True)
+
+    # Get messages for selected conversation
+    selected_user = None
+    chat_messages = []
+    if receiver_id:
+        selected_user = get_object_or_404(CustomUser, pk=receiver_id)
+        chat_messages = Message.objects.filter(
+            Q(sender=user, receiver=selected_user) | Q(sender=selected_user, receiver=user)
+        ).order_by('timestamp')
+        # Mark received messages as read
+        Message.objects.filter(sender=selected_user, receiver=user, is_read=False).update(is_read=True)
+        # If not in conversations list, add them
+        if selected_user.id not in conversation_user_ids:
+            conversations.insert(0, {
+                'user': selected_user,
+                'last_message': chat_messages.last() if chat_messages.exists() else None,
+                'unread_count': 0,
+            })
+
+    context = {
+        'conversations': conversations,
+        'selected_user': selected_user,
+        'chat_messages': chat_messages,
+    }
+    return render(request, "jobboard/RecruiterMessaging.html", context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def send_message(request):
+    """Send a message to another user (Story 13)"""
+    receiver_id = request.POST.get('receiver_id')
+    content = request.POST.get('content', '').strip()
+
+    if not receiver_id or not content:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'Message and recipient are required.'}, status=400)
+        messages.error(request, "Message and recipient are required.")
+        return redirect('messaging')
+
+    receiver = get_object_or_404(CustomUser, pk=receiver_id)
+    msg = Message.objects.create(sender=request.user, receiver=receiver, content=content)
+
+    # Create notification for receiver
+    Notification.objects.create(
+        user=receiver,
+        notification_message=f"New message from {request.user.get_full_name() or request.user.username}",
+        link=f"/jobboard/messaging/{request.user.id}/"
+    )
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'message_id': msg.id,
+            'content': msg.content,
+            'timestamp': msg.timestamp.strftime('%I:%M %p'),
+        })
+    return redirect('messaging_conversation', receiver_id=receiver.id)
+
+
+@login_required
+@recruiter_required
+def email_candidate(request, user_id):
+    """Email a candidate through the platform (Story 14)"""
+    candidate = get_object_or_404(CustomUser, pk=user_id)
+
+    if request.method == 'POST':
+        form = EmailCandidateForm(request.POST)
+        if form.is_valid():
+            subject = form.cleaned_data['subject']
+            body = form.cleaned_data['body']
+            recruiter_name = request.user.get_full_name() or request.user.username
+            company = ''
+            if hasattr(request.user, 'recruiterprofile'):
+                company = request.user.recruiterprofile.company_name
+
+            full_body = (
+                f"Hi {candidate.first_name or candidate.username},\n\n"
+                f"{body}\n\n"
+                f"Best regards,\n"
+                f"{recruiter_name}\n"
+                f"{company}\n\n"
+                f"--- Sent via MintMatch ---"
+            )
+
+            try:
+                send_mail(
+                    subject=subject,
+                    message=full_body,
+                    from_email=django_settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[candidate.email],
+                    fail_silently=False,
+                )
+                # Create notification for candidate
+                Notification.objects.create(
+                    user=candidate,
+                    notification_message=f"You received an email from {recruiter_name} ({company})",
+                    link=""
+                )
+                messages.success(request, f"Email sent to {candidate.email} successfully!")
+                return redirect('recruiter_talent_search')
+            except Exception as e:
+                messages.error(request, f"Failed to send email: {str(e)}")
+    else:
+        form = EmailCandidateForm()
+
+    context = {
+        'form': form,
+        'candidate': candidate,
+    }
+    return render(request, "jobboard/EmailCandidate.html", context)
+
+
+@login_required
+@recruiter_required
+@require_http_methods(["POST"])
+def save_search(request):
+    """Save a candidate search (Story 15)"""
+    query = request.POST.get('q', '')
+    location = request.POST.get('location', '')
+    skill = request.POST.get('skill', '')
+    name = request.POST.get('name', '') or f"Search: {query or location or skill or 'All'}"
+
+    SavedSearch.objects.create(
+        recruiter=request.user,
+        name=name,
+        query=query,
+        location=location,
+        skill=skill,
+    )
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': True, 'message': 'Search saved!'})
+    messages.success(request, "Search saved successfully!")
+    return redirect('recruiter_talent_search')
+
+
+@login_required
+@recruiter_required
+def saved_searches(request):
+    """List saved searches (Story 15)"""
+    searches = SavedSearch.objects.filter(recruiter=request.user)
+    return render(request, "jobboard/SavedSearches.html", {'searches': searches})
+
+
+@login_required
+@recruiter_required
+@require_http_methods(["POST"])
+def delete_saved_search(request, pk):
+    """Delete a saved search"""
+    search = get_object_or_404(SavedSearch, pk=pk, recruiter=request.user)
+    search.delete()
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': True})
+    messages.success(request, "Saved search deleted.")
+    return redirect('saved_searches')
+
+
+@login_required
+@recruiter_required
+def recruiter_applicant_map(request):
+    """Show clusters of applicants by location on a map (Story 18)"""
+    # Get all applicants who applied to this recruiter's jobs
+    applicant_ids = Application.objects.filter(
+        job__recruiter=request.user
+    ).values_list('applicant_id', flat=True).distinct()
+
+    # Get profiles with locations
+    applicant_profiles = JobSeekerProfile.objects.filter(
+        user_id__in=applicant_ids
+    ).exclude(location='').select_related('user')
+
+    # Group by location for clustering
+    location_groups = {}
+    for profile in applicant_profiles:
+        loc = profile.location.strip()
+        if loc:
+            if loc not in location_groups:
+                location_groups[loc] = {
+                    'location': loc,
+                    'count': 0,
+                    'applicants': [],
+                    'latitude': float(profile.latitude) if profile.latitude else None,
+                    'longitude': float(profile.longitude) if profile.longitude else None,
+                }
+            location_groups[loc]['count'] += 1
+            location_groups[loc]['applicants'].append({
+                'name': profile.user.get_full_name() or profile.user.username,
+                'headline': profile.headline or profile.major or 'Candidate',
+            })
+
+    context = {
+        'location_groups': list(location_groups.values()),
+        'total_applicants': len(applicant_ids),
+    }
+    return render(request, "jobboard/RecruiterApplicantMap.html", context)
 
 @login_required
 @recruiter_required
@@ -452,20 +791,24 @@ def recruiter_talent_search(request):
             skills_split = [s.strip() for s in skill_list.split(',')]
             all_skills.update(skills_split)
     all_skills = sorted(list(all_skills))
-    # Safely resolve the recruiter's profile picture URL so template doesn't trigger a relation lookup
-    recruiter_profile_picture_url = None
-    try:
-        rp = getattr(request.user, 'recruiterprofile', None)
-        if rp is not None:
-            # migrations used both `profile_photo` and `profile_picture` in history; check both
-            photo_field = getattr(rp, 'profile_photo', None) or getattr(rp, 'profile_picture', None)
-            if photo_field:
-                try:
-                    recruiter_profile_picture_url = photo_field.url
-                except Exception:
-                    recruiter_profile_picture_url = None
-    except Exception:
-        recruiter_profile_picture_url = None
+
+    # Get saved searches for this recruiter (Story 15)
+    user_saved_searches = SavedSearch.objects.filter(recruiter=request.user)
+
+    # Check if matching new candidates for saved searches and create notifications (Story 15)
+    for saved in user_saved_searches:
+        # This runs on page load — lightweight check
+        sq = Q()
+        if saved.query:
+            sq &= (Q(user__first_name__icontains=saved.query) | Q(user__last_name__icontains=saved.query) | Q(skills__icontains=saved.query))
+        if saved.location:
+            sq &= Q(location__icontains=saved.location)
+        if saved.skill:
+            sq &= Q(skills__icontains=saved.skill)
+        if sq:
+            new_count = JobSeekerProfile.objects.filter(sq, is_resume_public=True).count()
+            # Store count on saved search for template display
+            saved.current_matches = new_count
 
     context = {
         'profiles': profiles, 
@@ -473,7 +816,7 @@ def recruiter_talent_search(request):
         'location': location,
         'skill': skill,
         'all_skills': all_skills,
-        'recruiter_profile_picture_url': recruiter_profile_picture_url,
+        'saved_searches': user_saved_searches,
     }
     return render(request, "jobboard/RecruiterTalentSearch.html", context)
 

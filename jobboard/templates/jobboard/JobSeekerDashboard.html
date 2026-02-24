@@ -242,6 +242,52 @@
                         <div class="w-full bg-slate-200 rounded-t h-[50%]"></div>
                     </div>
                 </div>
+
+                <!-- Recommended Jobs Section (Story 6) -->
+                <div class="glass-card rounded-2xl p-6 col-span-1 md:col-span-2 lg:col-span-4 flex flex-col">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">recommend</span>
+                            <h3 class="font-bold text-lg text-slate-900">Recommended Jobs</h3>
+                        </div>
+                        <a href="{% url 'jobseeker_search' %}" class="text-sm font-bold text-primary hover:underline">View All</a>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {% for rec in recommended_jobs %}
+                        <div class="p-4 rounded-xl bg-white/50 border border-white/60 hover:bg-white/80 transition-all group">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-10 rounded-lg bg-slate-900 flex items-center justify-center text-white text-sm font-bold uppercase">
+                                        {{ rec.job.company_name|first }}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-900 text-sm group-hover:text-primary transition-colors">
+                                            <a href="{% url 'job_detail' rec.job.pk %}">{{ rec.job.title|truncatechars:25 }}</a>
+                                        </h4>
+                                        <p class="text-xs text-slate-500">{{ rec.job.company_name }}</p>
+                                    </div>
+                                </div>
+                                <span class="inline-flex items-center gap-1 bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                                    <span class="text-primary">{{ rec.match_score }}%</span> Match
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs text-slate-400">
+                                <span class="material-symbols-outlined text-sm">location_on</span>
+                                {{ rec.job.location|default:"Remote" }}
+                                <span class="mx-1">&bull;</span>
+                                {{ rec.job.get_job_type_display }}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-span-full text-center py-6">
+                            <span class="material-symbols-outlined text-3xl text-slate-300 mb-2">auto_awesome</span>
+                            <p class="text-sm text-slate-500">Add skills to your profile to see personalized job recommendations.</p>
+                            <a href="{% url 'edit_profile' %}" class="text-primary text-xs font-bold hover:underline mt-2 inline-block">Update Skills</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
 <div class="glass-card rounded-2xl p-1 col-span-1 md:col-span-2 flex relative group overflow-hidden">
 <div class="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 <a href="{% if one_click_job %}{% url 'one_click_apply_form' one_click_job.pk %}{% else %}{% url 'jobseeker_search' %}{% endif %}" class="w-full h-full rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 text-white flex items-center justify-between px-8 py-4 shadow-lg hover:shadow-primary/20 transition-all relative z-10 group-hover:scale-[0.99]">

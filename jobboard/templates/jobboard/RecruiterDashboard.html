@@ -255,45 +255,32 @@
         <div class="col-span-1 md:col-span-8 glass-panel rounded-lg p-6 hover-lift">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-lg font-bold text-charcoal dark:text-white">Top Candidates</h2>
-                <a class="text-sm font-bold text-primary hover:underline" href="#">View All Candidates</a>
+                <a class="text-sm font-bold text-primary hover:underline" href="{% url 'recruiter_talent_search' %}">View All Candidates</a>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Candidate 1 -->
+                {% for candidate in top_candidates %}
                 <div class="p-4 rounded-2xl bg-gradient-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5 border border-white/60 dark:border-white/10 flex items-center gap-4 relative overflow-hidden group">
                     <div class="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-150"></div>
-                    <img alt="Portrait of male candidate" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-md z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAE_AHrq_dTuGbBm-nZ1ceiChhAk3UdS3V4boWRwtv9BItsl2MvYP2l7ky7GKfMrYdzoVXupvNHkcjFFUgxvy-cqNvHJnYOL7Yu-KdcJBuwe4BAKXapdbtyo6HPgC77eSMlITRbTv-bw4VqUy7iE1pAT_2pcAXc9D4blfhCm9WOTbqIiMLVd2DWCqSF_8zBVZADWAZOxIcXGVeSMbkQbp33BATVAzfMAxByGe33J5RRc5QEj-JfKAGXV-3qSCB2RnWVlsuVnInvR0I"/>
+                    {% if candidate.profile.profile_photo %}
+                    <img alt="{{ candidate.profile.user.get_full_name }}" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-md z-10" src="{{ candidate.profile.profile_photo.url }}"/>
+                    {% else %}
+                    <div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-xl font-bold text-charcoal border-2 border-white shadow-md z-10">
+                        {{ candidate.profile.user.first_name|first|default:"?" }}
+                    </div>
+                    {% endif %}
                     <div class="z-10">
-                        <h4 class="font-bold text-charcoal dark:text-white text-sm">James Wilson</h4>
-                        <p class="text-xs text-charcoal-light dark:text-gray-400 mb-1">Frontend Dev</p>
+                        <h4 class="font-bold text-charcoal dark:text-white text-sm">{{ candidate.profile.user.get_full_name|default:candidate.profile.user.username }}</h4>
+                        <p class="text-xs text-charcoal-light dark:text-gray-400 mb-1">{{ candidate.profile.headline|default:candidate.profile.major|default:"Candidate" }}</p>
                         <span class="inline-flex items-center gap-1 bg-charcoal text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            <span class="text-primary">98%</span> Match
+                            <span class="text-primary">{{ candidate.match_pct }}%</span> Match
                         </span>
                     </div>
                 </div>
-                <!-- Candidate 2 -->
-                <div class="p-4 rounded-2xl bg-gradient-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5 border border-white/60 dark:border-white/10 flex items-center gap-4 relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-150"></div>
-                    <img alt="Portrait of female candidate" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-md z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKVfrX8IFW-lrHDjdtozD0TfwXwfI5FWSavp5uu2PK1exEwN4kEdPTOhPrlX1inkn74DXJu8jzBuMolEeWOYdCF2_dwox5GmoSDAbvU_LIgihAyV-kWxwqiGXjlr-B-7cAHePCGUQegb135LrGU8LNSomxvuCQoyShMm6GO_2bxQ1W3LSPrBuY6qPhXlojM4wDbeKdKS2Fr7auW0cnOQvoNI8F38XECNuxqXD7Mmt9aFDcmazee8Ts0eCOxzsj8tVeVy5kiicZFog"/>
-                    <div class="z-10">
-                        <h4 class="font-bold text-charcoal dark:text-white text-sm">Elena Rodriguez</h4>
-                        <p class="text-xs text-charcoal-light dark:text-gray-400 mb-1">Product Designer</p>
-                        <span class="inline-flex items-center gap-1 bg-charcoal text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            <span class="text-primary">95%</span> Match
-                        </span>
-                    </div>
+                {% empty %}
+                <div class="col-span-full text-center py-6">
+                    <p class="text-sm text-charcoal-light dark:text-gray-400">Post jobs with skills to see matching candidates.</p>
                 </div>
-                <!-- Candidate 3 -->
-                <div class="p-4 rounded-2xl bg-gradient-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5 border border-white/60 dark:border-white/10 flex items-center gap-4 relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-150"></div>
-                    <img alt="Portrait of male candidate" class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-md z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpigRkM3kpLyBkGYYUt-MZ0OFXSJXywDEgG_SXiAj3Iwy-8Y5DpreWF7BHy1LEBkStcwuC2WUJ-QFPIZrX-uOEqWxa0PR8mXgpQ9i3SMYdqYuoiZkITUQQ4Ran71UIZBBhDiJI8jqlwDgf1EcTqTNWmRs2nUpB7nnpXmLRMR48EecG9Jm7MDLBuBiUkev6PLhRjVE94pAEhPGBH0vw4srtQxGlAaPwKomI3BC8msE2spQEV_bI3mP9WhWLVU1u57fLYc-g1wnggak"/>
-                    <div class="z-10">
-                        <h4 class="font-bold text-charcoal dark:text-white text-sm">Marcus Chen</h4>
-                        <p class="text-xs text-charcoal-light dark:text-gray-400 mb-1">Marketing Mgr</p>
-                        <span class="inline-flex items-center gap-1 bg-charcoal text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            <span class="text-primary">92%</span> Match
-                        </span>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
 

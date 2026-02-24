@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Email Candidate - MintMatch{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="pt-32 pb-12 px-4 md:px-8 max-w-3xl mx-auto">
+    <a href="{% url 'recruiter_talent_search' %}" class="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-teal-600 font-medium mb-6 transition-colors">
+        <span class="material-symbols-outlined text-lg">arrow_back</span>
+        Back to Talent Search
+    </a>
+
+    <div class="glass-panel rounded-3xl p-8 shadow-lg">
+        <div class="flex items-center gap-4 mb-8">
+            <div class="size-14 rounded-full bg-teal-500 flex items-center justify-center text-white text-xl font-bold">
+                {{ candidate.first_name|first|default:candidate.username|first|upper }}
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Email {{ candidate.get_full_name|default:candidate.username }}</h1>
+                <p class="text-sm text-slate-500">{{ candidate.email }}</p>
+            </div>
+        </div>
+
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="p-4 rounded-xl mb-2 {% if message.tags == 'success' %}bg-emerald-50 text-emerald-700 border border-emerald-200{% else %}bg-red-50 text-red-700 border border-red-200{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label for="id_subject" class="block text-sm font-bold text-slate-700 mb-2">Subject</label>
+                <input type="text" name="subject" id="id_subject" value="{{ form.subject.value|default:'' }}"
+                    class="w-full h-12 px-4 rounded-xl bg-white/50 border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent text-slate-900 placeholder:text-slate-400 transition-all"
+                    placeholder="Enter email subject..." required>
+                {% if form.subject.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.subject.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="id_body" class="block text-sm font-bold text-slate-700 mb-2">Message</label>
+                <textarea name="body" id="id_body" rows="8"
+                    class="w-full px-4 py-3 rounded-xl bg-white/50 border border-slate-200 focus:ring-2 focus:ring-teal-500 focus:border-transparent text-slate-900 placeholder:text-slate-400 transition-all resize-none"
+                    placeholder="Write your message to the candidate..." required>{{ form.body.value|default:'' }}</textarea>
+                {% if form.body.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.body.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                <p class="text-xs text-slate-400">Email will be sent from noreply@mintmatch.com</p>
+                <div class="flex gap-3">
+                    <a href="{% url 'recruiter_talent_search' %}" class="px-6 py-3 rounded-full text-sm font-bold text-slate-600 hover:bg-slate-100 transition-colors">Cancel</a>
+                    <button type="submit" class="px-8 py-3 rounded-full bg-teal-500 text-white font-bold text-sm hover:bg-teal-600 transition-all shadow-lg shadow-teal-500/20 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-lg">send</span>
+                        Send Email
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}

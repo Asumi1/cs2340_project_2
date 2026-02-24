@@ -14,12 +14,13 @@ class ApplicationForm(forms.ModelForm):
 class JobForm(forms.ModelForm):
     class Meta:
         model = Job
-        fields = ['title', 'location', 'description', 'job_type', 'work_mode', 'salary_min', 'salary_max', 'skills', 'latitude', 'longitude']
+        fields = ['title', 'location', 'description', 'job_type', 'work_mode', 'salary_min', 'salary_max', 'skills', 'visa_sponsorship', 'latitude', 'longitude']
         widgets = {
             'job_type': forms.Select(attrs={'class': 'glass-input w-full px-4 py-3 rounded-xl outline-none transition-all text-sm font-medium text-charcoal bg-white/50 backdrop-blur-sm focus:bg-white/80 border border-gray-100'}),
             'work_mode': forms.Select(attrs={'class': 'glass-input w-full px-4 py-3 rounded-xl outline-none transition-all text-sm font-medium text-charcoal bg-white/50 backdrop-blur-sm focus:bg-white/80 border border-gray-100'}),
             'description': forms.Textarea(attrs={'rows': 5, 'class': 'glass-input w-full px-4 py-3 rounded-xl outline-none transition-all text-sm font-medium text-charcoal bg-white/50 backdrop-blur-sm focus:bg-white/80 border border-gray-100'}),
             'skills': forms.TextInput(attrs={'type': 'hidden', 'id': 'skills-hidden-input'}),
+            'visa_sponsorship': forms.CheckboxInput(attrs={'class': 'rounded text-primary focus:ring-primary'}),
             'latitude': forms.HiddenInput(),
             'longitude': forms.HiddenInput(),
         }
@@ -43,4 +44,16 @@ ScreeningQuestionFormSet = inlineformset_factory(
     Job, ScreeningQuestion, form=ScreeningQuestionForm,
     extra=1, can_delete=True
 )
+
+
+class EmailCandidateForm(forms.Form):
+    subject = forms.CharField(max_length=255, widget=forms.TextInput(attrs={
+        'class': 'w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent text-sm',
+        'placeholder': 'Email subject...'
+    }))
+    body = forms.CharField(widget=forms.Textarea(attrs={
+        'class': 'w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent text-sm',
+        'rows': 8,
+        'placeholder': 'Write your message...'
+    }))
 

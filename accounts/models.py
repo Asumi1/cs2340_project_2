@@ -51,6 +51,10 @@ class JobSeekerProfile(models.Model):
     resume_file = models.FileField(upload_to='resumes/', blank=True, null=True)
     profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
     
+    # Location coordinates (for map features)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    
     # Privacy Settings
     is_resume_public = models.BooleanField(default=True, help_text="Allow recruiters to see your resume")
 

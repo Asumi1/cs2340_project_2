@@ -239,6 +239,112 @@
                     </div>
                 </div>
             </div>
+
+            <!-- User Management Section (Story 17) -->
+            <div class="glass-panel rounded-[2.5rem] p-8 shadow-glass min-h-[400px] flex flex-col mt-8">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800 dark:text-white">User Management</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">Manage user accounts, roles, and access.</p>
+                    </div>
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <form method="GET" action="{% url 'admin_dashboard' %}" class="flex items-center gap-3">
+                            <div class="relative group">
+                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+                                <input name="user_search" value="{{ user_search|default:'' }}" class="pl-10 pr-4 py-2.5 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 w-full sm:w-64 transition-all" placeholder="Search users..." type="text"/>
+                            </div>
+                            <select name="role_filter" onchange="this.form.submit()" class="py-2.5 px-4 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="">All Roles</option>
+                                <option value="RECRUITER" {% if role_filter == 'RECRUITER' %}selected{% endif %}>Recruiters</option>
+                                <option value="JOBSEEKER" {% if role_filter == 'JOBSEEKER' %}selected{% endif %}>Job Seekers</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-slate-700/50">
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400">User</th>
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400">Email</th>
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400">Role</th>
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400">Status</th>
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400">Joined</th>
+                                <th class="py-4 px-4 text-xs font-bold uppercase tracking-wider text-slate-400 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-700/30">
+                            {% for u in all_users %}
+                            <tr class="group hover:bg-primary/5 dark:hover:bg-white/5 transition-colors">
+                                <td class="py-4 px-4 align-middle">
+                                    <div class="flex items-center gap-3">
+                                        <div class="size-9 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-teal-800">
+                                            {{ u.username|first|upper }}
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-slate-800 dark:text-white text-sm">{{ u.get_full_name|default:u.username }}</p>
+                                            <p class="text-xs text-slate-500">@{{ u.username }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4 align-middle text-sm text-slate-600 dark:text-slate-300">{{ u.email }}</td>
+                                <td class="py-4 px-4 align-middle">
+                                    <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase
+                                        {% if u.role == 'RECRUITER' %}bg-blue-100 text-blue-700{% else %}bg-emerald-100 text-emerald-700{% endif %}">
+                                        {{ u.get_role_display }}
+                                    </span>
+                                </td>
+                                <td class="py-4 px-4 align-middle">
+                                    <div class="flex items-center gap-2">
+                                        {% if u.is_active %}
+                                        <div class="size-2 bg-emerald-500 rounded-full"></div>
+                                        <span class="text-sm font-medium text-emerald-600">Active</span>
+                                        {% else %}
+                                        <div class="size-2 bg-red-500 rounded-full"></div>
+                                        <span class="text-sm font-medium text-red-600">Deactivated</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="py-4 px-4 align-middle text-sm text-slate-500">{{ u.date_joined|date:"M d, Y" }}</td>
+                                <td class="py-4 px-4 align-middle text-right">
+                                    <div class="flex items-center justify-end gap-2">
+                                        {% if not u.is_superuser %}
+                                        <form method="POST" action="{% url 'admin_toggle_user_active' u.pk %}">
+                                            {% csrf_token %}
+                                            {% if u.is_active %}
+                                            <button type="submit" class="p-2 rounded-full text-amber-600 hover:bg-amber-100 transition-colors" title="Deactivate">
+                                                <span class="material-symbols-outlined text-lg">person_off</span>
+                                            </button>
+                                            {% else %}
+                                            <button type="submit" class="p-2 rounded-full text-emerald-600 hover:bg-emerald-100 transition-colors" title="Activate">
+                                                <span class="material-symbols-outlined text-lg">person</span>
+                                            </button>
+                                            {% endif %}
+                                        </form>
+                                        <form method="POST" action="{% url 'admin_change_user_role' u.pk %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="p-2 rounded-full text-blue-600 hover:bg-blue-100 transition-colors" title="Switch Role to {% if u.role == 'RECRUITER' %}Job Seeker{% else %}Recruiter{% endif %}">
+                                                <span class="material-symbols-outlined text-lg">swap_horiz</span>
+                                            </button>
+                                        </form>
+                                        {% else %}
+                                        <span class="text-xs text-slate-400 italic">Admin</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="py-12 text-center text-slate-500">
+                                    <p class="text-sm">No users found matching your search.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </main>
 </div>
