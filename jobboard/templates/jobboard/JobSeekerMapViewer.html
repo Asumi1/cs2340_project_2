@@ -149,7 +149,10 @@ window.addEventListener('load', function() {
             { className: 'custom-popup' }
         );
         markers["{{ job.id }}"] = marker;
+<<<<<<< HEAD
         allJobData.push({ id: "{{ job.id }}", lat: lat, lng: lng, marker: marker });
+=======
+>>>>>>> bcf4aded877448dfb4e82905125f89eeac8c102a
         bounds.extend([lat, lng]);
     })();
     {% endif %}
@@ -159,6 +162,7 @@ window.addEventListener('load', function() {
         map.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
     }
 
+<<<<<<< HEAD
     // Get user geolocation for radius filtering
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(pos) {
@@ -168,6 +172,12 @@ window.addEventListener('load', function() {
             filterByRadius(parseInt(radiusSlider.value));
         }, function() {
             radiusLabel.textContent = 'Location unavailable';
+=======
+    window.focusJob = function(lat, lng, id) {
+        map.setView([lat, lng], 14, {
+            animate: true,
+            duration: 1.0
+>>>>>>> bcf4aded877448dfb4e82905125f89eeac8c102a
         });
     }
 
