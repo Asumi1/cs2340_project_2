@@ -120,11 +120,16 @@ def admin_change_user_role(request, pk):
         old_role = target_user.role
         target_user.role = new_role
         target_user.save()
-        # Create corresponding profile if it doesn't exist
-        if new_role == CustomUser.Role.JOBSEEKER and not hasattr(target_user, 'jobseekerprofile'):
-            JobSeekerProfile.objects.create(user=target_user)
-        elif new_role == CustomUser.Role.RECRUITER and not hasattr(target_user, 'recruiterprofile'):
-            RecruiterProfile.objects.create(user=target_user, company_name="Pending")
+        if new_role == CustomUser.Role.JOBSEEKER:
+            if RecruiterProfile.objects.filter(user=target_user).exists():
+                RecruiterProfile.objects.filter(user=target_user).delete()
+            if not JobSeekerProfile.objects.filter(user=target_user).exists():
+                JobSeekerProfile.objects.create(user=target_user)
+        elif new_role == CustomUser.Role.RECRUITER:
+            if JobSeekerProfile.objects.filter(user=target_user).exists():
+                JobSeekerProfile.objects.filter(user=target_user).delete()
+            if not RecruiterProfile.objects.filter(user=target_user).exists():
+                RecruiterProfile.objects.create(user=target_user, company_name="Pending")
         messages.success(request, f"User {target_user.username} role changed from {old_role} to {new_role}.")
     else:
         messages.error(request, "Invalid role specified.")
@@ -720,7 +725,8 @@ def save_search(request):
     query = request.POST.get('query', request.POST.get('q', ''))
     location = request.POST.get('location', '')
     skill = request.POST.get('skill', '')
-    name = request.POST.get('name', '') or f"Search: {query or location or skill or 'All'}"
+    project = request.POST.get('project', '')
+    name = request.POST.get('name', '') or f"Search: {query or location or skill or project or 'All'}"
 
     match_qs = JobSeekerProfile.objects.filter(is_resume_public=True)
     if query:
@@ -733,6 +739,8 @@ def save_search(request):
         match_qs = match_qs.filter(location__icontains=location)
     if skill:
         match_qs = match_qs.filter(skills__icontains=skill)
+    if project:
+        match_qs = match_qs.filter(projects__icontains=project)
     initial_match_count = match_qs.count()
 
     SavedSearch.objects.create(
@@ -741,6 +749,7 @@ def save_search(request):
         query=query,
         location=location,
         skill=skill,
+        project=project,
         last_match_count=initial_match_count,
     )
 
@@ -821,6 +830,7 @@ def recruiter_talent_search(request):
     query = request.GET.get('q', '')
     location = request.GET.get('location', '')
     skill = request.GET.get('skill', '')
+    project = request.GET.get('project', '')
     
     # Only show profiles that are set to public
     profiles = JobSeekerProfile.objects.filter(is_resume_public=True)
@@ -830,6 +840,7 @@ def recruiter_talent_search(request):
             Q(user__first_name__icontains=query) |
             Q(user__last_name__icontains=query) |
             Q(skills__icontains=query) |
+            Q(projects__icontains=query) |
             Q(major__icontains=query) |
             Q(headline__icontains=query) |
             Q(work_experience__icontains=query)
@@ -840,6 +851,9 @@ def recruiter_talent_search(request):
     
     if skill:
         profiles = profiles.filter(skills__icontains=skill)
+
+    if project:
+        profiles = profiles.filter(projects__icontains=project)
 
     # Get all unique skills for the dropdown
     all_skills_raw = JobSeekerProfile.objects.filter(is_resume_public=True).exclude(skills__isnull=True).exclude(skills='').values_list('skills', flat=True)
@@ -866,6 +880,8 @@ def recruiter_talent_search(request):
             sq = sq.filter(location__icontains=saved.location)
         if saved.skill:
             sq = sq.filter(skills__icontains=saved.skill)
+        if saved.project:
+            sq = sq.filter(projects__icontains=saved.project)
 
         new_count = sq.count()
         saved.current_matches = new_count
@@ -873,7 +889,7 @@ def recruiter_talent_search(request):
             Notification.objects.create(
                 user=request.user,
                 notification_message=f"Saved search '{saved.name or 'Untitled Search'}' has {new_count - saved.last_match_count} new candidate match(es).",
-                link=f"/jobboard/recruiter/talent-search/?q={saved.query}&location={saved.location}&skill={saved.skill}",
+                link=f"/jobboard/recruiter/talent-search/?q={saved.query}&location={saved.location}&skill={saved.skill}&project={saved.project}",
             )
         if new_count != saved.last_match_count:
             saved.last_match_count = new_count
@@ -884,6 +900,7 @@ def recruiter_talent_search(request):
         'query': query,
         'location': location,
         'skill': skill,
+        'project': project,
         'all_skills': all_skills,
         'saved_searches': user_saved_searches,
     }

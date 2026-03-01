@@ -44,6 +44,7 @@ class JobSeekerProfile(models.Model):
     bio = models.TextField(blank=True)
     location = models.CharField(max_length=255, blank=True, help_text="Current city/region")
     skills = models.TextField(blank=True, help_text="Comma-separated skills")
+    projects = models.TextField(blank=True, help_text="Projects and portfolio highlights")
     education = models.TextField(blank=True, help_text="Education details")
     work_experience = models.TextField(blank=True, help_text="Work experience details")
     linkedin_url = models.URLField(max_length=200, blank=True)

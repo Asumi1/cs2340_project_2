@@ -43,7 +43,12 @@
                     data-title="{{ job.title|lower }}"
                     data-company="{{ job.company_name|lower }}"
                     data-location="{{ job.location|lower }}"
-                    onclick="focusJob({{ job.latitude }}, {{ job.longitude }}, {{ job.id }})"
+                    data-lat="{{ job.latitude }}"
+                    data-lng="{{ job.longitude }}"
+                    data-detail-url="{% url 'job_detail' job.id %}"
+                    data-popup-title="{{ job.title|escape }}"
+                    data-popup-company="{{ job.company_name|escape }}"
+                    data-popup-salary="{% if job.salary_min and job.salary_max %}${{ job.salary_min }} - ${{ job.salary_max }}{% elif job.salary_min %}From ${{ job.salary_min }}{% elif job.salary_max %}Up to ${{ job.salary_max }}{% else %}Salary not listed{% endif %}"
                 >
                     <div class="flex justify-between items-start mb-3">
                         <div>
@@ -97,8 +102,12 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 window.addEventListener('load', function() {
-    const defaultLat = {% if jobs and jobs.0.latitude %}parseFloat("{{ jobs.0.latitude }}"){% else %}33.7490{% endif %};
-    const defaultLng = {% if jobs and jobs.0.longitude %}parseFloat("{{ jobs.0.longitude }}"){% else %}-84.3880{% endif %};
+    const jobCards = Array.from(document.querySelectorAll('.job-card'));
+    const firstJobCard = jobCards.length > 0 ? jobCards[0] : null;
+    const firstLat = firstJobCard ? parseFloat(firstJobCard.dataset.lat) : NaN;
+    const firstLng = firstJobCard ? parseFloat(firstJobCard.dataset.lng) : NaN;
+    const defaultLat = Number.isFinite(firstLat) ? firstLat : 33.7490;
+    const defaultLng = Number.isFinite(firstLng) ? firstLng : -84.3880;
 
     const map = L.map('map').setView([defaultLat, defaultLng], 11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -258,37 +267,43 @@ window.addEventListener('load', function() {
         updateVisibleCount();
     }
 
-    {% for job in jobs %}
-    {% if job.latitude and job.longitude %}
-    (function() {
-        const lat = parseFloat("{{ job.latitude }}");
-        const lng = parseFloat("{{ job.longitude }}");
+    jobCards.forEach(function(card) {
+        const jobId = card.dataset.jobId;
+        const lat = parseFloat(card.dataset.lat);
+        const lng = parseFloat(card.dataset.lng);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return;
+        }
+
         const marker = L.marker([lat, lng]).addTo(map);
         marker.bindPopup(
             '<div class="custom-popup p-1">' +
-            '<p class="text-xs font-bold text-teal-600 mb-1 uppercase tracking-tighter">{{ job.company_name|escapejs }}</p>' +
-            '<h3 class="font-bold text-slate-900 leading-tight mb-2">{{ job.title|escapejs }}</h3>' +
+            '<p class="text-xs font-bold text-teal-600 mb-1 uppercase tracking-tighter">' + card.dataset.popupCompany + '</p>' +
+            '<h3 class="font-bold text-slate-900 leading-tight mb-2">' + card.dataset.popupTitle + '</h3>' +
             '<div class="flex items-center justify-between gap-4 mt-2">' +
-            '<span class="text-[10px] font-bold text-slate-500">{% if job.salary_min and job.salary_max %}${{ job.salary_min }} - ${{ job.salary_max }}{% elif job.salary_min %}From ${{ job.salary_min }}{% elif job.salary_max %}Up to ${{ job.salary_max }}{% else %}Salary not listed{% endif %}</span>' +
-            '<a href="{% url "job_detail" job.id %}" class="px-3 py-1.5 bg-teal-500 text-white rounded-lg text-[10px] font-bold hover:bg-teal-600 transition-all">Details</a>' +
+            '<span class="text-[10px] font-bold text-slate-500">' + card.dataset.popupSalary + '</span>' +
+            '<a href="' + card.dataset.detailUrl + '" class="px-3 py-1.5 bg-teal-500 text-white rounded-lg text-[10px] font-bold hover:bg-teal-600 transition-all">Details</a>' +
             '</div></div>',
             { className: 'custom-popup' }
         );
 
-        markers["{{ job.id }}"] = marker;
+        markers[jobId] = marker;
         allJobData.push({
-            id: "{{ job.id }}",
-            title: "{{ job.title|lower|escapejs }}",
-            company: "{{ job.company_name|lower|escapejs }}",
-            location: "{{ job.location|lower|escapejs }}",
+            id: jobId,
+            title: (card.dataset.title || '').toLowerCase(),
+            company: (card.dataset.company || '').toLowerCase(),
+            location: (card.dataset.location || '').toLowerCase(),
             lat: lat,
             lng: lng,
             marker: marker,
         });
+
+        card.addEventListener('click', function() {
+            window.focusJob(lat, lng, jobId);
+        });
+
         bounds.extend([lat, lng]);
-    })();
-    {% endif %}
-    {% endfor %}
+    });
 
     if (bounds.isValid()) {
         map.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });

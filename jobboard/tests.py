@@ -1,7 +1,9 @@
 from django.test import TestCase
 from django.urls import reverse
+from unittest.mock import patch
+from decimal import Decimal
 
-from accounts.models import CustomUser, JobSeekerProfile
+from accounts.models import CustomUser, JobSeekerProfile, RecruiterProfile
 from .models import Application, Job, SavedSearch, Notification
 
 
@@ -487,3 +489,154 @@ class SavedSearchNotificationTests(TestCase):
         second_hit = self.client.get(reverse("recruiter_talent_search"))
         self.assertEqual(second_hit.status_code, 200)
         self.assertEqual(Notification.objects.filter(user=self.recruiter).count(), 1)
+
+
+class StoryCompletenessHardeningTests(TestCase):
+    def setUp(self):
+        self.admin_user = CustomUser.objects.create_user(
+            username="admin2",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+            is_staff=True,
+            is_superuser=True,
+        )
+        self.recruiter = CustomUser.objects.create_user(
+            username="recruiter11",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+            email="recruiter11@example.com",
+        )
+        RecruiterProfile.objects.create(user=self.recruiter, company_name="MintMatch")
+
+        self.jobseeker_public = CustomUser.objects.create_user(
+            username="public_candidate",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+            email="public@example.com",
+            first_name="Public",
+            last_name="Candidate",
+        )
+        self.public_profile = JobSeekerProfile.objects.create(
+            user=self.jobseeker_public,
+            location="Atlanta",
+            skills="Python, Django",
+            projects="Open source dashboard project",
+            is_resume_public=True,
+            latitude=Decimal("33.749000"),
+            longitude=Decimal("-84.388000"),
+        )
+
+        self.jobseeker_private = CustomUser.objects.create_user(
+            username="private_candidate",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+            email="private@example.com",
+        )
+        JobSeekerProfile.objects.create(
+            user=self.jobseeker_private,
+            location="Atlanta",
+            skills="Python",
+            projects="Open source dashboard project",
+            is_resume_public=False,
+        )
+
+        self.job = Job.objects.create(
+            recruiter=self.recruiter,
+            title="Geo Engineer",
+            company_name="MintMatch",
+            location="Atlanta, GA",
+            description="Map work",
+            skills="Python",
+            latitude=33.749,
+            longitude=-84.388,
+            is_active=True,
+            is_approved=True,
+        )
+
+    def test_story_11_candidate_search_supports_projects_and_respects_privacy(self):
+        self.client.login(username="recruiter11", password="testpass123")
+        response = self.client.get(reverse("recruiter_talent_search"), {"project": "dashboard"})
+
+        self.assertEqual(response.status_code, 200)
+        profiles = list(response.context["profiles"])
+        self.assertIn(self.public_profile, profiles)
+        self.assertEqual(len([p for p in profiles if p.user.username == "private_candidate"]), 0)
+
+    def test_story_13_messaging_creates_message_and_notification(self):
+        self.client.login(username="recruiter11", password="testpass123")
+        response = self.client.post(
+            reverse("send_message"),
+            {"receiver_id": str(self.jobseeker_public.pk), "content": "Hello candidate"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.recruiter.sent_messages.filter(receiver=self.jobseeker_public).exists())
+        self.assertTrue(Notification.objects.filter(user=self.jobseeker_public, notification_message__icontains="New message").exists())
+
+    @patch("jobboard.views.send_mail", return_value=1)
+    def test_story_14_email_candidate_creates_notification(self, mocked_send_mail):
+        self.client.login(username="recruiter11", password="testpass123")
+        response = self.client.post(
+            reverse("email_candidate", args=[self.jobseeker_public.pk]),
+            {"subject": "Interview", "body": "Would love to chat."},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        mocked_send_mail.assert_called_once()
+        self.assertTrue(Notification.objects.filter(user=self.jobseeker_public, notification_message__icontains="received an email").exists())
+
+    def test_story_17_job_create_persists_office_coordinates(self):
+        self.client.login(username="recruiter11", password="testpass123")
+        response = self.client.post(
+            reverse("job_create"),
+            {
+                "title": "Office Role",
+                "location": "Midtown Atlanta",
+                "description": "Onsite role",
+                "job_type": "FULL_TIME",
+                "work_mode": "ONSITE",
+                "salary_min": "90000",
+                "salary_max": "120000",
+                "skills": "Python, SQL",
+                "visa_sponsorship": "on",
+                "latitude": "33.781",
+                "longitude": "-84.383",
+                "questions-TOTAL_FORMS": "0",
+                "questions-INITIAL_FORMS": "0",
+                "questions-MIN_NUM_FORMS": "0",
+                "questions-MAX_NUM_FORMS": "1000",
+            },
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        created = Job.objects.filter(title="Office Role", recruiter=self.recruiter).latest("created_at")
+        self.assertEqual(float(created.latitude), 33.781)
+        self.assertEqual(float(created.longitude), -84.383)
+
+    def test_story_18_recruiter_applicant_map_context_contains_group_summary(self):
+        Application.objects.create(job=self.job, applicant=self.jobseeker_public, status="APPLIED")
+        self.client.login(username="recruiter11", password="testpass123")
+        response = self.client.get(reverse("recruiter_applicant_map"))
+
+        self.assertEqual(response.status_code, 200)
+        groups = response.context["location_groups"]
+        self.assertGreaterEqual(len(groups), 1)
+        self.assertIn("applicant_summary", groups[0])
+        self.assertIn("location", groups[0])
+
+    def test_story_19_admin_role_switch_removes_conflicting_profile(self):
+        self.client.login(username="admin2", password="testpass123")
+        response = self.client.post(
+            reverse("admin_change_user_role", args=[self.recruiter.pk]),
+            {"role": CustomUser.Role.JOBSEEKER},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.recruiter.refresh_from_db()
+        self.assertEqual(self.recruiter.role, CustomUser.Role.JOBSEEKER)
+        self.assertFalse(RecruiterProfile.objects.filter(user=self.recruiter).exists())
+        self.assertTrue(JobSeekerProfile.objects.filter(user=self.recruiter).exists())

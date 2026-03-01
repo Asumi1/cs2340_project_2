@@ -42,12 +42,13 @@
                             {% if ss.query %}<span class="px-2 py-0.5 bg-slate-100 rounded-full">{{ ss.query }}</span>{% endif %}
                             {% if ss.location %}<span class="px-2 py-0.5 bg-slate-100 rounded-full">{{ ss.location }}</span>{% endif %}
                             {% if ss.skill %}<span class="px-2 py-0.5 bg-slate-100 rounded-full">{{ ss.skill }}</span>{% endif %}
+                            {% if ss.project %}<span class="px-2 py-0.5 bg-slate-100 rounded-full">{{ ss.project }}</span>{% endif %}
                             <span>&bull; Saved {{ ss.created_at|timesince }} ago</span>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <a href="{% url 'recruiter_talent_search' %}?q={{ ss.query|urlencode }}&location={{ ss.location|urlencode }}&skill={{ ss.skill|urlencode }}" class="px-4 py-2 rounded-full bg-teal-500/10 text-teal-700 font-bold text-sm hover:bg-teal-500/20 transition-colors">
+                    <a href="{% url 'recruiter_talent_search' %}?q={{ ss.query|urlencode }}&location={{ ss.location|urlencode }}&skill={{ ss.skill|urlencode }}&project={{ ss.project|urlencode }}" class="px-4 py-2 rounded-full bg-teal-500/10 text-teal-700 font-bold text-sm hover:bg-teal-500/20 transition-colors">
                         Run Search
                     </a>
                     <form method="POST" action="{% url 'delete_saved_search' ss.pk %}" class="inline">

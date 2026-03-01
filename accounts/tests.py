@@ -31,8 +31,8 @@ class AuthTests(TestCase):
         }
         response = self.client.post(self.signup_url, data, follow=True)
         
-        # Expect redirect to home
-        self.assertRedirects(response, self.home_url)
+        # Expect role-based redirect to job seeker dashboard
+        self.assertRedirects(response, reverse('jobseeker_dashboard'))
         
         # Check user created
         self.assertTrue(CustomUser.objects.filter(username='testseeker').exists())
@@ -55,7 +55,7 @@ class AuthTests(TestCase):
             'password2': 'testpassword123',
         }
         response = self.client.post(self.signup_url, data, follow=True)
-        self.assertRedirects(response, self.home_url)
+        self.assertRedirects(response, reverse('recruiter_dashboard'))
         
         user = CustomUser.objects.get(username='testrecruiter')
         self.assertEqual(user.role, 'RECRUITER')
