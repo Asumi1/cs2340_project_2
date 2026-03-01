@@ -54,6 +54,10 @@ class JobSeekerProfile(models.Model):
     # Location coordinates (for map features)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    preferred_commute_radius_miles = models.PositiveIntegerField(
+        default=25,
+        help_text="Preferred commute radius in miles for map filtering"
+    )
     
     # Privacy Settings
     is_resume_public = models.BooleanField(default=True, help_text="Allow recruiters to see your resume")

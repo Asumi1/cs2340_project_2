@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.urls import reverse
 from django.core.mail import send_mail
 from django.conf import settings as django_settings
@@ -182,10 +183,44 @@ def jobseeker_dashboard(request):
     return render(request, "jobboard/JobSeekerDashboard.html", context)
 
 @login_required
+@ensure_csrf_cookie
 def jobseeker_map_viewer(request):
     # Only show jobs that are active and approved and have coordinates
     jobs = Job.objects.filter(is_active=True, is_approved=True, latitude__isnull=False, longitude__isnull=False)
-    return render(request, "jobboard/JobSeekerMapViewer.html", {"jobs": jobs})
+    preferred_radius_miles = 100
+    if request.user.role == CustomUser.Role.JOBSEEKER and hasattr(request.user, 'jobseekerprofile'):
+        preferred_radius_miles = max(1, min(request.user.jobseekerprofile.preferred_commute_radius_miles, 100))
+    return render(
+        request,
+        "jobboard/JobSeekerMapViewer.html",
+        {
+            "jobs": jobs,
+            "preferred_radius_miles": preferred_radius_miles,
+        },
+    )
+
+
+@login_required
+@require_http_methods(["POST"])
+def update_commute_radius_preference(request):
+    if request.user.role != CustomUser.Role.JOBSEEKER:
+        return JsonResponse({'error': 'Only job seekers can update commute preferences.'}, status=403)
+
+    profile = getattr(request.user, 'jobseekerprofile', None)
+    if not profile:
+        return JsonResponse({'error': 'Job seeker profile not found.'}, status=404)
+
+    try:
+        radius = int(request.POST.get('radius_miles', ''))
+    except (ValueError, TypeError):
+        return JsonResponse({'error': 'Radius must be a valid integer.'}, status=400)
+
+    if radius < 1 or radius > 100:
+        return JsonResponse({'error': 'Radius must be between 1 and 100 miles.'}, status=400)
+
+    profile.preferred_commute_radius_miles = radius
+    profile.save(update_fields=['preferred_commute_radius_miles'])
+    return JsonResponse({'success': True, 'preferred_radius_miles': radius})
 
 @login_required
 def jobseeker_search(request):
@@ -406,6 +441,8 @@ def recruiter_dashboard(request):
 
     # Unread messages count
     unread_messages = Message.objects.filter(receiver=request.user, is_read=False).count()
+    unread_notifications = Notification.objects.filter(user=request.user, is_read=False).count()
+    recent_notifications = Notification.objects.filter(user=request.user).order_by('-created_at')[:5]
 
     context = {
         'jobs': jobs,
@@ -416,6 +453,8 @@ def recruiter_dashboard(request):
         'today': today,
         'top_candidates': top_candidates,
         'unread_messages': unread_messages,
+        'unread_notifications': unread_notifications,
+        'recent_notifications': recent_notifications,
     }
     return render(request, "jobboard/RecruiterDashboard.html", context)
 
@@ -678,10 +717,23 @@ def email_candidate(request, user_id):
 @require_http_methods(["POST"])
 def save_search(request):
     """Save a candidate search (Story 15)"""
-    query = request.POST.get('q', '')
+    query = request.POST.get('query', request.POST.get('q', ''))
     location = request.POST.get('location', '')
     skill = request.POST.get('skill', '')
     name = request.POST.get('name', '') or f"Search: {query or location or skill or 'All'}"
+
+    match_qs = JobSeekerProfile.objects.filter(is_resume_public=True)
+    if query:
+        match_qs = match_qs.filter(
+            Q(user__first_name__icontains=query) |
+            Q(user__last_name__icontains=query) |
+            Q(skills__icontains=query)
+        )
+    if location:
+        match_qs = match_qs.filter(location__icontains=location)
+    if skill:
+        match_qs = match_qs.filter(skills__icontains=skill)
+    initial_match_count = match_qs.count()
 
     SavedSearch.objects.create(
         recruiter=request.user,
@@ -689,6 +741,7 @@ def save_search(request):
         query=query,
         location=location,
         skill=skill,
+        last_match_count=initial_match_count,
     )
 
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -702,7 +755,7 @@ def save_search(request):
 def saved_searches(request):
     """List saved searches (Story 15)"""
     searches = SavedSearch.objects.filter(recruiter=request.user)
-    return render(request, "jobboard/SavedSearches.html", {'searches': searches})
+    return render(request, "jobboard/SavedSearches.html", {'searches': searches, 'saved_searches': searches})
 
 
 @login_required
@@ -751,8 +804,13 @@ def recruiter_applicant_map(request):
                 'headline': profile.headline or profile.major or 'Candidate',
             })
 
+    location_groups_list = list(location_groups.values())
+    for group in location_groups_list:
+        group['applicant_names'] = [a['name'] for a in group['applicants']]
+        group['applicant_summary'] = ", ".join(group['applicant_names'])
+
     context = {
-        'location_groups': list(location_groups.values()),
+        'location_groups': location_groups_list,
         'total_applicants': len(applicant_ids),
     }
     return render(request, "jobboard/RecruiterApplicantMap.html", context)
@@ -797,18 +855,29 @@ def recruiter_talent_search(request):
 
     # Check if matching new candidates for saved searches and create notifications (Story 15)
     for saved in user_saved_searches:
-        # This runs on page load — lightweight check
-        sq = Q()
+        sq = JobSeekerProfile.objects.filter(is_resume_public=True)
         if saved.query:
-            sq &= (Q(user__first_name__icontains=saved.query) | Q(user__last_name__icontains=saved.query) | Q(skills__icontains=saved.query))
+            sq = sq.filter(
+                Q(user__first_name__icontains=saved.query) |
+                Q(user__last_name__icontains=saved.query) |
+                Q(skills__icontains=saved.query)
+            )
         if saved.location:
-            sq &= Q(location__icontains=saved.location)
+            sq = sq.filter(location__icontains=saved.location)
         if saved.skill:
-            sq &= Q(skills__icontains=saved.skill)
-        if sq:
-            new_count = JobSeekerProfile.objects.filter(sq, is_resume_public=True).count()
-            # Store count on saved search for template display
-            saved.current_matches = new_count
+            sq = sq.filter(skills__icontains=saved.skill)
+
+        new_count = sq.count()
+        saved.current_matches = new_count
+        if new_count > saved.last_match_count:
+            Notification.objects.create(
+                user=request.user,
+                notification_message=f"Saved search '{saved.name or 'Untitled Search'}' has {new_count - saved.last_match_count} new candidate match(es).",
+                link=f"/jobboard/recruiter/talent-search/?q={saved.query}&location={saved.location}&skill={saved.skill}",
+            )
+        if new_count != saved.last_match_count:
+            saved.last_match_count = new_count
+            saved.save(update_fields=['last_match_count'])
 
     context = {
         'profiles': profiles, 

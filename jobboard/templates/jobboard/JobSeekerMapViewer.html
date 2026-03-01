@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block extra_head %}
-<!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 <style>
     #map { height: calc(100vh - 100px); width: 100%; border-radius: 1rem; }
@@ -22,31 +21,36 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="max-w-[1600px] mx-auto px-4 py-6 mt-24">
     <div class="flex flex-col lg:flex-row gap-6">
-        <!-- Sidebar: Job List -->
         <div class="w-full lg:w-1/3 flex flex-col gap-4">
             <div class="glass-panel rounded-3xl p-6 shadow-xl space-y-4">
                 <div class="flex items-center justify-between">
                     <h1 class="text-2xl font-bold text-slate-900">Explore Jobs</h1>
-                    <span class="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-xs font-bold">{{ jobs|length }} Found</span>
+                    <span class="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-xs font-bold"><span id="visible-count">{{ jobs|length }}</span> Found</span>
                 </div>
-                
                 <div class="relative">
-                    <input type="text" placeholder="Filter by keyword..." class="w-full bg-white/50 border-none rounded-2xl py-3 px-4 focus:ring-2 focus:ring-teal-500 transition-all">
+                    <input id="job-filter-input" type="text" placeholder="Filter by keyword..." class="w-full bg-white/50 border-none rounded-2xl py-3 px-4 focus:ring-2 focus:ring-teal-500 transition-all">
                 </div>
             </div>
 
-            <div class="flex flex-col gap-4 overflow-y-auto max-h-[calc(100vh-280px)] pr-2">
+            <div id="job-list" class="flex flex-col gap-4 overflow-y-auto max-h-[calc(100vh-280px)] pr-2">
                 {% for job in jobs %}
-                <div class="glass-panel rounded-2xl p-5 hover:scale-[1.02] transition-all cursor-pointer group border-l-4 border-l-teal-500" onclick="focusJob({{ job.latitude }}, {{ job.longitude }}, {{ job.id }})">
+                <div
+                    id="job-card-{{ job.id }}"
+                    class="job-card glass-panel rounded-2xl p-5 hover:scale-[1.02] transition-all cursor-pointer group border-l-4 border-l-teal-500"
+                    data-job-id="{{ job.id }}"
+                    data-title="{{ job.title|lower }}"
+                    data-company="{{ job.company_name|lower }}"
+                    data-location="{{ job.location|lower }}"
+                    onclick="focusJob({{ job.latitude }}, {{ job.longitude }}, {{ job.id }})"
+                >
                     <div class="flex justify-between items-start mb-3">
                         <div>
                             <h3 class="font-bold text-slate-800 group-hover:text-teal-600 transition-colors">{{ job.title }}</h3>
                             <p class="text-sm text-slate-500">{{ job.company_name }}</p>
                         </div>
-                            <span class="text-xs font-semibold text-slate-400">{{ job.get_work_mode_display }}</span>
+                        <span class="text-xs font-semibold text-slate-400">{{ job.get_work_mode_display }}</span>
                     </div>
                     <div class="flex flex-wrap gap-2 mb-3">
                         <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-bold uppercase">{{ job.get_job_type_display }}</span>
@@ -69,19 +73,18 @@
             </div>
         </div>
 
-        <!-- Main Map Area -->
         <div class="w-full lg:w-2/3">
             <div class="glass-panel rounded-[2rem] p-2 shadow-2xl relative overflow-hidden">
                 <div id="map"></div>
-                
-                <!-- Floating Radius Control (Optional Mockup) -->
+
                 <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-[1000] w-2/3 max-w-md">
                     <div class="glass-panel rounded-2xl p-4 shadow-lg border border-white/40">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Search Radius</span>
-                            <span id="radius-val" class="text-xs font-bold text-teal-600">All Locations</span>
+                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Commute Radius</span>
+                            <span id="radius-val" class="text-xs font-bold text-teal-600">{{ preferred_radius_miles }} mi</span>
                         </div>
-                        <input type="range" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-500" min="1" max="100" value="100">
+                        <input id="radius-slider" type="range" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-teal-500" min="1" max="100" value="{{ preferred_radius_miles|default:100 }}">
+                        <p id="radius-help" class="mt-2 text-[11px] text-slate-500">Using your current location to filter jobs nearby.</p>
                     </div>
                 </div>
             </div>
@@ -91,53 +94,176 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 window.addEventListener('load', function() {
-    var defaultLat = 33.7490;
-    var defaultLng = -84.3880;
+    const defaultLat = {% if jobs and jobs.0.latitude %}parseFloat("{{ jobs.0.latitude }}"){% else %}33.7490{% endif %};
+    const defaultLng = {% if jobs and jobs.0.longitude %}parseFloat("{{ jobs.0.longitude }}"){% else %}-84.3880{% endif %};
 
-    {% if jobs and jobs.0.latitude %}
-    defaultLat = parseFloat("{{ jobs.0.latitude }}");
-    defaultLng = parseFloat("{{ jobs.0.longitude }}");
-    {% endif %}
-
-    var map = L.map('map').setView([defaultLat, defaultLng], 11);
-
+    const map = L.map('map').setView([defaultLat, defaultLng], 11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-
     map.invalidateSize();
-    setTimeout(function() { map.invalidateSize(); }, 300);
+    setTimeout(function() { map.invalidateSize(); }, 250);
     window.addEventListener('resize', function() { map.invalidateSize(); });
 
-    var markers = {};
-    var allJobData = [];
-    var bounds = L.latLngBounds();
-    var userLat = null, userLng = null;
-    var radiusCircle = null;
-    var radiusSlider = document.querySelector('input[type="range"]');
-    var radiusLabel = document.getElementById('radius-val');
+    const markers = {};
+    const allJobData = [];
+    const bounds = L.latLngBounds();
 
-    // Haversine distance in km
-    function haversine(lat1, lon1, lat2, lon2) {
-        var R = 6371;
-        var dLat = (lat2 - lat1) * Math.PI / 180;
-        var dLon = (lon2 - lon1) * Math.PI / 180;
-        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    const radiusSlider = document.getElementById('radius-slider');
+    const radiusLabel = document.getElementById('radius-val');
+    const radiusHelp = document.getElementById('radius-help');
+    const filterInput = document.getElementById('job-filter-input');
+    const visibleCount = document.getElementById('visible-count');
+
+    let userLat = null;
+    let userLng = null;
+    let radiusCircle = null;
+    let saveTimer = null;
+
+    function getCsrfToken() {
+        const match = document.cookie.match(/(^|;)\s*csrftoken=([^;]+)/);
+        return match ? decodeURIComponent(match[2]) : '';
+    }
+
+    function haversineMiles(lat1, lon1, lat2, lon2) {
+        const R = 3958.8;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon/2) * Math.sin(dLon/2);
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function persistRadiusPreference(radiusMiles) {
+        window.clearTimeout(saveTimer);
+        saveTimer = window.setTimeout(function() {
+            const body = new URLSearchParams();
+            body.append('radius_miles', String(radiusMiles));
+            fetch("{% url 'update_commute_radius_preference' %}", {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                    'X-CSRFToken': getCsrfToken(),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: body.toString()
+            }).then(function(response) {
+                if (!response.ok) {
+                    radiusHelp.textContent = 'Could not save commute radius right now. Filtering still works for this session.';
+                }
+            }).catch(function() {
+                radiusHelp.textContent = 'Could not save commute radius right now. Filtering still works for this session.';
+            });
+        }, 350);
+    }
+
+    function setCardVisibility(jobId, isVisible) {
+        const card = document.getElementById('job-card-' + jobId);
+        if (!card) {
+            return;
+        }
+        if (isVisible) {
+            card.classList.remove('hidden');
+        } else {
+            card.classList.add('hidden');
+        }
+    }
+
+    function applyKeywordFilter(job, keyword) {
+        if (!keyword) {
+            return true;
+        }
+        const content = [job.title, job.company, job.location].join(' ');
+        return content.includes(keyword);
+    }
+
+    function updateVisibleCount() {
+        const count = document.querySelectorAll('.job-card:not(.hidden)').length;
+        visibleCount.textContent = String(count);
+    }
+
+    function filterByRadiusAndKeyword(radiusMiles) {
+        const keyword = (filterInput.value || '').trim().toLowerCase();
+
+        if (radiusCircle) {
+            map.removeLayer(radiusCircle);
+            radiusCircle = null;
+        }
+
+        const showAllByRadius = userLat === null || userLng === null || radiusMiles >= 100;
+        if (showAllByRadius) {
+            if (radiusMiles >= 100) {
+                radiusLabel.textContent = 'All Locations';
+            } else {
+                radiusLabel.textContent = radiusMiles + ' mi';
+            }
+            allJobData.forEach(function(job) {
+                const keywordMatch = applyKeywordFilter(job, keyword);
+                if (keywordMatch && !map.hasLayer(job.marker)) {
+                    job.marker.addTo(map);
+                }
+                if (!keywordMatch && map.hasLayer(job.marker)) {
+                    map.removeLayer(job.marker);
+                }
+                setCardVisibility(job.id, keywordMatch);
+            });
+            updateVisibleCount();
+            return;
+        }
+
+        radiusLabel.textContent = radiusMiles + ' mi';
+
+        radiusCircle = L.circle([userLat, userLng], {
+            radius: radiusMiles * 1609.34,
+            color: '#06f9bc',
+            fillColor: '#06f9bc',
+            fillOpacity: 0.08,
+            weight: 2
+        }).addTo(map);
+
+        const visibleBounds = L.latLngBounds();
+        let anyVisible = false;
+
+        allJobData.forEach(function(job) {
+            const distance = haversineMiles(userLat, userLng, job.lat, job.lng);
+            const withinRadius = distance <= radiusMiles;
+            const keywordMatch = applyKeywordFilter(job, keyword);
+            const isVisible = withinRadius && keywordMatch;
+
+            if (isVisible) {
+                if (!map.hasLayer(job.marker)) {
+                    job.marker.addTo(map);
+                }
+                visibleBounds.extend([job.lat, job.lng]);
+                anyVisible = true;
+            } else if (map.hasLayer(job.marker)) {
+                map.removeLayer(job.marker);
+            }
+
+            setCardVisibility(job.id, isVisible);
+        });
+
+        if (anyVisible) {
+            visibleBounds.extend([userLat, userLng]);
+            map.fitBounds(visibleBounds, { padding: [40, 40], maxZoom: 13 });
+        } else {
+            map.setView([userLat, userLng], 10);
+        }
+
+        updateVisibleCount();
     }
 
     {% for job in jobs %}
     {% if job.latitude and job.longitude %}
     (function() {
-        var lat = parseFloat("{{ job.latitude }}");
-        var lng = parseFloat("{{ job.longitude }}");
-        var marker = L.marker([lat, lng]).addTo(map);
+        const lat = parseFloat("{{ job.latitude }}");
+        const lng = parseFloat("{{ job.longitude }}");
+        const marker = L.marker([lat, lng]).addTo(map);
         marker.bindPopup(
             '<div class="custom-popup p-1">' +
             '<p class="text-xs font-bold text-teal-600 mb-1 uppercase tracking-tighter">{{ job.company_name|escapejs }}</p>' +
@@ -148,11 +274,17 @@ window.addEventListener('load', function() {
             '</div></div>',
             { className: 'custom-popup' }
         );
+
         markers["{{ job.id }}"] = marker;
-<<<<<<< HEAD
-        allJobData.push({ id: "{{ job.id }}", lat: lat, lng: lng, marker: marker });
-=======
->>>>>>> bcf4aded877448dfb4e82905125f89eeac8c102a
+        allJobData.push({
+            id: "{{ job.id }}",
+            title: "{{ job.title|lower|escapejs }}",
+            company: "{{ job.company_name|lower|escapejs }}",
+            location: "{{ job.location|lower|escapejs }}",
+            lat: lat,
+            lng: lng,
+            marker: marker,
+        });
         bounds.extend([lat, lng]);
     })();
     {% endif %}
@@ -162,80 +294,40 @@ window.addEventListener('load', function() {
         map.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
     }
 
-<<<<<<< HEAD
-    // Get user geolocation for radius filtering
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(pos) {
             userLat = pos.coords.latitude;
             userLng = pos.coords.longitude;
-            radiusLabel.textContent = radiusSlider.value + ' km';
-            filterByRadius(parseInt(radiusSlider.value));
+            radiusHelp.textContent = 'Showing jobs within your selected commute radius.';
+            filterByRadiusAndKeyword(parseInt(radiusSlider.value, 10));
         }, function() {
-            radiusLabel.textContent = 'Location unavailable';
-=======
-    window.focusJob = function(lat, lng, id) {
-        map.setView([lat, lng], 14, {
-            animate: true,
-            duration: 1.0
->>>>>>> bcf4aded877448dfb4e82905125f89eeac8c102a
+            radiusHelp.textContent = 'Location unavailable. Showing all map jobs.';
+            filterByRadiusAndKeyword(parseInt(radiusSlider.value, 10));
         });
-    }
-
-    function filterByRadius(radiusKm) {
-        if (userLat === null) return;
-
-        // Remove old circle
-        if (radiusCircle) map.removeLayer(radiusCircle);
-
-        if (radiusKm >= 100) {
-            // Show all markers
-            allJobData.forEach(function(j) {
-                if (!map.hasLayer(j.marker)) j.marker.addTo(map);
-            });
-            radiusLabel.textContent = 'All Locations';
-            return;
-        }
-
-        // Draw radius circle
-        radiusCircle = L.circle([userLat, userLng], {
-            radius: radiusKm * 1000,
-            color: '#06f9bc',
-            fillColor: '#06f9bc',
-            fillOpacity: 0.08,
-            weight: 2
-        }).addTo(map);
-
-        radiusLabel.textContent = radiusKm + ' km';
-
-        var visibleBounds = L.latLngBounds();
-        var anyVisible = false;
-
-        allJobData.forEach(function(j) {
-            var dist = haversine(userLat, userLng, j.lat, j.lng);
-            if (dist <= radiusKm) {
-                if (!map.hasLayer(j.marker)) j.marker.addTo(map);
-                visibleBounds.extend([j.lat, j.lng]);
-                anyVisible = true;
-            } else {
-                if (map.hasLayer(j.marker)) map.removeLayer(j.marker);
-            }
-        });
-
-        if (anyVisible) {
-            visibleBounds.extend([userLat, userLng]);
-            map.fitBounds(visibleBounds, { padding: [40, 40], maxZoom: 13 });
-        } else {
-            map.setView([userLat, userLng], 10);
-        }
+    } else {
+        radiusHelp.textContent = 'Geolocation is unsupported in this browser. Showing all map jobs.';
+        filterByRadiusAndKeyword(parseInt(radiusSlider.value, 10));
     }
 
     radiusSlider.addEventListener('input', function() {
-        filterByRadius(parseInt(this.value));
+        const value = parseInt(this.value, 10);
+        filterByRadiusAndKeyword(value);
+    });
+
+    radiusSlider.addEventListener('change', function() {
+        const value = parseInt(this.value, 10);
+        persistRadiusPreference(value);
+    });
+
+    filterInput.addEventListener('input', function() {
+        filterByRadiusAndKeyword(parseInt(radiusSlider.value, 10));
     });
 
     window.focusJob = function(lat, lng, id) {
         map.setView([lat, lng], 14, { animate: true, duration: 1.0 });
-        if (markers[id]) markers[id].openPopup();
+        if (markers[id]) {
+            markers[id].openPopup();
+        }
     };
 });
 </script>

@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from accounts.models import CustomUser
-from .models import Application, Job
+from accounts.models import CustomUser, JobSeekerProfile
+from .models import Application, Job, SavedSearch, Notification
 
 
 class JobApplyFlowTests(TestCase):
@@ -367,3 +367,123 @@ class JobSearchFilterTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.remote_job, response.context["jobs"])
         self.assertNotIn(self.onsite_job, response.context["jobs"])
+
+
+class Sprint2MapAndRecommendationTests(TestCase):
+    def setUp(self):
+        self.recruiter = CustomUser.objects.create_user(
+            username="recruiter9",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+        )
+        self.jobseeker = CustomUser.objects.create_user(
+            username="jobseeker9",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        self.profile = JobSeekerProfile.objects.create(
+            user=self.jobseeker,
+            skills="Python, Django",
+            preferred_commute_radius_miles=25,
+        )
+        self.matching_job = Job.objects.create(
+            recruiter=self.recruiter,
+            title="Django Developer",
+            company_name="MintMatch",
+            location="Atlanta, GA",
+            description="Build Django apps",
+            skills="Django, REST",
+            latitude=33.749,
+            longitude=-84.388,
+            is_active=True,
+            is_approved=True,
+        )
+
+    def test_jobseeker_dashboard_recommendations_render_without_template_error(self):
+        self.client.login(username="jobseeker9", password="testpass123")
+        response = self.client.get(reverse("jobseeker_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Recommended Jobs")
+        self.assertContains(response, "Django Developer")
+
+    def test_jobseeker_can_update_commute_radius_preference(self):
+        self.client.login(username="jobseeker9", password="testpass123")
+        response = self.client.post(
+            reverse("update_commute_radius_preference"),
+            {"radius_miles": "10"},
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.preferred_commute_radius_miles, 10)
+
+
+class SavedSearchNotificationTests(TestCase):
+    def setUp(self):
+        self.recruiter = CustomUser.objects.create_user(
+            username="recruiter10",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+        )
+        self.candidate = CustomUser.objects.create_user(
+            username="candidate10",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+            first_name="Ari",
+            last_name="Stone",
+        )
+        JobSeekerProfile.objects.create(
+            user=self.candidate,
+            skills="Python, SQL",
+            is_resume_public=True,
+        )
+
+    def test_saved_search_stores_initial_match_count(self):
+        self.client.login(username="recruiter10", password="testpass123")
+        response = self.client.post(
+            reverse("save_search"),
+            {
+                "name": "Python candidates",
+                "query": "Python",
+                "location": "",
+                "skill": "",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        saved = SavedSearch.objects.get(recruiter=self.recruiter)
+        self.assertEqual(saved.last_match_count, 1)
+
+    def test_new_matches_trigger_notification_once(self):
+        saved = SavedSearch.objects.create(
+            recruiter=self.recruiter,
+            name="Python candidates",
+            query="Python",
+            last_match_count=1,
+        )
+        new_candidate = CustomUser.objects.create_user(
+            username="candidate11",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+            first_name="Sam",
+            last_name="Reed",
+        )
+        JobSeekerProfile.objects.create(
+            user=new_candidate,
+            skills="Python",
+            is_resume_public=True,
+        )
+
+        self.client.login(username="recruiter10", password="testpass123")
+        first_hit = self.client.get(reverse("recruiter_talent_search"))
+        self.assertEqual(first_hit.status_code, 200)
+
+        saved.refresh_from_db()
+        self.assertEqual(saved.last_match_count, 2)
+        self.assertEqual(Notification.objects.filter(user=self.recruiter).count(), 1)
+
+        second_hit = self.client.get(reverse("recruiter_talent_search"))
+        self.assertEqual(second_hit.status_code, 200)
+        self.assertEqual(Notification.objects.filter(user=self.recruiter).count(), 1)
