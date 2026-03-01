@@ -173,7 +173,11 @@
         <div class="col-span-1 md:col-span-4 glass-panel rounded-lg p-6 hover-lift flex flex-col h-full">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-bold text-charcoal dark:text-white">Pending Tasks</h2>
-                <span class="bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400 text-xs font-bold px-2 py-1 rounded-full">3 Urgent</span>
+                {% if unread_notifications > 0 %}
+                <span class="bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400 text-xs font-bold px-2 py-1 rounded-full">{{ unread_notifications }} Alerts</span>
+                {% else %}
+                <span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 text-xs font-bold px-2 py-1 rounded-full">Up to date</span>
+                {% endif %}
             </div>
             <div class="space-y-3 flex-grow overflow-y-auto pr-1 custom-scrollbar">
                 {% for app in pending_applications %}
@@ -194,6 +198,18 @@
                 </div>
                 {% endfor %}
             </div>
+            {% if recent_notifications %}
+            <div class="mt-4 border-t border-white/40 pt-3">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-charcoal-light dark:text-gray-400 mb-2">Recent Alerts</h3>
+                <div class="space-y-2 max-h-24 overflow-y-auto pr-1 custom-scrollbar">
+                    {% for alert in recent_notifications %}
+                    <div class="text-xs text-charcoal-light dark:text-gray-300 bg-white/40 dark:bg-white/5 rounded-xl px-3 py-2">
+                        {{ alert.notification_message|truncatechars:90 }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
             <button class="w-full mt-4 py-2 text-sm font-bold text-primary hover:bg-primary/10 rounded-full transition-colors">View All Tasks</button>
         </div>
 

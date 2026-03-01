@@ -132,6 +132,8 @@ class SavedSearch(models.Model):
     query = models.CharField(max_length=255, blank=True)
     location = models.CharField(max_length=255, blank=True)
     skill = models.CharField(max_length=255, blank=True)
+    project = models.CharField(max_length=255, blank=True)
+    last_match_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

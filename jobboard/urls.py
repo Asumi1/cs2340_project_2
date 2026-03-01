@@ -10,6 +10,7 @@ urlpatterns = [
 
     path("jobseeker/dashboard/", views.jobseeker_dashboard, name="jobseeker_dashboard"),
     path("jobseeker/map/", views.jobseeker_map_viewer, name="jobseeker_map_viewer"),
+    path("jobseeker/map/preferences/commute-radius/", views.update_commute_radius_preference, name="update_commute_radius_preference"),
     path("jobseeker/search/", views.jobseeker_search, name="jobseeker_search"),
     path("job/<int:pk>/", views.job_detail, name="job_detail"),
     path("job/<int:pk>/apply/", views.apply_for_job, name="job_apply"),

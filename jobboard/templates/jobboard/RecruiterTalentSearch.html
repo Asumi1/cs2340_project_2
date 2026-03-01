@@ -108,18 +108,25 @@
                             {% endfor %}
                         </select>
                     </div>
+                    <div class="relative flex-1 group">
+                        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-dark transition-colors">
+                            <span class="material-symbols-outlined">terminal</span>
+                        </div>
+                        <input name="project" value="{{ project|default:'' }}" class="w-full h-14 pl-12 pr-4 rounded-full bg-white dark:bg-surface-dark border-0 ring-1 ring-slate-200 dark:ring-slate-700 focus:ring-2 focus:ring-primary shadow-sm text-slate-900 dark:text-white placeholder:text-slate-400 transition-all" placeholder="Project keyword..." type="text"/>
+                    </div>
                     <div class="flex gap-2">
                         <button type="submit" class="flex items-center gap-2 h-14 px-8 rounded-full bg-slate-900 text-white hover:bg-slate-800 transition-all whitespace-nowrap font-bold shadow-lg">
                             Search
                         </button>
                     </div>
                 </form>
-                {% if query or location or skill %}
+                {% if query or location or skill or project %}
                 <form method="POST" action="{% url 'save_search' %}" class="mt-3">
                     {% csrf_token %}
                     <input type="hidden" name="query" value="{{ query|default:'' }}">
                     <input type="hidden" name="location" value="{{ location|default:'' }}">
                     <input type="hidden" name="skill" value="{{ skill|default:'' }}">
+                    <input type="hidden" name="project" value="{{ project|default:'' }}">
                     <div class="flex items-center gap-2">
                         <input type="text" name="name" placeholder="Save this search as..." class="flex-1 h-10 px-4 rounded-full bg-white/50 border border-slate-200 text-sm focus:ring-2 focus:ring-primary/50 focus:outline-none">
                         <button type="submit" class="flex items-center gap-1 h-10 px-5 rounded-full bg-primary/20 text-teal-800 font-bold text-sm hover:bg-primary/40 transition-all">
@@ -157,7 +164,7 @@
         <div class="flex flex-wrap gap-3">
             {% for ss in saved_searches %}
             <div class="flex items-center gap-2 bg-white/60 border border-slate-200 rounded-full pl-4 pr-1 py-1">
-                <a href="{% url 'recruiter_talent_search' %}?q={{ ss.query|urlencode }}&location={{ ss.location|urlencode }}&skill={{ ss.skill|urlencode }}" class="text-sm font-medium text-slate-700 hover:text-primary transition-colors">
+                <a href="{% url 'recruiter_talent_search' %}?q={{ ss.query|urlencode }}&location={{ ss.location|urlencode }}&skill={{ ss.skill|urlencode }}&project={{ ss.project|urlencode }}" class="text-sm font-medium text-slate-700 hover:text-primary transition-colors">
                     {{ ss.name|default:ss.query|default:"Untitled" }}
                 </a>
                 {% if ss.current_matches is not None %}

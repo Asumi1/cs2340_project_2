@@ -45,7 +45,7 @@
                             </div>
                             <span class="px-2 py-1 bg-teal-100 text-teal-700 rounded-full text-xs font-bold">{{ loc.count }}</span>
                         </div>
-                        <p class="text-xs text-slate-400 mt-1 ml-7">{{ loc.applicants|join:", "|truncatechars:60 }}</p>
+                        <p class="text-xs text-slate-400 mt-1 ml-7">{{ loc.applicant_summary|truncatechars:80 }}</p>
                     </div>
                     {% empty %}
                     <div class="text-center py-8 text-slate-400">
@@ -69,6 +69,7 @@
 
 {% block extra_js %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+{{ location_groups|json_script:"applicant-location-data" }}
 <script>
 window.addEventListener('load', function() {
     var map = L.map('applicant-map').setView([33.7490, -84.3880], 5);
@@ -81,18 +82,52 @@ window.addEventListener('load', function() {
     setTimeout(function() { map.invalidateSize(); }, 300);
 
     var locationMarkers = {};
-    var locations = [
-        {% for loc in location_groups %}
-        { name: "{{ loc.location|escapejs }}", count: {{ loc.count }}, applicants: "{{ loc.applicants|join:', '|escapejs }}" },
-        {% endfor %}
-    ];
+    var locations = JSON.parse(document.getElementById('applicant-location-data').textContent || '[]');
 
-    // Geocode each location using Nominatim and place markers
+    // Place marker using known coordinates when available; otherwise fallback to geocoding.
     var geocoded = 0;
     var bounds = L.latLngBounds();
 
+    function placeLocationMarker(loc, lat, lng) {
+        var radius = Math.max(12, Math.min(30, loc.count * 6));
+        var marker = L.circleMarker([lat, lng], {
+            radius: radius,
+            fillColor: '#06f9bc',
+            color: '#05c796',
+            weight: 2,
+            opacity: 0.9,
+            fillOpacity: 0.6
+        }).addTo(map);
+
+        marker.bindPopup(
+            '<div class="p-2">' +
+            '<h3 class="font-bold text-slate-900 text-sm mb-1">' + loc.location + '</h3>' +
+            '<p class="text-xs text-teal-600 font-bold mb-1">' + loc.count + ' applicant' + (loc.count > 1 ? 's' : '') + '</p>' +
+            '<p class="text-xs text-slate-500">' + (loc.applicant_summary || '') + '</p>' +
+            '</div>'
+        );
+
+        marker.bindTooltip(String(loc.count), {
+            permanent: true,
+            direction: 'center',
+            className: 'cluster-label'
+        });
+
+        locationMarkers[loc.location] = { marker: marker, lat: lat, lng: lng };
+        bounds.extend([lat, lng]);
+    }
+
     locations.forEach(function(loc) {
-        var url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(loc.name) + '&limit=1';
+        if (loc.latitude !== null && loc.longitude !== null) {
+            geocoded++;
+            placeLocationMarker(loc, parseFloat(loc.latitude), parseFloat(loc.longitude));
+            if (geocoded === locations.length && bounds.isValid()) {
+                map.fitBounds(bounds, { padding: [40, 40], maxZoom: 10 });
+            }
+            return;
+        }
+
+        var url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(loc.location) + '&limit=1';
         fetch(url)
             .then(function(r) { return r.json(); })
             .then(function(data) {
@@ -100,42 +135,19 @@ window.addEventListener('load', function() {
                 if (data && data.length > 0) {
                     var lat = parseFloat(data[0].lat);
                     var lng = parseFloat(data[0].lon);
-
-                    // Create a circle marker with size based on count
-                    var radius = Math.max(12, Math.min(30, loc.count * 6));
-                    var marker = L.circleMarker([lat, lng], {
-                        radius: radius,
-                        fillColor: '#06f9bc',
-                        color: '#05c796',
-                        weight: 2,
-                        opacity: 0.9,
-                        fillOpacity: 0.6
-                    }).addTo(map);
-
-                    marker.bindPopup(
-                        '<div class="p-2">' +
-                        '<h3 class="font-bold text-slate-900 text-sm mb-1">' + loc.name + '</h3>' +
-                        '<p class="text-xs text-teal-600 font-bold mb-1">' + loc.count + ' applicant' + (loc.count > 1 ? 's' : '') + '</p>' +
-                        '<p class="text-xs text-slate-500">' + loc.applicants + '</p>' +
-                        '</div>'
-                    );
-
-                    // Add count label
-                    marker.bindTooltip(String(loc.count), {
-                        permanent: true,
-                        direction: 'center',
-                        className: 'cluster-label'
-                    });
-
-                    locationMarkers[loc.name] = { marker: marker, lat: lat, lng: lng };
-                    bounds.extend([lat, lng]);
+                    placeLocationMarker(loc, lat, lng);
                 }
 
                 if (geocoded === locations.length && bounds.isValid()) {
                     map.fitBounds(bounds, { padding: [40, 40], maxZoom: 10 });
                 }
             })
-            .catch(function() { geocoded++; });
+            .catch(function() {
+                geocoded++;
+                if (geocoded === locations.length && bounds.isValid()) {
+                    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 10 });
+                }
+            });
     });
 
     window.focusLocation = function(name) {

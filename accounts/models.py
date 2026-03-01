@@ -44,6 +44,7 @@ class JobSeekerProfile(models.Model):
     bio = models.TextField(blank=True)
     location = models.CharField(max_length=255, blank=True, help_text="Current city/region")
     skills = models.TextField(blank=True, help_text="Comma-separated skills")
+    projects = models.TextField(blank=True, help_text="Projects and portfolio highlights")
     education = models.TextField(blank=True, help_text="Education details")
     work_experience = models.TextField(blank=True, help_text="Work experience details")
     linkedin_url = models.URLField(max_length=200, blank=True)
@@ -54,6 +55,10 @@ class JobSeekerProfile(models.Model):
     # Location coordinates (for map features)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    preferred_commute_radius_miles = models.PositiveIntegerField(
+        default=25,
+        help_text="Preferred commute radius in miles for map filtering"
+    )
     
     # Privacy Settings
     is_resume_public = models.BooleanField(default=True, help_text="Allow recruiters to see your resume")

@@ -324,6 +324,7 @@
                                         </form>
                                         <form method="POST" action="{% url 'admin_change_user_role' u.pk %}">
                                             {% csrf_token %}
+                                            <input type="hidden" name="role" value="{% if u.role == 'RECRUITER' %}JOBSEEKER{% else %}RECRUITER{% endif %}">
                                             <button type="submit" class="p-2 rounded-full text-blue-600 hover:bg-blue-100 transition-colors" title="Switch Role to {% if u.role == 'RECRUITER' %}Job Seeker{% else %}Recruiter{% endif %}">
                                                 <span class="material-symbols-outlined text-lg">swap_horiz</span>
                                             </button>

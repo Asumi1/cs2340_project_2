@@ -63,9 +63,10 @@ from .models import JobSeekerProfile, RecruiterProfile
 class JobSeekerProfileForm(forms.ModelForm):
     class Meta:
         model = JobSeekerProfile
-        fields = ['headline', 'bio', 'location', 'major', 'skills', 'education', 'work_experience', 'linkedin_url', 'portfolio_url', 'profile_photo', 'resume_file', 'is_resume_public']
+        fields = ['headline', 'bio', 'location', 'major', 'skills', 'projects', 'education', 'work_experience', 'linkedin_url', 'portfolio_url', 'profile_photo', 'resume_file', 'is_resume_public']
         widgets = {
             'bio': forms.Textarea(attrs={'rows': 4}),
+            'projects': forms.Textarea(attrs={'rows': 3}),
             'education': forms.Textarea(attrs={'rows': 3}),
             'work_experience': forms.Textarea(attrs={'rows': 3}),
         }
