@@ -113,10 +113,10 @@
                     <div class="relative mt-4 mb-4">
                 <!-- Profile Photo Preview-->
                         <div class="w-32 h-32 rounded-full p-1 bg-white dark:bg-neutral-800 shadow-xl relative z-10 overflow-hidden">
-                            {% if user.jobseekerprofile_photo %}
+                            {% if user.is_jobseeker and user.jobseekerprofile.profile_photo %}
                                 <img id="photo-preview" src="{{
                                 user.jobseekerprofile.profile_photo.url }}" class = "w-full h-full object-cover rounded-full" alt="Profile photo"/>
-                            {% elif user.recruiterprofile_photo %}
+                            {% elif user.is_recruiter and user.recruiterprofile.profile_photo %}
                                 <img id="photo-preview" src="{{user.recruiterprofile.profile_photo.url }}"
                                 class="w-full h-full object-cover rounded-full" alt="Profile photo"/>
                             {% else %}

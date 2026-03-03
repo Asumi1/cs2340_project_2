@@ -95,7 +95,7 @@ class JobSeekerProfileForm(forms.ModelForm):
 class RecruiterProfileForm(forms.ModelForm):
     class Meta:
         model = RecruiterProfile
-        fields = ['company_name']
+        fields = ['company_name', 'profile_photo']
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
