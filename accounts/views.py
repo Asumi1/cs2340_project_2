@@ -80,7 +80,7 @@ def edit_profile(request):
             profile = RecruiterProfile.objects.create(user=user, company_name="Unknown")
             
         if request.method == 'POST':
-            form = RecruiterProfileForm(request.POST, instance=profile)
+            form = RecruiterProfileForm(request.POST, request.FILES, instance=profile)
             if form.is_valid():
                 form.save()
                 messages.success(request, 'Profile updated successfully!')

@@ -41,12 +41,23 @@
             </div>
             <div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-2">
                 {% for convo in conversations %}
-                <a href="{% url 'messaging_conversation' convo.user.pk %}"
-                   class="{% if selected_user and selected_user.pk == convo.user.pk %}active-glass-card{% else %}hover:bg-white/40{% endif %} p-3 rounded-2xl flex gap-3 cursor-pointer transition-all block">
+                <a href="{% url 'messaging_conversation' convo.user.pk %}" class="{% if selected_user and selected_user.pk == convo.user.pk %}active-glass-card{% else %}hover:bg-white/40{% endif %} p-3 rounded-2xl flex gap-3 cursor-pointer transition-all block">
                     <div class="relative shrink-0">
-                        <div class="size-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg">
-                            {{ convo.user.first_name|first|default:convo.user.username|first|upper }}
-                        </div>
+                            {% if convo.user.role == 'JOBSEEKER' and convo.user.jobseekerprofile.profile_photo %}
+                                <img class="size-12 object-cover rounded-full"
+                                    src="{{ convo.user.jobseekerprofile.profile_photo.url }}"
+                                    alt="{{ convo.user.get_full_name|default:convo.user.username }} profile photo"/>
+                            {% elif convo.user.role == 'RECRUITER' and convo.user.recruiterprofile.profile_photo %}
+                                <img class="size-12 object-cover rounded-full"
+                                    src="{{ convo.user.recruiterprofile.profile_photo.url }}"
+                                    alt="{{ convo.user.get_full_name|default:convo.user.username }} profile photo"/>
+                            {% else %}
+                                {% if convo.user %}
+                                <div class="size-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg ring-2 ring-white">
+                                    {{ convo.user.first_name|default:convo.user.username|first|upper }}
+                                </div>
+                                {% endif %}
+                            {% endif %}
                     </div>
                     <div class="flex flex-col flex-1 min-w-0 justify-center">
                         <div class="flex justify-between items-center mb-0.5">
@@ -78,9 +89,19 @@
             <!-- Chat Header -->
             <div class="px-8 py-5 border-b border-white/40 bg-white/30 backdrop-blur-md flex items-center justify-between shrink-0 z-10">
                 <div class="flex items-center gap-4">
-                    <div class="size-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg ring-2 ring-white">
+                    {% if selected_user.role == 'JOBSEEKER' and selected_user.jobseekerprofile.profile_photo %}
+                        <img class="w-8 h-8 object-cover rounded-full"
+                                src="{{selected_user.jobseekerprofile.profile_photo.url }}"
+                                alt="{{ selected_user.get_full_name|default:selected_user.username}} profile photo"/>
+                    {% elif selected_user.role == 'RECRUITER' and selected_user.recruiterprofile.profile_photo %}
+                         <img class="w-8 h-8 object-cover rounded-full"
+                                src="{{selected_user.recruiterprofile.profile_photo.url }}" 
+                                alt="{{ selected_user.get_full_name|default:selected_user.username}} profile photo"/> 
+                    {% else %}
+                        <div class="size-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold text-lg ring-2 ring-white">
                         {{ selected_user.first_name|first|default:selected_user.username|first|upper }}
-                    </div>
+                        </div>
+                    {% endif %}
                     <div>
                         <h2 class="text-lg font-bold text-slate-800 leading-tight">{{ selected_user.get_full_name|default:selected_user.username }}</h2>
                         <p class="text-sm text-slate-500 font-medium">
@@ -96,14 +117,28 @@
                     {% endif %}
                 </div>
             </div>
-
+            {% endif %}
+            
             <!-- Messages -->
             <div id="chat-messages" class="flex-1 overflow-y-auto custom-scrollbar p-8 flex flex-col gap-4 relative">
                 {% for msg in chat_messages %}
                 <div class="flex items-end gap-3 max-w-[70%] {% if msg.sender == user %}self-end flex-row-reverse{% endif %}">
-                    <div class="size-8 rounded-full {% if msg.sender == user %}bg-teal-500{% else %}bg-slate-300{% endif %} flex items-center justify-center text-white text-xs font-bold shrink-0 mb-1">
-                        {{ msg.sender.first_name|first|default:msg.sender.username|first|upper }}
-                    </div>
+                    {# Avatar: always render the photo/initials for msg.sender #}
+                    {% with sender=msg.sender %}
+                        {% if sender.role  == 'JOBSEEKER' and sender.jobseekerprofile.profile_photo %}
+                            <img class="w-8 h-8 object-cover rounded-full"
+                                src="{{sender.jobseekerprofile.profile_photo.url }}" 
+                                alt="{{ sender.get_full_name|default:sender.username}} profile photo"/> 
+                        {% elif sender.role == 'RECRUITER' and sender.recruiterprofile.profile_photo %}
+                            <img class="w-8 h-8 object-cover rounded-full"
+                                src="{{sender.recruiterprofile.profile_photo.url }}" 
+                                alt="{{ sender.get_full_name|default:sender.username}} profile photo"/> 
+                        {% else %}
+                            <div class="size-8 rounded-full {% if sender == user %}bg-teal-500{% else %}bg-slate-300{% endif %} flex items-center justify-center text-white text-xs font-bold shrink-0 mb-1">
+                                {{ sender.first_name|first|default:sender.username|first|upper }}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
                     <div class="flex flex-col gap-1 {% if msg.sender == user %}items-end{% endif %}">
                         <div class="{% if msg.sender == user %}bg-teal-500/20 border-teal-200{% else %}bg-white/60 border-white/50{% endif %} p-4 rounded-2xl {% if msg.sender == user %}rounded-br-none{% else %}rounded-bl-none{% endif %} text-slate-800 text-[15px] leading-relaxed shadow-sm backdrop-blur-sm border">
                             {{ msg.content }}
@@ -112,16 +147,19 @@
                     </div>
                 </div>
                 {% empty %}
+                {% if selected_user %}
                 <div class="flex-1 flex items-center justify-center">
                     <div class="text-center text-slate-400">
                         <span class="material-symbols-outlined text-5xl mb-3">waving_hand</span>
                         <p class="font-medium">Start your conversation with {{ selected_user.get_full_name|default:selected_user.username }}</p>
                     </div>
                 </div>
+                {% endif %}
                 {% endfor %}
             </div>
 
             <!-- Message Input -->
+            {% if selected_user %}
             <div class="p-6 pt-2 shrink-0 z-20">
                 <form method="POST" action="{% url 'send_message' %}" class="glass-input rounded-[2rem] p-2 pr-2.5 flex items-center gap-2 shadow-sm focus-within:shadow-md focus-within:ring-2 focus-within:ring-teal-500/30 transition-all">
                     {% csrf_token %}

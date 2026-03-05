@@ -83,7 +83,7 @@
                     <div class="relative">
                         <button id="profileButton" type="button" aria-haspopup="true" aria-expanded="false"
                             class="h-9 w-9 rounded-full bg-gradient-to-tr from-primary to-blue-400 p-[2px] hover:scale-105 transition-transform">
-                            {% if user.role == 'JOBSEEKER' and user.jobseekerprofile.profile_photo %}
+                            {% if user.is_jobseeker and user.jobseekerprofile.profile_photo %}
                                 <img alt="Profile" class="h-full w-full rounded-full object-cover border-2 border-white dark:border-neutral-900" src="{{ user.jobseekerprofile.profile_photo.url }}">
                             {% elif user.role == 'RECRUITER' and user.recruiterprofile.profile_photo %}
                                 <img alt="Profile" class="h-full w-full rounded-full object-cover border-2 border-white dark:border-neutral-900" src="{{ user.recruiterprofile.profile_photo.url }}">
