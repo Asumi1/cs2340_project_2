@@ -97,3 +97,20 @@ class AuthTests(TestCase):
         form = response.context['form']
         self.assertIn('company_name', form.errors)
 
+
+class EditProfileNavigationTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_admin_edit_profile_redirects_to_admin_dashboard(self):
+        admin = CustomUser.objects.create_superuser(
+            username='adminuser',
+            email='admin@example.com',
+            password='adminpass123'
+        )
+        self.client.force_login(admin)
+
+        response = self.client.get(reverse('edit_profile'))
+
+        self.assertRedirects(response, reverse('admin_dashboard'))
+

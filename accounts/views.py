@@ -55,6 +55,9 @@ def logout_view(request):
 @login_required
 def edit_profile(request):
     user = request.user
+    if user.is_staff or user.is_superuser:
+        return redirect('admin_dashboard')
+
     if user.role == CustomUser.Role.JOBSEEKER:
         try:
             profile = user.jobseekerprofile
