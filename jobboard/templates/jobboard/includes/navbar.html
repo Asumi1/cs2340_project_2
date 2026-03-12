@@ -26,7 +26,6 @@
                     <a href="{% url 'admin_dashboard' %}" class="nav-link">Dashboard</a>
                     <a href="/admin/accounts/customuser/" class="nav-link">Users</a>
                     <a href="/admin/jobboard/job/" class="nav-link">Jobs</a>
-                    <a href="{% url 'home' %}" class="nav-link">Exit Site</a>
                 </div>
             {% else %}
                 <div class="hidden md:flex items-center gap-6 lg:gap-8">
@@ -63,7 +62,6 @@
                             <a href="{% url 'admin_dashboard' %}" class="mobile-link">Dashboard</a>
                             <a href="/admin/accounts/customuser/" class="mobile-link">Users</a>
                             <a href="/admin/jobboard/job/" class="mobile-link">Jobs</a>
-                            <a href="{% url 'home' %}" class="mobile-link">Exit Site</a>
                         {% else %}
                             <a href="{% url 'jobseeker_dashboard' %}" class="mobile-link">Dashboard</a>
                             <a href="{% url 'jobseeker_search' %}" class="mobile-link">Find Jobs</a>
