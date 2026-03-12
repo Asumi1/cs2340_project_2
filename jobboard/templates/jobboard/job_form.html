@@ -185,7 +185,7 @@
                         </div>
                         <h2 class="text-xl font-bold text-slate-900 dark:text-white">Office Location</h2>
                     </div>
-                    <p class="text-sm text-slate-500 mb-4">Click on the map to pin the exact office location for candidates.</p>
+                    <p class="text-sm text-slate-500 mb-4">Your location will be automatically mapped when you fill in the location field above. You can also click on the map to pin it manually, or refine the pin by clicking elsewhere.</p>
                     
                     <div id="job-pin-map" class="w-full h-[300px] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700"></div>
                     
@@ -194,7 +194,7 @@
 
                     <div class="mt-4 flex items-center gap-2 text-xs font-medium text-slate-400">
                         <span class="material-icons text-sm">info</span>
-                        <span id="coord-display">{% if form.latitude.value and form.longitude.value %}Coordinates pinned: {{ form.latitude.value }}, {{ form.longitude.value }}{% else %}No location pinned yet.{% endif %}</span>
+                        <span id="coord-display">{% if form.latitude.value and form.longitude.value %}Coordinates pinned: {{ form.latitude.value }}, {{ form.longitude.value }}{% else %}No location pinned yet. Fill in the location above and it will be automatically pinned.{% endif %}</span>
                     </div>
                 </div>
 
@@ -376,18 +376,19 @@
                             });
                         }
 
-                        // --- Leaflet Map Pinning Logic ---
+                        // --- Leaflet Map Pinning Logic with Auto-Geocoding ---
                         const mapId = 'job-pin-map';
                         const mapElement = document.getElementById(mapId);
                         if (mapElement) {
                             const latInput = document.querySelector('input[name="latitude"]');
                             const lngInput = document.querySelector('input[name="longitude"]');
+                            const locationInput = document.querySelector('input[name="location"]');
                             const coordDisplay = document.getElementById('coord-display');
 
-                            // Initial view: San Francisco or existing coords
-                            let initialLat = parseFloat(latInput.value) || 37.7749;
-                            let initialLng = parseFloat(lngInput.value) || -122.4194;
-                            let zoom = latInput.value ? 15 : 12;
+                            // Initial view: Default to US center
+                            let initialLat = parseFloat(latInput.value) || 39.8283;
+                            let initialLng = parseFloat(lngInput.value) || -98.5795;
+                            let zoom = latInput.value ? 15 : 4;
 
                             const map = L.map(mapId).setView([initialLat, initialLng], zoom);
 
@@ -402,19 +403,46 @@
                                 marker = L.marker([initialLat, initialLng]).addTo(map);
                             }
 
-                            map.on('click', function(e) {
-                                const lat = e.latlng.lat.toFixed(6);
-                                const lng = e.latlng.lng.toFixed(6);
-
+                            // Function to update marker and map
+                            function updateMarker(lat, lng, zoomTo = true) {
                                 if (marker) {
-                                    marker.setLatLng(e.latlng);
+                                    marker.setLatLng([lat, lng]);
                                 } else {
-                                    marker = L.marker(e.latlng).addTo(map);
+                                    marker = L.marker([lat, lng]).addTo(map);
                                 }
+                                latInput.value = lat.toFixed(6);
+                                lngInput.value = lng.toFixed(6);
+                                coordDisplay.innerText = `Coordinates pinned: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                                
+                                if (zoomTo) {
+                                    map.setView([lat, lng], 15);
+                                }
+                            }
 
-                                latInput.value = lat;
-                                lngInput.value = lng;
-                                coordDisplay.innerText = `Coordinates pinned: ${lat}, ${lng}`;
+                            // Auto-geocode location when changed
+                            if (locationInput) {
+                                locationInput.addEventListener('blur', function() {
+                                    const location = this.value.trim();
+                                    if (location && (!latInput.value || !lngInput.value)) {
+                                        // Call Nominatim API to geocode
+                                        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`)
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                if (data && data.length > 0) {
+                                                    const result = data[0];
+                                                    updateMarker(parseFloat(result.lat), parseFloat(result.lon), true);
+                                                }
+                                            })
+                                            .catch(error => console.log('Geocoding failed:', error));
+                                    }
+                                });
+                            }
+
+                            // Manual map click to pin location
+                            map.on('click', function(e) {
+                                const lat = e.latlng.lat;
+                                const lng = e.latlng.lng;
+                                updateMarker(lat, lng, false);
                             });
                         }
                     });

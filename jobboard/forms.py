@@ -1,6 +1,8 @@
 from django import forms
 from .models import Job, Application, ScreeningQuestion
 from django.forms import inlineformset_factory
+import requests
+from django.core.exceptions import ValidationError
 
 class ApplicationForm(forms.ModelForm):
     class Meta:
@@ -32,6 +34,35 @@ class JobForm(forms.ModelForm):
                 existing_classes = field.widget.attrs.get('class', '')
                 field.widget.attrs['class'] = f'{existing_classes} glass-input w-full px-4 py-3 rounded-xl outline-none transition-all text-sm font-medium text-charcoal bg-white/50 backdrop-blur-sm focus:bg-white/80 border border-gray-100 placeholder-gray-400'.strip()
 
+    def save(self, commit=True):
+        """Override save to auto-geocode location if coordinates are missing."""
+        instance = super().save(commit=False)
+        
+        # Auto-geocode if location is set but coordinates are missing
+        if instance.location and (not instance.latitude or not instance.longitude):
+            try:
+                response = requests.get(
+                    f'https://nominatim.openstreetmap.org/search',
+                    params={
+                        'q': instance.location,
+                        'format': 'json',
+                        'limit': 1
+                    },
+                    timeout=5
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    if data:
+                        instance.latitude = float(data[0]['lat'])
+                        instance.longitude = float(data[0]['lon'])
+            except Exception as e:
+                # Silently fail - don't block job creation if geocoding fails
+                print(f"Geocoding failed for location '{instance.location}': {e}")
+        
+        if commit:
+            instance.save()
+        return instance
+
 class ScreeningQuestionForm(forms.ModelForm):
     class Meta:
         model = ScreeningQuestion
@@ -56,4 +87,5 @@ class EmailCandidateForm(forms.Form):
         'rows': 8,
         'placeholder': 'Write your message...'
     }))
+
 
