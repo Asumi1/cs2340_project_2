@@ -268,14 +268,21 @@ def jobseeker_map_viewer(request):
     # Only show jobs that are active and approved and have coordinates
     jobs = Job.objects.filter(is_active=True, is_approved=True, latitude__isnull=False, longitude__isnull=False)
     preferred_radius_miles = 100
+    profile_latitude = None
+    profile_longitude = None
     if request.user.role == CustomUser.Role.JOBSEEKER and hasattr(request.user, 'jobseekerprofile'):
         preferred_radius_miles = max(1, min(request.user.jobseekerprofile.preferred_commute_radius_miles, 100))
+        if request.user.jobseekerprofile.latitude is not None and request.user.jobseekerprofile.longitude is not None:
+            profile_latitude = float(request.user.jobseekerprofile.latitude)
+            profile_longitude = float(request.user.jobseekerprofile.longitude)
     return render(
         request,
         "jobboard/JobSeekerMapViewer.html",
         {
             "jobs": jobs,
             "preferred_radius_miles": preferred_radius_miles,
+            "profile_latitude": profile_latitude,
+            "profile_longitude": profile_longitude,
         },
     )
 

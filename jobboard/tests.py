@@ -421,6 +421,18 @@ class Sprint2MapAndRecommendationTests(TestCase):
         self.profile.refresh_from_db()
         self.assertEqual(self.profile.preferred_commute_radius_miles, 10)
 
+    def test_jobseeker_map_viewer_includes_profile_location_fallback_coordinates(self):
+        self.profile.latitude = Decimal("33.749000")
+        self.profile.longitude = Decimal("-84.388000")
+        self.profile.save(update_fields=["latitude", "longitude"])
+        self.client.login(username="jobseeker9", password="testpass123")
+
+        response = self.client.get(reverse("jobseeker_map_viewer"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["profile_latitude"], 33.749)
+        self.assertEqual(response.context["profile_longitude"], -84.388)
+
 
 class SavedSearchNotificationTests(TestCase):
     def setUp(self):

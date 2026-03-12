@@ -126,6 +126,8 @@ window.addEventListener('load', function() {
     const radiusHelp = document.getElementById('radius-help');
     const filterInput = document.getElementById('job-filter-input');
     const visibleCount = document.getElementById('visible-count');
+    const fallbackProfileLat = {% if profile_latitude is not None %}{{ profile_latitude }}{% else %}null{% endif %};
+    const fallbackProfileLng = {% if profile_longitude is not None %}{{ profile_longitude }}{% else %}null{% endif %};
 
     let userLat = null;
     let userLng = null;
@@ -309,6 +311,17 @@ window.addEventListener('load', function() {
         map.fitBounds(bounds, { padding: [30, 30], maxZoom: 13 });
     }
 
+    function useProfileLocationFallback() {
+        if (fallbackProfileLat !== null && fallbackProfileLng !== null) {
+            userLat = fallbackProfileLat;
+            userLng = fallbackProfileLng;
+            radiusHelp.textContent = 'Using your saved profile location to filter jobs nearby.';
+            filterByRadiusAndKeyword(parseInt(radiusSlider.value, 10));
+            return true;
+        }
+        return false;
+    }
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(pos) {
             userLat = pos.coords.latitude;
@@ -316,12 +329,16 @@ window.addEventListener('load', function() {
             radiusHelp.textContent = 'Showing jobs within your selected commute radius.';
             filterByRadiusAndKeyword(parseInt(radiusSlider.value, 10));
         }, function() {
-            radiusHelp.textContent = 'Location unavailable. Showing all map jobs.';
-            filterByRadiusAndKeyword(parseInt(radiusSlider.value, 10));
+            if (!useProfileLocationFallback()) {
+                radiusHelp.textContent = 'Location unavailable. Add a profile location to filter jobs by distance.';
+                filterByRadiusAndKeyword(parseInt(radiusSlider.value, 10));
+            }
         });
     } else {
-        radiusHelp.textContent = 'Geolocation is unsupported in this browser. Showing all map jobs.';
-        filterByRadiusAndKeyword(parseInt(radiusSlider.value, 10));
+        if (!useProfileLocationFallback()) {
+            radiusHelp.textContent = 'Geolocation is unsupported in this browser. Add a profile location to filter jobs by distance.';
+            filterByRadiusAndKeyword(parseInt(radiusSlider.value, 10));
+        }
     }
 
     radiusSlider.addEventListener('input', function() {
