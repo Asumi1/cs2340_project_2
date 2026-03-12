@@ -8,11 +8,12 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.urls import reverse
 from django.core.mail import send_mail
 from django.conf import settings as django_settings
-from .models import Job, Application, Interview, Message, SavedSearch, Notification
+from .models import Job, Application, Interview, Message, SavedSearch, SavedCandidate, Notification
 from .forms import JobForm, ApplicationForm, ScreeningQuestionFormSet, EmailCandidateForm
 from accounts.models import CustomUser, RecruiterProfile, JobSeekerProfile
 from django.db.models import Q, Count
 from django.utils import timezone
+from urllib.parse import urlencode
 import csv
 
 # Helper to ensure only recruiters access certain views
@@ -22,6 +23,80 @@ def recruiter_required(view_func):
             return redirect('home') # or forbidden page
         return view_func(request, *args, **kwargs)
     return wrapper
+
+
+def build_candidate_search_queryset(query='', location='', skill='', project=''):
+    """Apply the recruiter talent-search filters consistently across views."""
+    profiles = JobSeekerProfile.objects.filter(is_resume_public=True).select_related('user')
+
+    if query:
+        profiles = profiles.filter(
+            Q(user__first_name__icontains=query) |
+            Q(user__last_name__icontains=query) |
+            Q(skills__icontains=query) |
+            Q(projects__icontains=query) |
+            Q(major__icontains=query) |
+            Q(headline__icontains=query) |
+            Q(work_experience__icontains=query)
+        )
+
+    if location:
+        profiles = profiles.filter(location__icontains=location)
+
+    if skill:
+        profiles = profiles.filter(skills__icontains=skill)
+
+    if project:
+        profiles = profiles.filter(projects__icontains=project)
+
+    return profiles.distinct()
+
+
+def build_saved_search_link(saved_search):
+    params = {
+        'q': saved_search.query,
+        'location': saved_search.location,
+        'skill': saved_search.skill,
+        'project': saved_search.project,
+    }
+    query_string = urlencode({key: value for key, value in params.items() if value})
+    base_url = reverse('recruiter_talent_search')
+    return f"{base_url}?{query_string}" if query_string else base_url
+
+
+def hydrate_saved_searches(recruiter):
+    """
+    Evaluate current saved-search matches and emit notifications for newly found candidates.
+    """
+    saved_searches = list(SavedSearch.objects.filter(recruiter=recruiter))
+
+    for saved_search in saved_searches:
+        current_matches = build_candidate_search_queryset(
+            query=saved_search.query,
+            location=saved_search.location,
+            skill=saved_search.skill,
+            project=saved_search.project,
+        ).count()
+        new_match_count = max(current_matches - saved_search.last_match_count, 0)
+
+        saved_search.current_matches = current_matches
+        saved_search.new_match_count = new_match_count
+
+        if new_match_count:
+            Notification.objects.create(
+                user=recruiter,
+                notification_message=(
+                    f"Saved search '{saved_search.name or 'Untitled Search'}' "
+                    f"has {new_match_count} new candidate match(es)."
+                ),
+                link=build_saved_search_link(saved_search),
+            )
+
+        if current_matches != saved_search.last_match_count:
+            saved_search.last_match_count = current_matches
+            saved_search.save(update_fields=['last_match_count'])
+
+    return saved_searches
 
 @staff_member_required
 def admin_dashboard(request):
@@ -388,6 +463,7 @@ def one_click_apply_confirmation(request, pk):
 @login_required
 @recruiter_required
 def recruiter_dashboard(request):
+    saved_searches = hydrate_saved_searches(request.user)
     jobs = Job.objects.filter(recruiter=request.user).order_by('-created_at')
     
     # Stats for dashboard
@@ -451,6 +527,7 @@ def recruiter_dashboard(request):
 
     context = {
         'jobs': jobs,
+        'saved_searches': saved_searches,
         'total_applicants': total_applicants,
         'interviews_count': interviews_count,
         'pending_applications': pending_applications,
@@ -728,20 +805,12 @@ def save_search(request):
     project = request.POST.get('project', '')
     name = request.POST.get('name', '') or f"Search: {query or location or skill or project or 'All'}"
 
-    match_qs = JobSeekerProfile.objects.filter(is_resume_public=True)
-    if query:
-        match_qs = match_qs.filter(
-            Q(user__first_name__icontains=query) |
-            Q(user__last_name__icontains=query) |
-            Q(skills__icontains=query)
-        )
-    if location:
-        match_qs = match_qs.filter(location__icontains=location)
-    if skill:
-        match_qs = match_qs.filter(skills__icontains=skill)
-    if project:
-        match_qs = match_qs.filter(projects__icontains=project)
-    initial_match_count = match_qs.count()
+    initial_match_count = build_candidate_search_queryset(
+        query=query,
+        location=location,
+        skill=skill,
+        project=project,
+    ).count()
 
     SavedSearch.objects.create(
         recruiter=request.user,
@@ -763,8 +832,28 @@ def save_search(request):
 @recruiter_required
 def saved_searches(request):
     """List saved searches (Story 15)"""
-    searches = SavedSearch.objects.filter(recruiter=request.user)
+    searches = hydrate_saved_searches(request.user)
     return render(request, "jobboard/SavedSearches.html", {'searches': searches, 'saved_searches': searches})
+
+
+@login_required
+@recruiter_required
+@require_http_methods(["POST"])
+def save_candidate(request, user_id):
+    candidate = get_object_or_404(CustomUser, pk=user_id, role=CustomUser.Role.JOBSEEKER)
+    SavedCandidate.objects.get_or_create(recruiter=request.user, candidate=candidate)
+    messages.success(request, f"{candidate.get_full_name() or candidate.username} saved to your candidates.")
+    return redirect(request.POST.get('next') or reverse('recruiter_talent_search'))
+
+
+@login_required
+@recruiter_required
+@require_http_methods(["POST"])
+def remove_saved_candidate(request, user_id):
+    candidate = get_object_or_404(CustomUser, pk=user_id, role=CustomUser.Role.JOBSEEKER)
+    SavedCandidate.objects.filter(recruiter=request.user, candidate=candidate).delete()
+    messages.success(request, f"{candidate.get_full_name() or candidate.username} removed from saved candidates.")
+    return redirect(request.POST.get('next') or reverse('recruiter_talent_search'))
 
 
 @login_required
@@ -817,10 +906,19 @@ def recruiter_applicant_map(request):
     for group in location_groups_list:
         group['applicant_names'] = [a['name'] for a in group['applicants']]
         group['applicant_summary'] = ", ".join(group['applicant_names'])
+        group['has_coordinates'] = group['latitude'] is not None and group['longitude'] is not None
+
+    location_groups_list.sort(key=lambda group: (-group['count'], group['location'].lower()))
+
+    top_location = location_groups_list[0] if location_groups_list else None
+    mapped_location_count = sum(1 for group in location_groups_list if group['has_coordinates'])
 
     context = {
         'location_groups': location_groups_list,
         'total_applicants': len(applicant_ids),
+        'total_locations': len(location_groups_list),
+        'mapped_location_count': mapped_location_count,
+        'top_location': top_location,
     }
     return render(request, "jobboard/RecruiterApplicantMap.html", context)
 
@@ -831,29 +929,13 @@ def recruiter_talent_search(request):
     location = request.GET.get('location', '')
     skill = request.GET.get('skill', '')
     project = request.GET.get('project', '')
-    
-    # Only show profiles that are set to public
-    profiles = JobSeekerProfile.objects.filter(is_resume_public=True)
 
-    if query:
-        profiles = profiles.filter(
-            Q(user__first_name__icontains=query) |
-            Q(user__last_name__icontains=query) |
-            Q(skills__icontains=query) |
-            Q(projects__icontains=query) |
-            Q(major__icontains=query) |
-            Q(headline__icontains=query) |
-            Q(work_experience__icontains=query)
-        )
-    
-    if location:
-        profiles = profiles.filter(location__icontains=location)
-    
-    if skill:
-        profiles = profiles.filter(skills__icontains=skill)
-
-    if project:
-        profiles = profiles.filter(projects__icontains=project)
+    profiles = build_candidate_search_queryset(
+        query=query,
+        location=location,
+        skill=skill,
+        project=project,
+    )
 
     # Get all unique skills for the dropdown
     all_skills_raw = JobSeekerProfile.objects.filter(is_resume_public=True).exclude(skills__isnull=True).exclude(skills='').values_list('skills', flat=True)
@@ -865,35 +947,12 @@ def recruiter_talent_search(request):
     all_skills = sorted(list(all_skills))
 
     # Get saved searches for this recruiter (Story 15)
-    user_saved_searches = SavedSearch.objects.filter(recruiter=request.user)
-
-    # Check if matching new candidates for saved searches and create notifications (Story 15)
-    for saved in user_saved_searches:
-        sq = JobSeekerProfile.objects.filter(is_resume_public=True)
-        if saved.query:
-            sq = sq.filter(
-                Q(user__first_name__icontains=saved.query) |
-                Q(user__last_name__icontains=saved.query) |
-                Q(skills__icontains=saved.query)
-            )
-        if saved.location:
-            sq = sq.filter(location__icontains=saved.location)
-        if saved.skill:
-            sq = sq.filter(skills__icontains=saved.skill)
-        if saved.project:
-            sq = sq.filter(projects__icontains=saved.project)
-
-        new_count = sq.count()
-        saved.current_matches = new_count
-        if new_count > saved.last_match_count:
-            Notification.objects.create(
-                user=request.user,
-                notification_message=f"Saved search '{saved.name or 'Untitled Search'}' has {new_count - saved.last_match_count} new candidate match(es).",
-                link=f"/jobboard/recruiter/talent-search/?q={saved.query}&location={saved.location}&skill={saved.skill}&project={saved.project}",
-            )
-        if new_count != saved.last_match_count:
-            saved.last_match_count = new_count
-            saved.save(update_fields=['last_match_count'])
+    user_saved_searches = hydrate_saved_searches(request.user)
+    saved_candidates = list(
+        SavedCandidate.objects.filter(recruiter=request.user)
+        .select_related('candidate__jobseekerprofile', 'candidate')
+    )
+    saved_candidate_ids = {saved.candidate_id for saved in saved_candidates}
 
     context = {
         'profiles': profiles, 
@@ -903,6 +962,8 @@ def recruiter_talent_search(request):
         'project': project,
         'all_skills': all_skills,
         'saved_searches': user_saved_searches,
+        'saved_candidates': saved_candidates,
+        'saved_candidate_ids': saved_candidate_ids,
     }
     return render(request, "jobboard/RecruiterTalentSearch.html", context)
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Job, Application, ScreeningQuestion, ApplicationAnswer, Interview, Message, SavedSearch, Notification
+from .models import Job, Application, ScreeningQuestion, ApplicationAnswer, Interview, Message, SavedSearch, SavedCandidate, Notification
 
 @admin.register(Job)
 class JobAdmin(admin.ModelAdmin):
@@ -25,6 +25,12 @@ class MessageAdmin(admin.ModelAdmin):
 @admin.register(SavedSearch)
 class SavedSearchAdmin(admin.ModelAdmin):
     list_display = ("recruiter", "name", "query", "location", "skill", "created_at")
+
+
+@admin.register(SavedCandidate)
+class SavedCandidateAdmin(admin.ModelAdmin):
+    list_display = ("recruiter", "candidate", "created_at")
+    search_fields = ("recruiter__username", "candidate__username", "candidate__email")
 
 
 @admin.register(Notification)

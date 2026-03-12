@@ -4,7 +4,7 @@ from unittest.mock import patch
 from decimal import Decimal
 
 from accounts.models import CustomUser, JobSeekerProfile, RecruiterProfile
-from .models import Application, Job, SavedSearch, Notification
+from .models import Application, Job, SavedSearch, SavedCandidate, Notification
 
 
 class JobApplyFlowTests(TestCase):
@@ -627,6 +627,45 @@ class StoryCompletenessHardeningTests(TestCase):
         self.assertIn("applicant_summary", groups[0])
         self.assertIn("location", groups[0])
 
+    def test_story_18_recruiter_applicant_map_orders_largest_cluster_first(self):
+        second_candidate = CustomUser.objects.create_user(
+            username="jobseeker12",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        third_candidate = CustomUser.objects.create_user(
+            username="jobseeker13",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        JobSeekerProfile.objects.create(
+            user=second_candidate,
+            location="Atlanta",
+            headline="Data Analyst",
+            latitude="33.749000",
+            longitude="-84.388000",
+        )
+        JobSeekerProfile.objects.create(
+            user=third_candidate,
+            location="Austin, TX",
+            headline="Designer",
+            latitude="30.267200",
+            longitude="-97.743100",
+        )
+        Application.objects.create(job=self.job, applicant=self.jobseeker_public, status="APPLIED")
+        Application.objects.create(job=self.job, applicant=second_candidate, status="APPLIED")
+        Application.objects.create(job=self.job, applicant=third_candidate, status="APPLIED")
+
+        self.client.login(username="recruiter11", password="testpass123")
+        response = self.client.get(reverse("recruiter_applicant_map"))
+
+        self.assertEqual(response.status_code, 200)
+        groups = response.context["location_groups"]
+        self.assertEqual(groups[0]["location"], "Atlanta")
+        self.assertEqual(groups[0]["count"], 2)
+        self.assertEqual(response.context["top_location"]["location"], "Atlanta")
+        self.assertEqual(response.context["total_locations"], 2)
+
     def test_story_19_admin_role_switch_removes_conflicting_profile(self):
         self.client.login(username="admin2", password="testpass123")
         response = self.client.post(
@@ -640,3 +679,121 @@ class StoryCompletenessHardeningTests(TestCase):
         self.assertEqual(self.recruiter.role, CustomUser.Role.JOBSEEKER)
         self.assertFalse(RecruiterProfile.objects.filter(user=self.recruiter).exists())
         self.assertTrue(JobSeekerProfile.objects.filter(user=self.recruiter).exists())
+
+
+class SavedSearchNotificationTests(TestCase):
+    def setUp(self):
+        self.recruiter = CustomUser.objects.create_user(
+            username="recruiter_saved",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+        )
+        RecruiterProfile.objects.create(user=self.recruiter, company_name="MintMatch")
+
+        self.candidate = CustomUser.objects.create_user(
+            username="headline_match",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        JobSeekerProfile.objects.create(
+            user=self.candidate,
+            headline="Machine Learning Engineer",
+            skills="Python, TensorFlow",
+            is_resume_public=True,
+        )
+
+    def test_save_search_uses_same_match_logic_as_talent_search(self):
+        self.client.login(username="recruiter_saved", password="testpass123")
+        response = self.client.post(
+            reverse("save_search"),
+            {"query": "Machine Learning", "name": "ML talent"},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        saved_search = SavedSearch.objects.get(recruiter=self.recruiter, name="ML talent")
+        self.assertEqual(saved_search.last_match_count, 1)
+
+    def test_dashboard_creates_notification_once_when_new_matches_appear(self):
+        self.client.login(username="recruiter_saved", password="testpass123")
+        saved_search = SavedSearch.objects.create(
+            recruiter=self.recruiter,
+            name="Remote Python",
+            skill="Python",
+            last_match_count=1,
+        )
+
+        new_candidate = CustomUser.objects.create_user(
+            username="second_python_match",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        JobSeekerProfile.objects.create(
+            user=new_candidate,
+            headline="Backend Developer",
+            skills="Python, Django",
+            is_resume_public=True,
+        )
+
+        first_response = self.client.get(reverse("recruiter_dashboard"))
+        self.assertEqual(first_response.status_code, 200)
+
+        notifications = Notification.objects.filter(
+            user=self.recruiter,
+            notification_message__icontains="Remote Python",
+        )
+        self.assertEqual(notifications.count(), 1)
+
+        saved_search.refresh_from_db()
+        self.assertEqual(saved_search.last_match_count, 2)
+
+        second_response = self.client.get(reverse("recruiter_dashboard"))
+        self.assertEqual(second_response.status_code, 200)
+        self.assertEqual(notifications.count(), 1)
+
+
+class SavedCandidateTests(TestCase):
+    def setUp(self):
+        self.recruiter = CustomUser.objects.create_user(
+            username="recruiter_candidate",
+            password="testpass123",
+            role=CustomUser.Role.RECRUITER,
+        )
+        self.candidate = CustomUser.objects.create_user(
+            username="saved_candidate_user",
+            password="testpass123",
+            role=CustomUser.Role.JOBSEEKER,
+        )
+        JobSeekerProfile.objects.create(
+            user=self.candidate,
+            headline="Frontend Engineer",
+            skills="React, TypeScript",
+            is_resume_public=True,
+        )
+
+    def test_recruiter_can_save_candidate(self):
+        self.client.login(username="recruiter_candidate", password="testpass123")
+        response = self.client.post(
+            reverse("save_candidate", args=[self.candidate.pk]),
+            {"next": reverse("recruiter_talent_search")},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            SavedCandidate.objects.filter(recruiter=self.recruiter, candidate=self.candidate).exists()
+        )
+
+    def test_recruiter_can_remove_saved_candidate(self):
+        SavedCandidate.objects.create(recruiter=self.recruiter, candidate=self.candidate)
+        self.client.login(username="recruiter_candidate", password="testpass123")
+        response = self.client.post(
+            reverse("remove_saved_candidate", args=[self.candidate.pk]),
+            {"next": reverse("recruiter_talent_search")},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(
+            SavedCandidate.objects.filter(recruiter=self.recruiter, candidate=self.candidate).exists()
+        )

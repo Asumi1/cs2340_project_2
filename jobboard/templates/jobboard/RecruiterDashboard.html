@@ -300,6 +300,31 @@
             </div>
         </div>
 
+        <div class="col-span-1 md:col-span-4 glass-panel rounded-lg p-6 hover-lift">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-charcoal dark:text-white">Applicant Map</h2>
+                <span class="inline-flex items-center gap-1 text-xs font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">
+                    <span class="material-icons text-sm">hub</span>
+                    Cluster View
+                </span>
+            </div>
+            <p class="text-sm text-charcoal-light dark:text-gray-400 leading-6">
+                See where applicants are concentrated so you can spot your strongest location pipelines at a glance.
+            </p>
+            <div class="mt-6 rounded-3xl bg-gradient-to-br from-primary/20 via-white/50 to-slate-100/80 p-5 border border-white/60">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.2em] font-semibold text-charcoal-light">Geographic Insights</p>
+                        <p class="mt-2 text-xl font-bold text-charcoal">Open the interactive map</p>
+                    </div>
+                    <span class="material-icons text-4xl text-primary">location_searching</span>
+                </div>
+                <a href="{% url 'recruiter_applicant_map' %}" class="mt-5 inline-flex items-center gap-2 px-5 py-3 rounded-full bg-charcoal text-white text-sm font-bold hover:bg-slate-800 transition-colors">
+                    View Applicant Map
+                </a>
+            </div>
+        </div>
+
         <!-- 5. Upcoming Interviews (Bottom Full Width or Span) -->
         <div class="col-span-1 md:col-span-12 glass-panel rounded-lg p-6 hover-lift">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">

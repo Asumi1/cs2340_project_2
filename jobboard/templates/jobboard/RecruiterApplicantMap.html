@@ -30,11 +30,37 @@
         </a>
     </div>
 
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="glass-panel rounded-3xl p-5 shadow-xl">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Applicants</p>
+            <p class="mt-2 text-3xl font-bold text-slate-900">{{ total_applicants }}</p>
+            <p class="mt-1 text-sm text-slate-500">Unique candidates across all of your jobs.</p>
+        </div>
+        <div class="glass-panel rounded-3xl p-5 shadow-xl">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Locations</p>
+            <p class="mt-2 text-3xl font-bold text-slate-900">{{ total_locations }}</p>
+            <p class="mt-1 text-sm text-slate-500">{{ mapped_location_count }} locations already have coordinates for precise map placement.</p>
+        </div>
+        <div class="glass-panel rounded-3xl p-5 shadow-xl">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Top Source</p>
+            {% if top_location %}
+            <p class="mt-2 text-xl font-bold text-slate-900">{{ top_location.location }}</p>
+            <p class="mt-1 text-sm text-slate-500">{{ top_location.count }} applicant{{ top_location.count|pluralize }} from this area.</p>
+            {% else %}
+            <p class="mt-2 text-xl font-bold text-slate-900">No data yet</p>
+            <p class="mt-1 text-sm text-slate-500">Applicants with locations will appear here.</p>
+            {% endif %}
+        </div>
+    </section>
+
     <div class="flex flex-col lg:flex-row gap-6">
         <!-- Sidebar: Location List -->
         <div class="w-full lg:w-1/3 flex flex-col gap-4">
             <div class="glass-panel rounded-3xl p-6 shadow-xl">
-                <h2 class="text-lg font-bold text-slate-900 mb-4">Applicant Locations</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-slate-900">Applicant Locations</h2>
+                    <span class="text-xs font-semibold text-slate-500 bg-white/70 px-3 py-1 rounded-full border border-white/80">Largest clusters first</span>
+                </div>
                 <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
                     {% for loc in location_groups %}
                     <div class="p-3 rounded-xl bg-white/50 border border-white/60 hover:bg-white/80 transition-all cursor-pointer" onclick="focusLocation('{{ loc.location|escapejs }}')">
@@ -46,6 +72,13 @@
                             <span class="px-2 py-1 bg-teal-100 text-teal-700 rounded-full text-xs font-bold">{{ loc.count }}</span>
                         </div>
                         <p class="text-xs text-slate-400 mt-1 ml-7">{{ loc.applicant_summary|truncatechars:80 }}</p>
+                        <div class="ml-7 mt-2 flex items-center gap-2">
+                            {% if loc.has_coordinates %}
+                            <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Mapped exactly</span>
+                            {% else %}
+                            <span class="text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">Approximate via geocoding</span>
+                            {% endif %}
+                        </div>
                     </div>
                     {% empty %}
                     <div class="text-center py-8 text-slate-400">
@@ -72,7 +105,7 @@
 {{ location_groups|json_script:"applicant-location-data" }}
 <script>
 window.addEventListener('load', function() {
-    var map = L.map('applicant-map').setView([33.7490, -84.3880], 5);
+    var map = L.map('applicant-map').setView([39.8283, -98.5795], 4);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -115,6 +148,10 @@ window.addEventListener('load', function() {
 
         locationMarkers[loc.location] = { marker: marker, lat: lat, lng: lng };
         bounds.extend([lat, lng]);
+    }
+
+    if (!locations.length) {
+        map.setView([39.8283, -98.5795], 4);
     }
 
     locations.forEach(function(loc) {

@@ -143,6 +143,19 @@ class SavedSearch(models.Model):
         return f"Saved search by {self.recruiter}: {self.name or self.query}"
 
 
+class SavedCandidate(models.Model):
+    recruiter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='saved_candidates')
+    candidate = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='saved_by_recruiters')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ('recruiter', 'candidate')
+
+    def __str__(self):
+        return f"{self.recruiter} saved {self.candidate}"
+
+
 class Notification(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
     notification_message = models.TextField()

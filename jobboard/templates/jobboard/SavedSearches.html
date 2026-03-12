@@ -45,6 +45,12 @@
                             {% if ss.project %}<span class="px-2 py-0.5 bg-slate-100 rounded-full">{{ ss.project }}</span>{% endif %}
                             <span>&bull; Saved {{ ss.created_at|timesince }} ago</span>
                         </div>
+                        <div class="flex items-center gap-2 mt-2 text-xs">
+                            <span class="px-2 py-0.5 bg-teal-50 text-teal-700 rounded-full">{{ ss.current_matches|default:ss.last_match_count }} matches</span>
+                            {% if ss.new_match_count %}
+                            <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">+{{ ss.new_match_count }} new</span>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">

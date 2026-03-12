@@ -63,12 +63,14 @@ from .models import JobSeekerProfile, RecruiterProfile
 class JobSeekerProfileForm(forms.ModelForm):
     class Meta:
         model = JobSeekerProfile
-        fields = ['headline', 'bio', 'location', 'major', 'skills', 'projects', 'education', 'work_experience', 'linkedin_url', 'portfolio_url', 'profile_photo', 'resume_file', 'is_resume_public']
+        fields = ['headline', 'bio', 'location', 'latitude', 'longitude', 'major', 'skills', 'projects', 'education', 'work_experience', 'linkedin_url', 'portfolio_url', 'profile_photo', 'resume_file', 'is_resume_public']
         widgets = {
             'bio': forms.Textarea(attrs={'rows': 4}),
             'projects': forms.Textarea(attrs={'rows': 3}),
             'education': forms.Textarea(attrs={'rows': 3}),
             'work_experience': forms.Textarea(attrs={'rows': 3}),
+            'latitude': forms.HiddenInput(),
+            'longitude': forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -85,6 +87,8 @@ class JobSeekerProfileForm(forms.ModelForm):
                 field.widget.attrs['class'] = 'block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-neutral-900 hover:file:bg-primary/20 transition-colors'
                 continue
 
+            if field_name in ['latitude', 'longitude']:
+                continue
             if field_name == 'headline':
                 field.widget.attrs['class'] = 'w-full text-2xl font-bold text-neutral-900 dark:text-white border-0 border-b-2 border-neutral-100 dark:border-neutral-700 bg-transparent px-0 py-2 focus:ring-0 focus:border-primary placeholder-neutral-300 transition-colors'
             elif field_name == 'bio':

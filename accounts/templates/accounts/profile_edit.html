@@ -70,6 +70,10 @@
 {% include 'jobboard/includes/navbar.html' %} 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
+    {% if user.role == 'JOBSEEKER' %}
+        {{ form.latitude }}
+        {{ form.longitude }}
+    {% endif %}
     
     <!-- Main Content -->
     <main class="pt-28 pb-12 px-6 max-w-7xl mx-auto">
@@ -221,6 +225,14 @@
                     </div>
                     {% endif %}
 
+                    {% if form.location %}
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Location</label>
+                        {{ form.location }}
+                        <p id="location-status" class="mt-2 text-xs text-neutral-400">Add your city or metro area so recruiters can find you on location-based maps.</p>
+                    </div>
+                    {% endif %}
+
                     {% if form.bio %}
                     <div>
                         <label class="block text-xs font-bold text-neutral-250 uppercase tracking-wider mb-2">Bio</label>
@@ -317,36 +329,113 @@
 </html>
 
 <script>
-    document.getElementById('photo-upload-input').addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        if (!file) return;
+    (function () {
+        const photoInput = document.getElementById('photo-upload-input');
+        if (photoInput) {
+            photoInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
 
-        // Validate it's an image and under 5MB
-        if (!file.type.startsWith('image/')) {
-            alert('Please select an image file (JPG, PNG, GIF, etc.)');
-            this.value = '';
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file (JPG, PNG, GIF, etc.)');
+                    this.value = '';
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image must be under 5MB.');
+                    this.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const preview = document.getElementById('photo-preview');
+                    const placeholder = document.getElementById('photo-placeholder');
+                    const status = document.getElementById('photo-status');
+
+                    preview.src = event.target.result;
+                    preview.classList.remove('hidden');
+                    if (placeholder) placeholder.classList.add('hidden');
+                    status.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        const form = document.querySelector('form[method="post"]');
+        const locationInput = document.getElementById('id_location');
+        const latitudeInput = document.getElementById('id_latitude');
+        const longitudeInput = document.getElementById('id_longitude');
+        const locationStatus = document.getElementById('location-status');
+
+        if (!form || !locationInput || !latitudeInput || !longitudeInput) {
             return;
         }
-        if (file.size > 5 * 1024 * 1024) {
-            alert('Image must be under 5MB.');
-            this.value = '';
-            return;
+
+        let initialLocation = (locationInput.value || '').trim();
+        let isSubmittingAfterGeocode = false;
+
+        function updateStatus(message, isError) {
+            if (!locationStatus) return;
+            locationStatus.textContent = message;
+            locationStatus.className = isError
+                ? 'mt-2 text-xs text-red-500'
+                : 'mt-2 text-xs text-neutral-400';
         }
 
-        // Show live preview
-        const reader = new FileReader();
-        reader.onload = function (event) {
-            const preview = document.getElementById('photo-preview');
-            const placeholder = document.getElementById('photo-placeholder');
-            const status = document.getElementById('photo-status');
+        async function geocodeLocation(locationValue) {
+            const response = await fetch(
+                'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(locationValue),
+                { headers: { 'Accept': 'application/json' } }
+            );
+            if (!response.ok) {
+                throw new Error('Unable to geocode location.');
+            }
 
-            preview.src = event.target.result;
-            preview.classList.remove('hidden');
-            if (placeholder) placeholder.classList.add('hidden');
-            status.classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
-    });
+            const results = await response.json();
+            if (!results.length) {
+                throw new Error('Location not found.');
+            }
+
+            latitudeInput.value = Number.parseFloat(results[0].lat).toFixed(6);
+            longitudeInput.value = Number.parseFloat(results[0].lon).toFixed(6);
+        }
+
+        form.addEventListener('submit', async function (event) {
+            if (isSubmittingAfterGeocode) {
+                return;
+            }
+
+            const locationValue = (locationInput.value || '').trim();
+            const coordinatesMissing = !latitudeInput.value || !longitudeInput.value;
+            const locationChanged = locationValue !== initialLocation;
+
+            if (!locationValue) {
+                latitudeInput.value = '';
+                longitudeInput.value = '';
+                return;
+            }
+
+            if (!coordinatesMissing && !locationChanged) {
+                return;
+            }
+
+            event.preventDefault();
+            updateStatus('Looking up map coordinates for your location...', false);
+
+            try {
+                await geocodeLocation(locationValue);
+                updateStatus('Location mapped successfully. Saving profile...', false);
+                initialLocation = locationValue;
+                isSubmittingAfterGeocode = true;
+                form.submit();
+            } catch (error) {
+                latitudeInput.value = '';
+                longitudeInput.value = '';
+                updateStatus('We could not map that location. Try a city and state, like Atlanta, GA.', true);
+            }
+        });
+    })();
 </script>
 </body>
 </html>

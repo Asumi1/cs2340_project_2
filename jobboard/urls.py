@@ -43,6 +43,8 @@ urlpatterns = [
     path("recruiter/saved-searches/", views.saved_searches, name="saved_searches"),
     path("recruiter/save-search/", views.save_search, name="save_search"),
     path("recruiter/saved-search/<int:pk>/delete/", views.delete_saved_search, name="delete_saved_search"),
+    path("recruiter/candidate/<int:user_id>/save/", views.save_candidate, name="save_candidate"),
+    path("recruiter/candidate/<int:user_id>/remove/", views.remove_saved_candidate, name="remove_saved_candidate"),
 
     path("recruiter/talent-search/", views.recruiter_talent_search, name="recruiter_talent_search"),
 ]

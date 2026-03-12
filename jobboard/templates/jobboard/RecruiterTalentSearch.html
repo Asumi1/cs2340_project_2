@@ -136,6 +136,15 @@
                     </div>
                 </form>
                 {% endif %}
+                <div class="mt-3 flex items-center gap-3">
+                    <a href="{% url 'saved_searches' %}" class="inline-flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-primary-dark transition-colors">
+                        <span class="material-symbols-outlined text-base">bookmarks</span>
+                        View saved searches
+                    </a>
+                    {% if not query and not location and not skill and not project %}
+                    <span class="text-xs text-slate-400">Run a search first to save it.</span>
+                    {% endif %}
+                </div>
             </div>
             <div class="flex-shrink-0 self-end lg:self-center">
                 <div class="bg-slate-100 dark:bg-surface-dark p-1 rounded-full flex items-center border border-slate-200 dark:border-slate-700">
@@ -170,9 +179,44 @@
                 {% if ss.current_matches is not None %}
                 <span class="text-[10px] font-bold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded-full">{{ ss.current_matches }}</span>
                 {% endif %}
+                {% if ss.new_match_count %}
+                <span class="text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-full">+{{ ss.new_match_count }} new</span>
+                {% endif %}
                 <form method="POST" action="{% url 'delete_saved_search' ss.pk %}" class="inline">
                     {% csrf_token %}
                     <button type="submit" class="size-7 rounded-full hover:bg-red-100 flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors" title="Delete">
+                        <span class="material-symbols-outlined text-sm">close</span>
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if saved_candidates %}
+    <section class="glass-panel rounded-2xl p-5 shadow-glass">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">bookmark_manager</span>
+                Saved Candidates
+            </h3>
+            <span class="text-xs font-semibold text-slate-500">{{ saved_candidates|length }} saved</span>
+        </div>
+        <div class="flex flex-wrap gap-3">
+            {% for saved_candidate in saved_candidates|slice:":6" %}
+            <div class="flex items-center gap-3 bg-white/60 border border-slate-200 rounded-full pl-3 pr-2 py-2">
+                <div class="size-8 rounded-full bg-primary/80 text-slate-900 flex items-center justify-center text-xs font-bold">
+                    {{ saved_candidate.candidate.first_name|first }}{{ saved_candidate.candidate.last_name|first }}
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-700">{{ saved_candidate.candidate.get_full_name|default:saved_candidate.candidate.username }}</p>
+                    <p class="text-[11px] text-slate-400">{{ saved_candidate.candidate.jobseekerprofile.headline|default:"Candidate" }}</p>
+                </div>
+                <form method="POST" action="{% url 'remove_saved_candidate' saved_candidate.candidate.pk %}" class="inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="size-7 rounded-full hover:bg-red-100 flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors" title="Remove saved candidate">
                         <span class="material-symbols-outlined text-sm">close</span>
                     </button>
                 </form>
@@ -205,9 +249,23 @@
                         <p class="text-sm text-slate-500 dark:text-slate-400">{{ profile.headline|default:profile.major|default:"Candidate" }}</p>
                     </div>
                 </div>
-                <button class="text-slate-400 hover:text-primary transition-colors">
-                    <span class="material-symbols-outlined">bookmark</span>
-                </button>
+                {% if profile.user_id in saved_candidate_ids %}
+                <form method="POST" action="{% url 'remove_saved_candidate' profile.user.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="text-primary transition-colors" title="Remove saved candidate">
+                        <span class="material-symbols-outlined">bookmark_added</span>
+                    </button>
+                </form>
+                {% else %}
+                <form method="POST" action="{% url 'save_candidate' profile.user.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="text-slate-400 hover:text-primary transition-colors" title="Save candidate">
+                        <span class="material-symbols-outlined">bookmark_add</span>
+                    </button>
+                </form>
+                {% endif %}
             </div>
             
             {% if profile.location %}
